@@ -1,0 +1,23 @@
+[96msrc/site/components/Navbar.tsx[0m:[93m42[0m:[93m35[0m - [91merror[0m[90m TS7019: [0mRest parameter 'args' implicitly has an 'any[]' type.
+
+[7m42[0m     history.pushState = function (...args) {
+[7m  [0m [91m                                  ~~~~~~~[0m
+
+[96msrc/site/components/Navbar.tsx[0m:[93m43[0m:[93m31[0m - [91merror[0m[90m TS2683: [0m'this' implicitly has type 'any' because it does not have a type annotation.
+
+[7m43[0m       const ret = _push.apply(this, args as any);
+[7m  [0m [91m                              ~~~~[0m
+
+[96msrc/site/components/Navbar.tsx[0m:[93m47[0m:[93m38[0m - [91merror[0m[90m TS7019: [0mRest parameter 'args' implicitly has an 'any[]' type.
+
+[7m47[0m     history.replaceState = function (...args) {
+[7m  [0m [91m                                     ~~~~~~~[0m
+
+[96msrc/site/components/Navbar.tsx[0m:[93m48[0m:[93m34[0m - [91merror[0m[90m TS2683: [0m'this' implicitly has type 'any' because it does not have a type annotation.
+
+[7m48[0m       const ret = _replace.apply(this, args as any);
+[7m  [0m [91m                                 ~~~~[0m
+
+
+Found 4 errors in the same file, starting at: src/site/components/Navbar.tsx[90m:42[0m
+
