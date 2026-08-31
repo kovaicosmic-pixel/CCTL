@@ -20,7 +20,7 @@ function Masthead() {
   return (
     <div ref={ref} className="relative h-[92vh] overflow-hidden">
       <motion.img
-        src="/images/blog.png"
+        src="/images/blog.webp"
         alt=""
         style={{ y: imgY, scale: imgScale }}
         className="absolute inset-0 h-full w-full object-cover opacity-80"

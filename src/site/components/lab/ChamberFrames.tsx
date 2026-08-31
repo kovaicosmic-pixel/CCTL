@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+import { useReducedMotion } from "framer-motion";
+import { DESKTOP_BREAKPOINT, useIsDesktop } from "../../hooks/useIsDesktop";
 
 /**
  * Real chamber footage as a scroll-scrubbed image sequence — the same technique behind Apple's
@@ -11,6 +13,8 @@ import { useEffect, useRef } from "react";
  */
 
 const FRAME_COUNT = 192;
+const EAGER_COUNT = 16;
+const IDLE_BATCH_SIZE = 8;
 const frameSrc = (i: number) => `/images/chamber-frames/frame-${String(i).padStart(3, "0")}.webp`;
 
 export default function ChamberFrames({
@@ -24,6 +28,9 @@ export default function ChamberFrames({
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const loadedRef = useRef<boolean[]>([]);
   const drawnIndexRef = useRef(-1);
+  const loadFrameRef = useRef<(index: number) => void>(() => {});
+  const reducedMotion = useReducedMotion();
+  const isDesktop = useIsDesktop(DESKTOP_BREAKPOINT);
 
   const draw = (index: number, force = false) => {
     const canvas = canvasRef.current;
@@ -74,9 +81,13 @@ export default function ChamberFrames({
 
   useEffect(() => {
     let cancelled = false;
-    const images: HTMLImageElement[] = [];
+    const images: HTMLImageElement[] = new Array(FRAME_COUNT);
     const loaded: boolean[] = new Array(FRAME_COUNT).fill(false);
-    for (let i = 0; i < FRAME_COUNT; i++) {
+    imagesRef.current = images;
+    loadedRef.current = loaded;
+
+    const loadFrame = (i: number) => {
+      if (images[i] || cancelled) return;
       const img = new Image();
       img.decoding = "async";
       img.onload = () => {
@@ -85,10 +96,29 @@ export default function ChamberFrames({
         if (drawnIndexRef.current === -1) draw(i, true);
       };
       img.src = frameSrc(i);
-      images.push(img);
-    }
-    imagesRef.current = images;
-    loadedRef.current = loaded;
+      images[i] = img;
+    };
+    loadFrameRef.current = loadFrame;
+
+    // First screenful loads immediately so the scene has something to paint
+    // and early scroll feels smooth; the rest trickle in during idle time
+    // instead of firing 192 concurrent requests that starve the CSS/font/JS
+    // requests competing for the same handful of connections.
+    for (let i = 0; i < Math.min(EAGER_COUNT, FRAME_COUNT); i++) loadFrame(i);
+
+    let next = EAGER_COUNT;
+    const idle: (cb: () => void) => number =
+      typeof window !== "undefined" && "requestIdleCallback" in window
+        ? (cb) => window.requestIdleCallback(cb, { timeout: 1000 })
+        : (cb) => window.setTimeout(cb, 200);
+    const loadNextBatch = () => {
+      if (cancelled || next >= FRAME_COUNT) return;
+      const end = Math.min(next + IDLE_BATCH_SIZE, FRAME_COUNT);
+      for (; next < end; next++) loadFrame(next);
+      idle(loadNextBatch);
+    };
+    idle(loadNextBatch);
+
     return () => {
       cancelled = true;
     };
@@ -113,10 +143,34 @@ export default function ChamberFrames({
 
   useEffect(() => {
     const target = Math.round(progress * (FRAME_COUNT - 1));
+    // Scroll can outrun the idle-loaded queue — jump the target frame (and a
+    // little lookahead in the scroll direction) to the front of the line so
+    // scrubbing doesn't stall on frames the idle batches haven't reached yet.
+    if (!loadedRef.current[target]) {
+      loadFrameRef.current(target);
+      for (let d = 1; d <= 4; d++) {
+        if (target + d < FRAME_COUNT) loadFrameRef.current(target + d);
+        if (target - d >= 0) loadFrameRef.current(target - d);
+      }
+    }
     const idx = nearestLoaded(target);
     if (idx !== -1) draw(idx);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress]);
 
-  return <canvas ref={canvasRef} className={className} aria-hidden />;
+  const depthTransform =
+    !isDesktop && !reducedMotion
+      ? `scale(${1.03 + 0.01 * progress})`
+      : undefined;
+
+  return (
+    <div className="h-full w-full">
+      <canvas
+        ref={canvasRef}
+        className={className}
+        style={{ transform: depthTransform, transformOrigin: "center top" }}
+        aria-hidden
+      />
+    </div>
+  );
 }

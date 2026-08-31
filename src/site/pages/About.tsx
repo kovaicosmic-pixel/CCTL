@@ -87,7 +87,7 @@ function WhoWeAre() {
         >
           <motion.div style={{ y: yA }} className="ml-auto w-[82%] lg:w-[76%]">
             <img
-              src="/images/chamber.png"
+              src="/images/chamber.webp"
               alt="CCTL semi-anechoic chamber"
               loading="eager"
               className="nav-logo aspect-[4/5] w-full rounded-3xl object-cover plate"
@@ -98,7 +98,7 @@ function WhoWeAre() {
             className="absolute bottom-0 left-0 w-[58%] lg:w-[54%]"
           >
             <img
-              src={labPhotosA[1] ?? "/images/explore/control_room.jpg"}
+              src={labPhotosA[1] ?? "/images/explore/control_room.webp"}
               alt="CCTL engineers at work"
               loading="eager"
               className="nav-logo aspect-[4/3] w-full rounded-2xl object-cover plate"
@@ -238,9 +238,9 @@ function Capabilities() {
       curveAmount: 35.0,
       curveDirection: 1 as const,
       images: [
-        "/images/explore/AZ7_7709%202023-09-11%2006_28_36.JPG",
-        "/images/explore/AZ7_7776.JPG",
-        "/images/explore/civilLab.png",
+        "/images/explore/AZ7_7709%202023-09-11%2006_28_36.webp",
+        "/images/explore/AZ7_7776.webp",
+        "/images/explore/civilLab.webp",
         "/images/explore/Picture1.jpg",
       ],
     },
@@ -252,10 +252,10 @@ function Capabilities() {
       curveAmount: 30.0,
       curveDirection: 1 as const,
       images: [
-        "/images/explore/AZ7_7722%202023-09-11%2006_29_56.JPG",
-        "/images/explore/AZ7_7777.JPG",
-        "/images/explore/domain-railways.png",
-        "/images/explore/Labcivil.png",
+        "/images/explore/AZ7_7722%202023-09-11%2006_29_56.webp",
+        "/images/explore/AZ7_7777.webp",
+        "/images/explore/domain-railways.webp",
+        "/images/explore/Labcivil.webp",
       ],
     },
     {
@@ -265,10 +265,10 @@ function Capabilities() {
       curveAmount: 35.0,
       curveDirection: 1 as const,
       images: [
-        "/images/explore/domain-telecom.png",
-        "/images/explore/media.png",
-        "/images/explore/AZ7_7776.JPG",
-        "/images/explore/civilLab.png",
+        "/images/explore/domain-telecom.webp",
+        "/images/explore/media.webp",
+        "/images/explore/AZ7_7776.webp",
+        "/images/explore/civilLab.webp",
       ],
     },
     {
@@ -279,9 +279,9 @@ function Capabilities() {
       curveDirection: 1 as const,
       images: [
         "/images/explore/Picture1.jpg",
-        "/images/explore/AZ7_7709%202023-09-11%2006_28_36.JPG",
-        "/images/explore/domain-railways.png",
-        "/images/explore/AZ7_7722%202023-09-11%2006_29_56.JPG",
+        "/images/explore/AZ7_7709%202023-09-11%2006_28_36.webp",
+        "/images/explore/domain-railways.webp",
+        "/images/explore/AZ7_7722%202023-09-11%2006_29_56.webp",
       ],
     },
   ];

@@ -9,12 +9,12 @@ import { useReducedMotion } from "framer-motion";
  */
 
 const ICONS = [
-  { src: "/images/automotive_icon.png", bg: "rgba(26, 108, 245, 0.12)" },
-  { src: "/images/defense_icon.png", bg: "rgba(109, 78, 240, 0.12)" },
-  { src: "/images/railway_icon.png", bg: "rgba(245, 158, 11, 0.12)" },
-  { src: "/images/telecom_icon.png", bg: "rgba(16, 185, 129, 0.12)" },
-  { src: "/images/mil_aero_icon.png", bg: "rgba(214, 56, 156, 0.1)" },
-  { src: "/images/civilian_icon.png", bg: "rgba(26, 108, 245, 0.1)" },
+  { src: "/images/automotive_icon.webp", bg: "rgba(26, 108, 245, 0.12)" },
+  { src: "/images/defense_icon.webp", bg: "rgba(109, 78, 240, 0.12)" },
+  { src: "/images/railway_icon.webp", bg: "rgba(245, 158, 11, 0.12)" },
+  { src: "/images/telecom_icon.webp", bg: "rgba(16, 185, 129, 0.12)" },
+  { src: "/images/mil_aero_icon.webp", bg: "rgba(214, 56, 156, 0.1)" },
+  { src: "/images/civilian_icon.webp", bg: "rgba(26, 108, 245, 0.1)" },
 ];
 
 const POSITIONS = [

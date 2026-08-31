@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 
-/** True above `minWidth` — used to gate the heavier pinned/scroll-driven scenes to larger
- *  viewports. 768 (not 1024) so an ordinary, non-maximized desktop browser window still gets
- *  the real 3D scenes — 1024 was excluding real desktop users, not just phones/small tablets. */
-export function useIsDesktop(minWidth = 768) {
-  const [isDesktop, setIsDesktop] = useState(() => false);
+export const DESKTOP_BREAKPOINT = 1024;
+
+/** True at or above the shared breakpoint used by the site's cinematic scenes. */
+export function useIsDesktop(minWidth = DESKTOP_BREAKPOINT) {
+  // Keep the server snapshot and the first client render identical. The
+  // browser value is applied immediately after hydration in the effect below.
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia(`(min-width: ${minWidth}px)`);

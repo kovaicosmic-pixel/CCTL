@@ -114,7 +114,7 @@ export default function StylishCarousel({
 
   return (
     <div
-      className={cn("relative flex flex-col items-center select-none", className)}
+      className={cn("relative flex w-full min-w-0 flex-col items-center select-none overflow-hidden", className)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       aria-label="Lab Gallery Carousel"

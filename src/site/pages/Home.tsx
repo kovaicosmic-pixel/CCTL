@@ -48,32 +48,32 @@ const WINDOWS = [
     code: "01",
     title: whyChooseUs[0].title.match(/\(([^)]+)\)/)?.[1] ?? "CSAC",
     note: whyChooseUs[0].body,
-    image: "/images/chamber.png",
+    image: "/images/chamber.webp",
   },
   {
     code: "02",
     title: "EMC Scanner",
     note: whyChooseUs[2].body,
-    image: "/images/explore/emc_scanner.jpg",
+    image: "/images/explore/emc_scanner.webp",
   },
   {
     code: "03",
     title: whyChooseUs[1].title.match(/\(([^)]+)\)/)?.[1] ?? "VSAC",
     note: whyChooseUs[1].body,
-    image: "/images/auto.png",
+    image: "/images/auto.webp",
   },
   {
     code: "04",
     title: "Team of Expertise",
     note: whyChooseUs[3].body,
-    image: "/images/about_us.png",
+    image: "/images/about_us.webp",
   },
 ];
 
 function WhyChooseUsScene() {
   const reducedMotion = useReducedMotion();
-  const isDesktop = useIsDesktop(1024);
-  const reduced = reducedMotion || !isDesktop;
+  const isDesktop = useIsDesktop();
+  const reduced = reducedMotion;
   const { ref, progress } = useSceneProgress<HTMLDivElement>();
   const p = reduced ? 1 : progress;
   const split = range(p, 0.06, 0.5);
@@ -84,7 +84,7 @@ function WhyChooseUsScene() {
     <section
       ref={ref}
       className="seam relative"
-      style={{ height: reduced ? undefined : "220vh" }}
+      style={{ height: reduced ? undefined : isDesktop ? "220vh" : "135vh" }}
       aria-label="Why choose us"
     >
       <div
@@ -133,7 +133,7 @@ function WhyChooseUsScene() {
           </h2>
         </div>
 
-        <div className={`stage relative w-full ${reduced ? "" : "min-h-0 flex-1"}`}>
+        <div className={`stage relative w-full ${reduced ? "" : "flex-1 min-h-[48rem] sm:min-h-[56rem] lg:min-h-0"}`}>
           <div
             className={`grid grid-cols-2 grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 ${reduced ? "gap-3" : "absolute inset-0"}`}
           >
@@ -143,7 +143,7 @@ function WhyChooseUsScene() {
               return (
                 <div
                   key={w.title}
-                  className="group chroma relative aspect-[3/4] overflow-hidden lg:aspect-auto"
+                  className="group chroma relative min-h-0 aspect-auto overflow-hidden"
                   style={
                     reduced
                       ? undefined
@@ -170,16 +170,16 @@ function WhyChooseUsScene() {
                     className="scanfield pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   />
                   <div
-                    className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a1220]/90 via-[#0a1220]/50 to-transparent p-5 pt-16 sm:p-8 sm:pt-20"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a1220]/90 via-[#0a1220]/50 to-transparent p-3 pt-14 sm:p-6 sm:pt-16 lg:p-8 lg:pt-20"
                     style={{ opacity: label }}
                   >
-                    <h3 className="font-display text-2xl font-extrabold uppercase leading-none tracking-[-0.03em] text-white transition-transform duration-500 ease-out group-hover:-translate-y-1 sm:text-3xl">
+                    <h3 className="font-display text-xl font-extrabold uppercase leading-none tracking-[-0.03em] text-white transition-transform duration-500 ease-out group-hover:-translate-y-1 sm:text-2xl lg:text-3xl">
                       {w.title}
                     </h3>
-                    <p className="mt-3 max-w-[32ch] text-[0.8125rem] font-semibold leading-[1.6] text-white/85">
+                    <p className="mt-2 max-w-[32ch] text-[0.72rem] font-semibold leading-[1.45] text-white/85 sm:mt-3 sm:text-[0.78rem] sm:leading-[1.55] lg:text-[0.8125rem] lg:leading-[1.6]">
                       {w.note}
                     </p>
-                    <span className="mt-5 block h-[2px] w-0 bg-cyan-glow transition-all duration-700 group-hover:w-20" />
+                    <span className="mt-3 block h-[2px] w-0 bg-cyan-glow transition-all duration-700 group-hover:w-20 sm:mt-5" />
                   </div>
                 </div>
               );
@@ -462,7 +462,7 @@ function AboutBlurbScene() {
           >
             <PhotoPlane
               depth="far"
-              src="/images/gallery1.jpg"
+              src="/images/gallery1.webp"
               alt="Broadband amplifier rack and antenna mast"
               code="INSTRUMENTATION / RACK 04"
               className="h-full w-full"
@@ -938,19 +938,19 @@ function AccreditationScene() {
 /* ------------------------------------------------------------------ */
 
 const EXPLORE_ITEMS = [
-  { src: encodeURI("/images/explore/RE102 setup.png"), title: "RE102 Setup" },
-  { src: encodeURI("/images/explore/RE102 setup (2).png"), title: "Functional Setup" },
-  { src: encodeURI("/images/explore/Commercialtesting.png"), title: "Commercial Testing" },
+  { src: encodeURI("/images/explore/RE102 setup.webp"), title: "RE102 Setup" },
+  { src: encodeURI("/images/explore/RE102 setup (2).webp"), title: "Functional Setup" },
+  { src: encodeURI("/images/explore/Commercialtesting.webp"), title: "Commercial Testing" },
   { src: encodeURI("/images/explore/Picture1.jpg"), title: "CSAC Chamber" },
-  { src: encodeURI("/images/explore/media.png"), title: "Mil-Aero setup" },
-  { src: encodeURI("/images/explore/Labcivil.png"), title: "Lab Overview" },
-  { src: encodeURI("/images/explore/RE102.jpg"), title: "RE102 Test setup" },
-  { src: encodeURI("/images/explore/emc_scanner.jpg"), title: "EMC Scanner" },
-  { src: encodeURI("/images/explore/control_room.jpg"), title: "Control Room" },
-  { src: encodeURI("/images/explore/civilLab.png"), title: "Civil Lab" },
-  { src: encodeURI("/images/explore/BCI_test_setup.jpg"), title: "BCI Test Setup" },
-  { src: encodeURI("/images/explore/RF_testing.png"), title: "RF Testing" },
-  { src: encodeURI("/images/explore/BCI-setup.jpg"), title: "BCI Setup" },
+  { src: encodeURI("/images/explore/media.webp"), title: "Mil-Aero setup" },
+  { src: encodeURI("/images/explore/Labcivil.webp"), title: "Lab Overview" },
+  { src: encodeURI("/images/explore/RE102.webp"), title: "RE102 Test setup" },
+  { src: encodeURI("/images/explore/emc_scanner.webp"), title: "EMC Scanner" },
+  { src: encodeURI("/images/explore/control_room.webp"), title: "Control Room" },
+  { src: encodeURI("/images/explore/civilLab.webp"), title: "Civil Lab" },
+  { src: encodeURI("/images/explore/BCI_test_setup.webp"), title: "BCI Test Setup" },
+  { src: encodeURI("/images/explore/RF_testing.webp"), title: "RF Testing" },
+  { src: encodeURI("/images/explore/BCI-setup.webp"), title: "BCI Setup" },
 ];
 
 function FacilityScene() {
@@ -1218,8 +1218,9 @@ function FinalScene() {
     >
       <div className="absolute inset-0">
         <img
-          src="/images/get_in_touch.png"
+          src="/images/get_in_touch.webp"
           alt="Global network illustration"
+          loading="lazy"
           className="h-full w-full object-cover object-center opacity-100"
         />
       </div>
@@ -1362,64 +1363,64 @@ export default function Home() {
             connectionDistance={120}
             speed={0.2}
           />
-          <FloatingStandards count={10} opacity={0.5} />
+          <FloatingStandards count={10} opacity={0.5} className="hidden lg:block" />
           <Hero />
         </div>
 
         {/* Trust Bar (LIGHT) */}
         <div className="section-light relative">
-          <FloatingStandards count={6} opacity={0.7} theme="light" />
+          <FloatingStandards count={6} opacity={0.7} theme="light" className="hidden lg:block" />
           <TrustBar />
         </div>
 
         {/* Why Choose Us (DARK) */}
         <div className="relative">
           <GradientOrbs variant="subtle" />
-          <FloatingStandards count={8} opacity={0.35} theme="dark" />
+          <FloatingStandards count={8} opacity={0.35} theme="dark" className="hidden lg:block" />
           <WhyChooseUsScene />
         </div>
 
         {/* Deliver (LIGHT) */}
         <div className="section-light relative">
-          <FloatingStandards count={8} opacity={0.7} theme="light" />
+          <FloatingStandards count={8} opacity={0.7} theme="light" className="hidden lg:block" />
           <DeliverScene />
         </div>
 
         {/* About CCTL (DARK) */}
         <div className="relative">
           <GradientOrbs variant="default" />
-          <FloatingStandards count={8} opacity={0.35} theme="dark" />
+          <FloatingStandards count={8} opacity={0.35} theme="dark" className="hidden lg:block" />
           <AboutBlurbScene />
         </div>
 
         {/* Trusted By (LIGHT) */}
         <div className="section-light relative">
-          <FloatingStandards count={6} opacity={0.7} theme="light" />
+          <FloatingStandards count={6} opacity={0.7} theme="light" className="hidden lg:block" />
           <TrustScene />
         </div>
 
         {/* Services Stack (DARK) */}
         <div className="relative">
           <GridBackground variant="default" />
-          <FloatingStandards count={8} opacity={0.3} theme="dark" />
+          <FloatingStandards count={8} opacity={0.3} theme="dark" className="hidden lg:block" />
           <DomainStack />
         </div>
 
         {/* Accreditations (LIGHT) */}
         <div className="section-light relative">
-          <FloatingStandards count={8} opacity={0.7} theme="light" />
+          <FloatingStandards count={8} opacity={0.7} theme="light" className="hidden lg:block" />
           <AccreditationScene />
         </div>
 
         {/* Gallery (DARK) */}
         <div className="relative">
-          <FloatingStandards count={6} opacity={0.3} theme="dark" />
+          <FloatingStandards count={6} opacity={0.3} theme="dark" className="hidden lg:block" />
           <FacilityScene />
         </div>
 
         {/* Testimonials (DARK) */}
         <div className="relative">
-          <FloatingStandards count={6} opacity={0.3} theme="dark" />
+          <FloatingStandards count={6} opacity={0.3} theme="dark" className="hidden lg:block" />
           <TestimonialScene />
         </div>
 

@@ -144,12 +144,12 @@ export const services: ServiceDomain[] = [
     tagline: "Reliable MIL-STD-461 EMC Testing for Military and Aerospace Equipment",
     body: "Ensure your defense and aerospace systems meet the most rigorous global standards with Cosmic Compliance Test Lab's certified MIL-STD-461 testing services.",
     icon: "shield",
-    image: "/images/chamber.png",
+    image: "/images/chamber.webp",
     gallery: [
-      "/images/mil-aero/AZ7_7709%202023-09-11%2006_28_36.JPG",
-      "/images/mil-aero/AZ7_7722%202023-09-11%2006_29_56.JPG",
-      "/images/mil-aero/Radiated%20immunity%20test%20.JPG",
-      "/images/mil-aero/WhatsApp%20Image%202024-04-23%20at%205.30.59%20PM%20(1).jpeg",
+      "/images/mil-aero/AZ7_7709%202023-09-11%2006_28_36.webp",
+      "/images/mil-aero/AZ7_7722%202023-09-11%2006_29_56.webp",
+      "/images/mil-aero/Radiated%20immunity%20test%20.webp",
+      "/images/mil-aero/WhatsApp%20Image%202024-04-23%20at%205.30.59%20PM%20(1).webp",
     ],
     spec: "MIL-461",
     stats: [
@@ -210,12 +210,12 @@ export const services: ServiceDomain[] = [
     tagline: "Confidently navigate civilian compliance.",
     body: "Trust in our expertise to navigate the complexities of civilian domain regulations, ensuring your products meet all necessary compliance requirements.",
     icon: "cpu",
-    image: "/images/civilianDomain.png",
+    image: "/images/civilianDomain.webp",
     gallery: [
-      "/images/civilian/Civil.JPG",
-      "/images/civilian/EST%20.jpg",
-      "/images/civilian/IMG_20240418_173040.jpg",
-      "/images/civilian/IMG_20240418_175038.jpg",
+      "/images/civilian/Civil.webp",
+      "/images/civilian/EST%20.webp",
+      "/images/civilian/IMG_20240418_173040.webp",
+      "/images/civilian/IMG_20240418_175038.webp",
     ],
     spec: "COMPLIANT",
     stats: [
@@ -293,12 +293,12 @@ export const services: ServiceDomain[] = [
     tagline: "Validated technologies, industry-grade standards.",
     body: "Drive innovation forward with confidence as we validate the compliance of your automotive technologies, adhering to rigorous industry standards with our Expert Automotive Electromagnetic Compatibility (EMC).",
     icon: "car",
-    image: "/images/automotive.png",
+    image: "/images/automotive.webp",
     gallery: [
-      encodeURI("/images/automotive/Transient pulse on supply lines.jpeg"),
-      encodeURI("/images/automotive/Transient on signal lines.jpeg"),
-      encodeURI("/images/automotive/RE main pic .JPG"),
-      encodeURI("/images/automotive/receiver with software setup.JPG"),
+      encodeURI("/images/automotive/Transient pulse on supply lines.webp"),
+      encodeURI("/images/automotive/Transient on signal lines.webp"),
+      encodeURI("/images/automotive/RE main pic .webp"),
+      encodeURI("/images/automotive/receiver with software setup.webp"),
     ],
     spec: "48 GHz",
     stats: [
@@ -339,12 +339,12 @@ export const services: ServiceDomain[] = [
     tagline: "Safety and reliability on every track.",
     body: "Stay on track with regulatory compliance for your railway technologies, guaranteeing safety and reliability through meticulous EMC testing protocols.",
     icon: "train",
-    image: "/images/domain-railways.png",
+    image: "/images/domain-railways.webp",
     gallery: [
-      "/images/railway/Radiated-Emission-test-1-4-scaled-1.jpg",
+      "/images/railway/Radiated-Emission-test-1-4-scaled-1.webp",
       "/images/railway/Railway-service-1.jpg",
       "/images/railway/railway-service-2-1.jpg",
-      "/images/railway/railway-service-4-2.jpg",
+      "/images/railway/railway-service-4-2.webp",
     ],
     spec: "EN 50121",
     stats: [
@@ -407,11 +407,11 @@ export const services: ServiceDomain[] = [
     tagline: "Seamless, certified connectivity.",
     body: "Seamlessly connect with your audience as we certify the compliance of your telecom and wireless devices, enabling you to deliver cutting-edge solutions with peace of mind.",
     icon: "radio",
-    image: "/images/domain-telecom.png",
+    image: "/images/domain-telecom.webp",
     gallery: [
-      "/images/telecom-wireless/DSC08033.JPG",
-      "/images/telecom-wireless/DSC08114.JPG",
-      "/images/telecom-wireless/DSC08115.JPG",
+      "/images/telecom-wireless/DSC08033.webp",
+      "/images/telecom-wireless/DSC08114.webp",
+      "/images/telecom-wireless/DSC08115.webp",
       "/images/telecom-wireless/Picture1.jpg",
     ],
     spec: "CE / FCC",
@@ -486,7 +486,7 @@ export const certifications = [
     title: "Certificate of Incorporation",
     code: "MCA / INC-2019",
     issuer: "Ministry of Corporate Affairs",
-    image: "/images/certificate1.png",
+    image: "/images/certificate1.webp",
   },
   {
     title: "ISO 17025 Certification",
@@ -510,7 +510,7 @@ export const certifications = [
     title: "Certificate of Designation",
     code: "CCTL / DESIG",
     issuer: "Designated Test Facility",
-    image: "/images/certificate5.jpg",
+    image: "/images/certificate5.webp",
   },
 ];
 
@@ -524,11 +524,11 @@ export const stats = [
 ];
 
 // "Inside the Lab" parallax gallery (About) — equipment/engineer shots not used elsewhere.
-export const labPhotosA = ["/images/gallery7.jpg", "/images/explore/control_room.jpg", "/images/gallery3.jpg"];
-export const labPhotosB = ["/images/gallery8.jpg", "/images/chamber.png", "/images/about_us.jpg"];
+export const labPhotosA = ["/images/gallery7.jpg", "/images/explore/control_room.webp", "/images/gallery3.jpg"];
+export const labPhotosB = ["/images/gallery8.jpg", "/images/chamber.webp", "/images/about_us.jpg"];
 
 export const gallery = [
-  "/images/gallery1.jpg",
+  "/images/gallery1.webp",
   "/images/gallery2.jpg",
   "/images/gallery3.jpg",
   "/images/gallery4.jpg",
@@ -717,7 +717,7 @@ export const blogPlaceholders: BlogPost[] = [
   },
   {
     slug: "emi-vs-emc",
-    image: "/images/blog4.jpeg",
+    image: "/images/blog4.webp",
     title: "EMI vs EMC Key Differences and Their Importance",
     subtitle: "EMI vs EMC: Understanding the Key Differences and Their Importance in Electronics",
     ghostWord: "COMPARE",

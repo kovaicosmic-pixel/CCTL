@@ -1,0 +1,6 @@
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m12[m[36m:[m  { src: "/images/[1;31mautomotive_icon[m.png", bg: "rgba(26, 108, 245, 0.12)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m13[m[36m:[m  { src: "/images/[1;31mdefense_icon[m.png", bg: "rgba(109, 78, 240, 0.12)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m14[m[36m:[m  { src: "/images/[1;31mrailway_icon[m.png", bg: "rgba(245, 158, 11, 0.12)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m15[m[36m:[m  { src: "/images/[1;31mtelecom_icon[m.png", bg: "rgba(16, 185, 129, 0.12)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m16[m[36m:[m  { src: "/images/[1;31mmil_aero_icon[m.png", bg: "rgba(214, 56, 156, 0.1)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m17[m[36m:[m  { src: "/images/[1;31mcivilian_icon[m.png", bg: "rgba(26, 108, 245, 0.1)" },

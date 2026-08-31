@@ -1,0 +1,97 @@
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m1[m[36m:[mimport { useReducedMotion } from "framer-motion";
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m2[m[36m:[m
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m3[m[36m:[m/**
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m4[m[36m:[m * FloatingIcons — Service icons in soft pastel circles, gently floating.
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m5[m[36m:[m *
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m6[m[36m:[m * Each icon sits in a colored circle that bobs and drifts continuously.
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m7[m[36m:[m * The positioning is done via a wrapper (no transform), so the CSS animation
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m8[m[36m:[m * has full control over the movement.
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m9[m[36m:[m */
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m10[m[36m:[m
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m11[m[36m:[mconst ICONS = [
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m12[m[36m:[m  { src: "/images/automotive_icon.png", bg: "rgba(26, 108, 245, 0.12)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m13[m[36m:[m  { src: "/images/defense_icon.png", bg: "rgba(109, 78, 240, 0.12)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m14[m[36m:[m  { src: "/images/railway_icon.png", bg: "rgba(245, 158, 11, 0.12)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m15[m[36m:[m  { src: "/images/telecom_icon.png", bg: "rgba(16, 185, 129, 0.12)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m16[m[36m:[m  { src: "/images/mil_aero_icon.png", bg: "rgba(214, 56, 156, 0.1)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m17[m[36m:[m  { src: "/images/civilian_icon.png", bg: "rgba(26, 108, 245, 0.1)" },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m18[m[36m:[m];
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m19[m[36m:[m
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m20[m[36m:[mconst POSITIONS = [
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m21[m[36m:[m  { x: 3, y: 10, size: 62 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m22[m[36m:[m  { x: 86, y: 8, size: 56 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m23[m[36m:[m  { x: 4, y: 52, size: 50 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m24[m[36m:[m  { x: 91, y: 55, size: 58 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m25[m[36m:[m  { x: 10, y: 83, size: 54 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m26[m[36m:[m  { x: 82, y: 82, size: 60 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m27[m[36m:[m  { x: 22, y: 5, size: 48 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m28[m[36m:[m  { x: 72, y: 92, size: 50 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m29[m[36m:[m  { x: 93, y: 28, size: 52 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m30[m[36m:[m  { x: 6, y: 30, size: 46 },
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m31[m[36m:[m];
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m32[m[36m:[m
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m33[m[36m:[mexport default function FloatingIcons({
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m34[m[36m:[m  className = "",
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m35[m[36m:[m  count = 8,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m36[m[36m:[m  theme = "light",
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m37[m[36m:[m}: {
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m38[m[36m:[m  className?: string;
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m39[m[36m:[m  count?: number;
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m40[m[36m:[m  theme?: "light" | "dark";
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m41[m[36m:[m}) {
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m42[m[36m:[m  const reducedMotion = useReducedMotion();
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m43[m[36m:[m  const items = POSITIONS.slice(0, count);
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m44[m[36m:[m
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m45[m[36m:[m  return (
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m46[m[36m:[m    <div
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m47[m[36m:[m      aria-hidden="true"
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m48[m[36m:[m      className={`pointer-events-none fixed inset-0 z-[15] overflow-hidden ${className}`}
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m49[m[36m:[m    >
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m50[m[36m:[m      {items.map((pos, i) => {
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m51[m[36m:[m        const icon = ICONS[i % ICONS.length];
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m52[m[36m:[m        const circleSize = pos.size;
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m53[m[36m:[m        const iconSize = circleSize * 0.48;
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m54[m[36m:[m        const bgColor = theme === "light" ? icon.bg : icon.bg.replace(/[\d.]+\)$/, "0.07)");
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m55[m[36m:[m        const containerOpacity = theme === "light" ? 0.75 : 0.45;
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m56[m[36m:[m
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m57[m[36m:[m        return (
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m58[m[36m:[m          /* Outer wrapper handles position only — no transform */
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m59[m[36m:[m          <div
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m60[m[36m:[m            key={i}
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m61[m[36m:[m            style={{
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m62[m[36m:[m              position: "absolute",
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m63[m[36m:[m              left: `${pos.x}%`,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m64[m[36m:[m              top: `${pos.y}%`,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m65[m[36m:[m            }}
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m66[m[36m:[m          >
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m67[m[36m:[m            {/* Inner element handles animation — CSS animation controls transform freely */}
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m68[m[36m:[m            <div
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m69[m[36m:[m              className="flex items-center justify-center rounded-full"
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m70[m[36m:[m              style={{
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m71[m[36m:[m                width: `${circleSize}px`,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m72[m[36m:[m                height: `${circleSize}px`,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m73[m[36m:[m                background: bgColor,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m74[m[36m:[m                opacity: containerOpacity,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m75[m[36m:[m                animation: reducedMotion
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m76[m[36m:[m                  ? undefined
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m77[m[36m:[m                  : `floating-icon ${14 + (i % 5) * 4}s ease-in-out infinite`,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m78[m[36m:[m                animationDelay: `${-(i * 2.5)}s`,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m79[m[36m:[m              }}
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m80[m[36m:[m            >
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m81[m[36m:[m              <img
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m82[m[36m:[m                src={icon.src}
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m83[m[36m:[m                alt=""
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m84[m[36m:[m                className="nav-logo"
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m85[m[36m:[m                style={{
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m86[m[36m:[m                  width: `${iconSize}px`,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m87[m[36m:[m                  height: `${iconSize}px`,
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m88[m[36m:[m                  objectFit: "contain",
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m89[m[36m:[m                }}
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m90[m[36m:[m              />
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m91[m[36m:[m            </div>
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m92[m[36m:[m          </div>
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m93[m[36m:[m        );
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m94[m[36m:[m      })}
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m95[m[36m:[m    </div>
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m96[m[36m:[m  );
+[35msrc/site/components/bg/FloatingIcons.tsx[m[36m:[m[32m97[m[36m:[m}

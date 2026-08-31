@@ -6,8 +6,7 @@ import { useEffect } from "react";
 
 export default function Hero() {
   const reducedMotion = useReducedMotion();
-  const isDesktop = useIsDesktop(1024);
-  const reduced = reducedMotion || !isDesktop;
+  const isDesktop = useIsDesktop();
   const { ref, progress } = useSceneProgress<HTMLDivElement>();
 
   // Emit a global event with the current progress so listeners (Navbar) can
@@ -19,12 +18,12 @@ export default function Hero() {
     }
   }, [progress]);
 
-  if (reduced) {
+  if (reducedMotion) {
     return (
       <section ref={ref} className="relative min-h-screen overflow-hidden bg-space-950">
         <h1 className="sr-only">EMI/EMC Testing Laboratory in Coimbatore &amp; Bangalore, India</h1>
         <img
-          src="/images/chamber.png"
+          src="/images/chamber.webp"
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
           aria-hidden
@@ -37,13 +36,13 @@ export default function Hero() {
     <section
       ref={ref}
       className="relative bg-space-950"
-      style={{ height: "160vh" }}
+      style={{ height: isDesktop ? "160vh" : "220vh" }}
       aria-label="Enter the lab"
     >
       <h1 className="sr-only">EMI/EMC Testing Laboratory in Coimbatore &amp; Bangalore, India</h1>
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-space-950">
         <img
-          src="/images/chamber.png"
+          src="/images/chamber.webp"
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
           aria-hidden
