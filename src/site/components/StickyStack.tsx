@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import SignalPing from "./motion/SignalPing";
 import DomainIcon from "./DomainIcon";
-import type { ServiceDomain } from "../data/content";
+import type { ServiceDomainLight as ServiceDomain } from "../data/services-light";
 
 function StackCard({
   service,

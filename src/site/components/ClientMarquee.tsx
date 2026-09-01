@@ -13,20 +13,16 @@ export default function ClientMarquee() {
       <div className="overflow-hidden">
         <div className="marquee-track">
           {[...rowA, ...rowA].map((src, i) => (
-            <div
+            <img
               key={`a-${i}`}
-              className="mx-3 flex h-16 w-28 shrink-0 items-center justify-center rounded-lg border border-white/8 bg-white/[0.06] p-2 shadow-sm sm:h-20 sm:w-36"
-            >
-              <img
-                src={src}
-                alt={`Client ${(i % rowA.length) + 1}`}
-                className="nav-logo max-h-full max-w-full object-contain"
-                loading="lazy"
-                decoding="async"
-                width={144}
-                height={80}
-              />
-            </div>
+              src={src}
+              alt={`Client ${(i % rowA.length) + 1}`}
+              className="nav-logo mx-3 h-16 w-28 shrink-0 rounded-lg border border-white/8 bg-white/[0.06] object-contain p-2 shadow-sm sm:h-20 sm:w-36"
+              loading="lazy"
+              decoding="async"
+              width={144}
+              height={80}
+            />
           ))}
         </div>
       </div>
@@ -34,20 +30,16 @@ export default function ClientMarquee() {
       <div className="overflow-hidden">
         <div className="marquee-track marquee-track-reverse">
           {[...rowB, ...rowB].map((src, i) => (
-            <div
+            <img
               key={`b-${i}`}
-              className="mx-3 flex h-16 w-28 shrink-0 items-center justify-center rounded-lg border border-white/8 bg-white/[0.06] p-2 shadow-sm sm:h-20 sm:w-36"
-            >
-              <img
-                src={src}
-                alt={`Client ${(i % rowB.length) + 1}`}
-                className="nav-logo max-h-full max-w-full object-contain"
-                loading="lazy"
-                decoding="async"
-                width={144}
-                height={80}
-              />
-            </div>
+              src={src}
+              alt={`Client ${(i % rowB.length) + 1}`}
+              className="nav-logo mx-3 h-16 w-28 shrink-0 rounded-lg border border-white/8 bg-white/[0.06] object-contain p-2 shadow-sm sm:h-20 sm:w-36"
+              loading="lazy"
+              decoding="async"
+              width={144}
+              height={80}
+            />
           ))}
         </div>
       </div>

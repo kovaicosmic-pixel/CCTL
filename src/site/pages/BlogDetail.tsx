@@ -6,6 +6,7 @@ import GrainOverlay from "../components/motion/GrainOverlay";
 import Magnetic from "../components/motion/Magnetic";
 import TiltPlane from "../components/motion/TiltPlane";
 import { blogPlaceholders } from "../data/content";
+import { blogBodies } from "../data/blog-bodies";
 
 /**
  * Renders blog body blocks with rich formatting:
@@ -188,7 +189,8 @@ function renderBlogBody(body: string[], reduced: boolean | null) {
 
 export default function BlogDetail() {
   const { slug } = useParams({ from: "/blog/$slug" });
-  const post = blogPlaceholders.find((p) => p.slug === slug);
+  const lightPost = blogPlaceholders.find((p) => p.slug === slug);
+  const post = lightPost && { ...lightPost, body: blogBodies[lightPost.slug] };
   const reduced = useReducedMotion();
 
   const heroRef = useRef<HTMLElement>(null);

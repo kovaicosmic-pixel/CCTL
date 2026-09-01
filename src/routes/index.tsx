@@ -14,9 +14,9 @@ import {
 } from "@/site/data/seo";
 
 const title =
-  "EMI/EMC Testing Lab in Coimbatore & Bangalore, India | NABL Accredited | CCTL";
+  "NABL Accredited EMC Testing Lab | Coimbatore & Bangalore"
 const description =
-  "Cosmic Compliance Test Lab (CCTL) is a NABL & ISO/IEC 17025 accredited EMI/EMC testing laboratory in Coimbatore and Bangalore, India. Expert EMC compliance testing for automotive, defence, aerospace, railway & telecom industries.";
+  "NABL & ISO/IEC 17025 accredited EMI/EMC testing lab in Coimbatore & Bangalore. CISPR 25, MIL-STD-461, IEC 61000 compliance testing for automotive, aerospace, rail & telecom."
 
 // FAQ targeting "EMC testing" related searches
 const homeFaqs: FAQItem[] = [

@@ -3,6 +3,7 @@ import { Link, Navigate, useParams } from "@tanstack/react-router";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Magnetic from "../components/motion/Magnetic";
 import { services, company } from "../data/content";
+import { serviceDetails } from "../data/service-details";
 
 /* Spring-like easing */
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -20,7 +21,8 @@ const SERVICE_IMAGE_DIMENSIONS: Record<string, { width: number; height: number }
 
 export default function ServiceDetail() {
   const { slug } = useParams({ from: "/services/$slug" });
-  const service = services.find((s) => s.slug === slug);
+  const lightService = services.find((s) => s.slug === slug);
+  const service = lightService && { ...lightService, ...serviceDetails[lightService.slug] };
   const reduced = useReducedMotion();
 
   const heroRef = useRef<HTMLDivElement>(null);

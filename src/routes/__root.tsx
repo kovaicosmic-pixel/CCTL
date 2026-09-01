@@ -80,7 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
         title:
-          "Cosmic Compliance Test Lab | EMI/EMC Testing Lab in Coimbatore & Bangalore, India",
+          "NABL Accredited EMC Testing Lab | Coimbatore & Bangalore",
       },
       {
         name: "description",
@@ -105,9 +105,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.gif", type: "image/gif" },
-      { rel: "shortcut icon", href: "/favicon.gif" },
-      { rel: "apple-touch-icon", href: "/cosmic_favicon.png" },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/favicon-48x48.png", type: "image/png", sizes: "48x48" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
     ],
   }),
   shellComponent: RootShell,
