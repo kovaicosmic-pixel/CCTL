@@ -23,6 +23,8 @@ export default function CertificatePlate({
           src={image}
           alt={title}
           className="nav-logo w-full object-contain transition-transform duration-700 group-hover/cert:scale-[1.03]"
+          loading="lazy"
+          decoding="async"
         />
       )}
 

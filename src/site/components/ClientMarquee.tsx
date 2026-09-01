@@ -21,6 +21,10 @@ export default function ClientMarquee() {
                 src={src}
                 alt={`Client ${(i % rowA.length) + 1}`}
                 className="nav-logo max-h-full max-w-full object-contain"
+                loading="lazy"
+                decoding="async"
+                width={144}
+                height={80}
               />
             </div>
           ))}
@@ -38,6 +42,10 @@ export default function ClientMarquee() {
                 src={src}
                 alt={`Client ${(i % rowB.length) + 1}`}
                 className="nav-logo max-h-full max-w-full object-contain"
+                loading="lazy"
+                decoding="async"
+                width={144}
+                height={80}
               />
             </div>
           ))}

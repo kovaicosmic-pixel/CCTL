@@ -171,7 +171,7 @@ export default function Blog() {
                     <p className="t-small mt-3">{post.subtitle}</p>
                     <span className="mt-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-ink-500 transition-colors group-hover:text-cyan-glow">
                       Read
-                      <span className="h-px w-8 bg-current transition-all duration-500 group-hover:w-16" />
+                      <span className="h-px w-16 origin-left scale-x-[0.5] bg-current transition-transform duration-500 group-hover:scale-x-100" />
                     </span>
                   </div>
                 </div>

@@ -78,7 +78,13 @@ function DomainFan() {
                   style={{ marginLeft: i === 0 ? 0 : "-2.5rem", zIndex: hover === i ? 20 : i }}
                   className="relative w-[28vw] max-w-[11rem] overflow-hidden rounded-2xl border border-white/10 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.5)] sm:w-[18vw] sm:max-w-[12.5rem] lg:max-w-[14rem]"
                 >
-                  <img src={s.image} alt="" className="aspect-[3/4] w-full object-cover" />
+                  <img
+                    src={s.image}
+                    alt=""
+                    className="aspect-[3/4] w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-[rgba(7,13,24,0.9)] via-[rgba(7,13,24,0.4)] to-transparent" />
                   <span className="font-mono absolute bottom-3 left-3 right-3 text-[0.5rem] font-bold uppercase leading-tight tracking-[0.18em] text-white sm:text-[0.55rem]">
                     {s.name.replace(" Domain", "")}

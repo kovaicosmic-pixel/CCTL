@@ -122,6 +122,8 @@ export default function CertificateGallery3D({
                     aria-hidden
                     className="nav-logo absolute inset-0 w-full h-full opacity-30"
                     style={{ objectFit: "cover", filter: "blur(3px)" }}
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-[rgba(7,13,24,0.6)] z-[2]" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center z-[3]">

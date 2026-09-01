@@ -179,7 +179,7 @@ function WhyChooseUsScene() {
                     <p className="mt-2 max-w-[32ch] text-[0.72rem] font-semibold leading-[1.45] text-white/85 sm:mt-3 sm:text-[0.78rem] sm:leading-[1.55] lg:text-[0.8125rem] lg:leading-[1.6]">
                       {w.note}
                     </p>
-                    <span className="mt-3 block h-[2px] w-0 bg-cyan-glow transition-all duration-700 group-hover:w-20 sm:mt-5" />
+                    <span className="mt-3 block h-[2px] w-20 origin-left scale-x-0 bg-cyan-glow transition-transform duration-700 group-hover:scale-x-100 sm:mt-5" />
                   </div>
                 </div>
               );
@@ -645,6 +645,10 @@ function TrustScene() {
                       src={src}
                       alt={`Client ${(i % clientLogos.length) + 1}`}
                       className="max-h-full max-w-full object-contain"
+                      loading="lazy"
+                      decoding="async"
+                      width={128}
+                      height={64}
                     />
                   </div>
                 ))}
@@ -762,8 +766,8 @@ function DomainStack() {
                   {d.name.replace(" Domain", "")}
                 </span>
                 <span
-                  className="block h-px bg-cyan-glow transition-all duration-500"
-                  style={{ width: i === active ? "2.5rem" : "0.75rem" }}
+                  className="block h-px w-[0.75rem] origin-left bg-cyan-glow transition-transform duration-500"
+                  style={{ transform: i === active ? "scaleX(3.3333)" : "scaleX(1)" }}
                 />
               </div>
             ))}
@@ -938,19 +942,19 @@ function AccreditationScene() {
 /* ------------------------------------------------------------------ */
 
 const EXPLORE_ITEMS = [
-  { src: encodeURI("/images/explore/RE102 setup.webp"), title: "RE102 Setup" },
-  { src: encodeURI("/images/explore/RE102 setup (2).webp"), title: "Functional Setup" },
-  { src: encodeURI("/images/explore/Commercialtesting.webp"), title: "Commercial Testing" },
-  { src: encodeURI("/images/explore/Picture1.jpg"), title: "CSAC Chamber" },
-  { src: encodeURI("/images/explore/media.webp"), title: "Mil-Aero setup" },
-  { src: encodeURI("/images/explore/Labcivil.webp"), title: "Lab Overview" },
-  { src: encodeURI("/images/explore/RE102.webp"), title: "RE102 Test setup" },
-  { src: encodeURI("/images/explore/emc_scanner.webp"), title: "EMC Scanner" },
-  { src: encodeURI("/images/explore/control_room.webp"), title: "Control Room" },
-  { src: encodeURI("/images/explore/civilLab.webp"), title: "Civil Lab" },
-  { src: encodeURI("/images/explore/BCI_test_setup.webp"), title: "BCI Test Setup" },
-  { src: encodeURI("/images/explore/RF_testing.webp"), title: "RF Testing" },
-  { src: encodeURI("/images/explore/BCI-setup.webp"), title: "BCI Setup" },
+  { src: encodeURI("/images/explore/RE102 setup.webp"), title: "RE102 Setup", width: 960, height: 540 },
+  { src: encodeURI("/images/explore/RE102 setup (2).webp"), title: "Functional Setup", width: 960, height: 540 },
+  { src: encodeURI("/images/explore/Commercialtesting.webp"), title: "Commercial Testing", width: 960, height: 540 },
+  { src: encodeURI("/images/explore/Picture1.jpg"), title: "CSAC Chamber", width: 1386, height: 780 },
+  { src: encodeURI("/images/explore/media.webp"), title: "Mil-Aero setup", width: 1448, height: 1086 },
+  { src: encodeURI("/images/explore/Labcivil.webp"), title: "Lab Overview", width: 1536, height: 1024 },
+  { src: encodeURI("/images/explore/RE102.webp"), title: "RE102 Test setup", width: 960, height: 540 },
+  { src: encodeURI("/images/explore/emc_scanner.webp"), title: "EMC Scanner", width: 960, height: 540 },
+  { src: encodeURI("/images/explore/control_room.webp"), title: "Control Room", width: 2000, height: 1125 },
+  { src: encodeURI("/images/explore/civilLab.webp"), title: "Civil Lab", width: 1537, height: 1023 },
+  { src: encodeURI("/images/explore/BCI_test_setup.webp"), title: "BCI Test Setup", width: 960, height: 540 },
+  { src: encodeURI("/images/explore/RF_testing.webp"), title: "RF Testing", width: 960, height: 720 },
+  { src: encodeURI("/images/explore/BCI-setup.webp"), title: "BCI Setup", width: 960, height: 540 },
 ];
 
 function FacilityScene() {
@@ -1316,7 +1320,7 @@ function TrustBar() {
   const items = [
     { value: "NABL", label: "Accredited" },
     { value: "500+", label: "Clients Served" },
-    { value: "10 kHz–48 GHz", label: "Range" },
+    { value: "10 kHz–40 GHz", label: "Range" },
     { value: "120+", label: "Projects Completed" },
     { value: "5+", label: "Years of Excellence" },
   ];

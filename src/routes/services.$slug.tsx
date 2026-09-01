@@ -26,7 +26,7 @@ const serviceTitles: Record<string, string> = {
 /** Geo-keyword-rich meta descriptions per slug */
 const serviceDescriptions: Record<string, string> = {
   "mil-aero":
-    "NABL accredited MIL-STD-461 EMC testing lab in Coimbatore & Bangalore, India. Complete defence & aerospace EMI/EMC compliance testing from 10 kHz to 48 GHz. CSAC facility with up to 100A capacity.",
+    "NABL accredited MIL-STD-461 EMC testing lab in Coimbatore & Bangalore, India. Complete defence & aerospace EMI/EMC compliance testing from 10 kHz to 40 GHz. CSAC facility with up to 100A capacity.",
   civilian:
     "ISO/IEC 17025 accredited civilian EMI/EMC testing in Coimbatore & Bangalore. IEC 61000, CISPR 11/22/32, EN 55014 compliance testing for industrial, scientific & medical equipment in India.",
   automotive:

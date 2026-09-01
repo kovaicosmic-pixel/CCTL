@@ -6,6 +6,8 @@ export interface StylishCarouselItem {
   src: string;
   title?: string;
   alt?: string;
+  width?: number;
+  height?: number;
 }
 
 export interface StylishCarouselProps {
@@ -166,6 +168,8 @@ export default function StylishCarousel({
                   <img
                     src={item.src}
                     alt={item.alt ?? item.title ?? `Slide ${i + 1}`}
+                    width={item.width}
+                    height={item.height}
                     draggable={false}
                     onClick={() => clickToNavigate && goTo(i)}
                     className={cn(
@@ -174,6 +178,7 @@ export default function StylishCarousel({
                       clickToNavigate && !isActive && "cursor-pointer",
                     )}
                     loading="lazy"
+                    decoding="async"
                   />
                   {/* Active glow ring */}
                   {isActive && (

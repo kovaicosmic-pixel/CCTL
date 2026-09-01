@@ -57,9 +57,10 @@ export default function InfiniteDrift({
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
     camera.position.z = 1;
 
+    const dpr = Math.min(window.devicePixelRatio, 2);
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(dpr);
 
     const meshes: THREE.Mesh[] = [];
     const materials: THREE.ShaderMaterial[] = [];
@@ -109,9 +110,19 @@ export default function InfiniteDrift({
       const cloneCount = 3;
       const totalWidth = sequenceWidth * cloneCount;
       const offscreenCanvas = document.createElement("canvas");
-      offscreenCanvas.width = totalWidth;
-      offscreenCanvas.height = bandHeight;
+      // Backing store is rasterized at `dpr` real pixels per layout pixel so the
+      // texture has enough data to render sharply once the GPU magnifies it to
+      // fill the (also dpr-scaled) output framebuffer — same reasoning as
+      // `renderer.setPixelRatio` above, just applied to this offscreen texture.
+      // `totalWidth`/`sequenceWidth`/`bandHeight` themselves stay in layout-pixel
+      // units below and are returned unchanged — the shader's scroll/UV math
+      // uses those against `uResolution` (also layout pixels), so scaling only
+      // the canvas's pixel buffer (not these values) can't affect scroll speed,
+      // wrapping, or on-screen size, only how much texture detail backs it.
+      offscreenCanvas.width = totalWidth * dpr;
+      offscreenCanvas.height = bandHeight * dpr;
       const ctx = offscreenCanvas.getContext("2d")!;
+      ctx.scale(dpr, dpr);
 
       let currentX = 0;
       for (let c = 0; c < cloneCount; c++) {

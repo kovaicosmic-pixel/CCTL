@@ -82,6 +82,8 @@ export default function FloatingIcons({
                 src={icon.src}
                 alt=""
                 className="nav-logo"
+                loading="lazy"
+                decoding="async"
                 style={{
                   width: `${iconSize}px`,
                   height: `${iconSize}px`,

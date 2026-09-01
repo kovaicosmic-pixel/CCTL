@@ -27,6 +27,8 @@ export default function Hero() {
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
           aria-hidden
+          fetchPriority="high"
+          decoding="async"
         />
       </section>
     );
@@ -46,6 +48,8 @@ export default function Hero() {
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
           aria-hidden
+          fetchPriority="high"
+          decoding="async"
         />
         <ChamberFrames progress={progress} className="relative z-10 block h-full w-full" />
       </div>

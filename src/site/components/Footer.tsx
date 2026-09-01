@@ -32,7 +32,15 @@ export default function Footer() {
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 p-0 transition-colors hover:border-cyan-glow hover:bg-white/10"
                 aria-label="LinkedIn"
               >
-                <img src="/images/linkedin.png" alt="LinkedIn" className="h-4 w-4 object-contain" />
+                <img
+                  src="/images/linkedin.png"
+                  alt="LinkedIn"
+                  className="h-4 w-4 object-contain"
+                  loading="lazy"
+                  decoding="async"
+                  width={16}
+                  height={16}
+                />
               </a>
 
               <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
@@ -40,6 +48,10 @@ export default function Footer() {
                   src="/images/NABL.jpg"
                   alt="NABL accredited"
                   className="h-6 w-6 rounded object-contain bg-white"
+                  loading="lazy"
+                  decoding="async"
+                  width={24}
+                  height={24}
                 />
                 <span className="font-mono text-[0.6rem] font-bold uppercase tracking-[0.16em] text-white/70">
                   NABL Accredited

@@ -7,6 +7,17 @@ import { services, company } from "../data/content";
 /* Spring-like easing */
 const ease = [0.22, 1, 0.36, 1] as const;
 
+/* Real dimensions of the 5 domain images (service.image), used to reserve
+   layout space ahead of load — aspect ratios differ per domain so a single
+   shared CSS aspect-ratio would crop some of them differently than today. */
+const SERVICE_IMAGE_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  "/images/chamber.webp": { width: 1447, height: 1087 },
+  "/images/civilianDomain.webp": { width: 1672, height: 941 },
+  "/images/automotive.webp": { width: 1672, height: 941 },
+  "/images/domain-railways.webp": { width: 1448, height: 1086 },
+  "/images/domain-telecom.webp": { width: 1510, height: 1042 },
+};
+
 export default function ServiceDetail() {
   const { slug } = useParams({ from: "/services/$slug" });
   const service = services.find((s) => s.slug === slug);
@@ -35,7 +46,13 @@ export default function ServiceDetail() {
             className="absolute inset-x-0 -top-[16%] h-[132%]"
             style={{ y: heroImgY, scale: heroImgScale }}
           >
-            <img src={service.image} alt="" className="nav-logo h-full w-full object-cover" />
+            <img
+              src={service.image}
+              alt=""
+              className="nav-logo h-full w-full object-cover"
+              fetchPriority="high"
+              decoding="async"
+            />
           </motion.div>
           <div className="absolute inset-0 bg-gradient-to-b from-[rgba(7,13,24,0.8)] via-[rgba(7,13,24,0.6)] to-[rgba(7,13,24,0.85)]" />
         </div>
@@ -276,6 +293,9 @@ export default function ServiceDetail() {
                 alt={`${service.name} testing facility`}
                 className="nav-logo w-full object-cover"
                 loading="lazy"
+                decoding="async"
+                width={SERVICE_IMAGE_DIMENSIONS[service.image]?.width}
+                height={SERVICE_IMAGE_DIMENSIONS[service.image]?.height}
               />
             </motion.div>
           </div>
@@ -348,7 +368,7 @@ export default function ServiceDetail() {
                     <h3 className="t-h3 mt-5">{so.title}</h3>
                     <p className="t-body mt-3">{so.body}</p>
                   </div>
-                  <span className="mt-6 block h-px w-10 bg-cyan-glow/40 transition-all duration-500 group-hover:w-20" />
+                  <span className="mt-6 block h-px w-20 origin-left scale-x-[0.5] bg-cyan-glow/40 transition-transform duration-500 group-hover:scale-x-100" />
                 </motion.article>
               ))}
             </div>

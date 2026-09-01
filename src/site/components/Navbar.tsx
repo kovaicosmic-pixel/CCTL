@@ -98,6 +98,9 @@ export default function Navbar() {
             src="/images/logo.png"
             alt="Cosmic Compliance Test Lab"
             className="nav-logo h-12 w-auto object-contain sm:h-14 lg:h-[3.6rem]"
+            width={88}
+            height={60}
+            decoding="async"
           />
         </Link>
 

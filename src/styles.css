@@ -1298,12 +1298,15 @@ img.nav-logo,
   width: 60%;
   height: 200%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-  transform: skewX(-20deg);
   animation: btn-shine 4s ease-in-out infinite;
 }
+/* translateX is a % of this element's own width (60% of the button), not the
+   button's width like `left` was — 416.667% here covers the same physical
+   distance as the original `left: -100% -> 150%` sweep (250% of the button
+   width / 0.6 = 416.667% of the element's own width). */
 @keyframes btn-shine {
-  0%, 100% { left: -100%; }
-  50% { left: 150%; }
+  0%, 100% { transform: translateX(0%) skewX(-20deg); }
+  50% { transform: translateX(416.667%) skewX(-20deg); }
 }
 .btn-primary:hover {
   box-shadow:

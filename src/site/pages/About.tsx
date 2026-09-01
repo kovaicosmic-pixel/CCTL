@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import SectionHeading from "../components/SectionHeading";
 import ClientMarquee from "../components/ClientMarquee";
@@ -9,16 +9,15 @@ import CertificatePlate from "../components/CertificatePlate";
 import Counter from "../components/Counter";
 import Reveal from "../components/motion/Reveal";
 import CharacterReveal from "../components/motion/CharacterReveal";
-import ParallaxGallery from "../components/motion/ParallaxGallery";
-import MaskedImage from "../components/motion/MaskedImage";
-import TiltPlane from "../components/motion/TiltPlane";
-import InfiniteDrift from "../components/InfiniteDrift";
 import KineticWords from "../components/motion/KineticWords";
 import DirectionalConverge from "../components/motion/DirectionalConverge";
-import SpatialAssembly from "../components/motion/SpatialAssembly";
 import StaggerWave from "../components/motion/StaggerWave";
 import FloatingStandards from "../components/bg/FloatingStandards";
 import { about, aboutPillars, certifications, stats, labPhotosA } from "../data/content";
+
+// three.js (~365KB min) is only needed for this one below-the-fold gallery —
+// splitting it out of the route chunk instead of bundling it upfront.
+const InfiniteDrift = lazy(() => import("../components/InfiniteDrift"));
 
 /* ------------------------------------------------------------------ */
 /* 1 — Who we are: sticky editorial column beside drifting photo plates */
@@ -210,7 +209,7 @@ function PillarLadder() {
 
 const capabilities = [
   "Radiated and Conducted emissions as per various CISPR and Military standards.",
-  "Radiated Immunity 10 kHz to 48 GHz Field strength 150V/m.",
+  "Radiated Immunity 10 kHz to 40 GHz Field strength 150V/m.",
   "Conducted transient emissions on power leads, as per IEC standards.",
   "Immunity to conducted transients' disturbances, as per IEC standards.",
   "Immunity to Electrostatic Discharge (ESD) as per ISO 10605/IEC 61000-4-2.",
@@ -295,16 +294,22 @@ function Capabilities() {
 
         {/* Infinite Drift Gallery */}
         <div className="mt-14">
-          <InfiniteDrift
-            bands={driftBands}
-            height={500}
-            gap={16}
-            imageHeight={110}
-            bandHeight={130}
-            maxImageWidth={280}
-            inertia={0.93}
-            className="surface rounded-[1.25rem] bg-space-950"
-          />
+          <Suspense
+            fallback={
+              <div className="surface w-full rounded-[1.25rem] bg-space-950" style={{ height: 500 }} />
+            }
+          >
+            <InfiniteDrift
+              bands={driftBands}
+              height={500}
+              gap={16}
+              imageHeight={110}
+              bandHeight={130}
+              maxImageWidth={280}
+              inertia={0.93}
+              className="surface rounded-[1.25rem] bg-space-950"
+            />
+          </Suspense>
         </div>
 
         {/* Capabilities list below */}

@@ -3,19 +3,44 @@ import { useReducedMotion } from "framer-motion";
 import { DESKTOP_BREAKPOINT, useIsDesktop } from "../../hooks/useIsDesktop";
 
 /**
- * Real chamber footage as a scroll-scrubbed image sequence — the same technique behind Apple's
- * product-page hero reels. A plain <video>'s currentTime seek has to walk back to the nearest
- * keyframe on every jump, which reads as stutter under fast scroll; drawing pre-decoded frames
- * straight to canvas has no decode latency, so the "camera" tracks the scrollbar exactly.
- * Frames are pre-extracted stills at public/images/chamber-frames/frame-000.webp..frame-191.webp —
- * the source video's full native 24fps/8s (192 frames), not a downsampled subset, so the scrub
- * plays back at the same motion resolution as the real footage instead of looking steppy.
+ * Real chamber footage as a scroll-scrubbed video — the same technique behind
+ * Apple/Stripe's product-page hero reels. `video.currentTime` is driven
+ * directly from scroll progress; the browser decodes and displays whichever
+ * frame that time lands on, so there's no per-frame image fetching or
+ * canvas compositing to manage.
+ *
+ * Source: public/images/chamber-scrub.mp4, encoded with `-g 1` (every frame
+ * a keyframe) so an arbitrary seek lands on the exact frame instead of
+ * snapping back to the nearest GOP boundary — that precision is what makes
+ * scroll-scrubbing feel smooth instead of steppy.
  */
 
-const FRAME_COUNT = 192;
-const EAGER_COUNT = 16;
-const IDLE_BATCH_SIZE = 8;
-const frameSrc = (i: number) => `/images/chamber-frames/frame-${String(i).padStart(3, "0")}.webp`;
+const VIDEO_SRC = "/images/chamber-scrub.mp4";
+// ~1 source frame at the original 192-frames-over-8s (24fps) cut — seeks
+// smaller than this are visually indistinguishable, so skip them to avoid
+// thrashing the decoder on fast/high-frequency scroll updates.
+const SEEK_EPSILON = 1 / 48;
+
+/**
+ * iOS Safari refuses programmatic `currentTime` seeks on a video that has
+ * never played, even when `preload="auto"` has fully buffered it. A muted,
+ * inline play-then-immediately-pause primes the decoder so later seeks
+ * actually take effect, without ever visibly starting playback.
+ */
+function unlockIOSScrubbing(video: HTMLVideoElement, onDone: () => void) {
+  const playPromise = video.play();
+  if (playPromise && typeof playPromise.then === "function") {
+    playPromise
+      .then(() => {
+        video.pause();
+        onDone();
+      })
+      .catch(() => onDone());
+  } else {
+    video.pause();
+    onDone();
+  }
+}
 
 export default function ChamberFrames({
   progress,
@@ -24,151 +49,60 @@ export default function ChamberFrames({
   progress: number;
   className?: string;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imagesRef = useRef<HTMLImageElement[]>([]);
-  const loadedRef = useRef<boolean[]>([]);
-  const drawnIndexRef = useRef(-1);
-  const loadFrameRef = useRef<(index: number) => void>(() => {});
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const readyRef = useRef(false);
+  const pendingProgressRef = useRef(progress);
   const reducedMotion = useReducedMotion();
   const isDesktop = useIsDesktop(DESKTOP_BREAKPOINT);
 
-  const draw = (index: number, force = false) => {
-    const canvas = canvasRef.current;
-    const img = imagesRef.current[index];
-    if (!canvas || !img || !loadedRef.current[index]) return;
-    if (!force && drawnIndexRef.current === index) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    drawnIndexRef.current = index;
-    // Source stills are 1280x720 (the source video's native resolution —
-    // there's no higher-res version to draw from). This only softens the
-    // upscale blur on large displays, it can't add detail that isn't
-    // there; a genuinely sharp full-bleed hero needs a higher-res source.
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-
-    const cw = canvas.width;
-    const ch = canvas.height;
-    const ir = img.naturalWidth / img.naturalHeight;
-    const cr = cw / ch;
-    /* Cover, anchored to the top — always full-bleed, no letterbox/pillarbox
-       bars at any viewport ratio. The footage (~16:9) is narrower than a
-       wide desktop viewport (~2:1), so filling edge-to-edge means cropping
-       height, not width; anchoring that crop to the top instead of
-       centering it means the ceiling stays in frame as long as possible
-       and only the floor gets clipped, not both. */
-    let dw = cw;
-    let dh = ch;
-    if (ir > cr) {
-      dw = ch * ir;
-    } else {
-      dh = cw / ir;
-    }
-    const dx = (cw - dw) / 2;
-    const dy = 0;
-    ctx.clearRect(0, 0, cw, ch);
-    ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, dx, dy, dw, dh);
-  };
-
-  const nearestLoaded = (target: number) => {
-    if (loadedRef.current[target]) return target;
-    for (let d = 1; d < FRAME_COUNT; d++) {
-      if (target - d >= 0 && loadedRef.current[target - d]) return target - d;
-      if (target + d < FRAME_COUNT && loadedRef.current[target + d]) return target + d;
-    }
-    return -1;
+  const seekTo = (p: number) => {
+    const video = videoRef.current;
+    if (!video || !readyRef.current) return;
+    const duration = video.duration;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+    const target = Math.max(0, Math.min(duration - 0.001, p * duration));
+    if (Math.abs(video.currentTime - target) < SEEK_EPSILON) return;
+    video.currentTime = target;
   };
 
   useEffect(() => {
-    let cancelled = false;
-    const images: HTMLImageElement[] = new Array(FRAME_COUNT);
-    const loaded: boolean[] = new Array(FRAME_COUNT).fill(false);
-    imagesRef.current = images;
-    loadedRef.current = loaded;
+    const video = videoRef.current;
+    if (!video) return;
 
-    const loadFrame = (i: number) => {
-      if (images[i] || cancelled) return;
-      const img = new Image();
-      img.decoding = "async";
-      img.onload = () => {
-        if (cancelled) return;
-        loaded[i] = true;
-        if (drawnIndexRef.current === -1) draw(i, true);
-      };
-      img.src = frameSrc(i);
-      images[i] = img;
+    const onLoadedMetadata = () => {
+      readyRef.current = true;
+      unlockIOSScrubbing(video, () => seekTo(pendingProgressRef.current));
     };
-    loadFrameRef.current = loadFrame;
 
-    // First screenful loads immediately so the scene has something to paint
-    // and early scroll feels smooth; the rest trickle in during idle time
-    // instead of firing 192 concurrent requests that starve the CSS/font/JS
-    // requests competing for the same handful of connections.
-    for (let i = 0; i < Math.min(EAGER_COUNT, FRAME_COUNT); i++) loadFrame(i);
+    video.addEventListener("loadedmetadata", onLoadedMetadata);
+    // Metadata may already be available (e.g. fast cache hit before this
+    // effect ran) — readyState 1 (HAVE_METADATA) or higher means duration
+    // is already known and the event above won't fire again.
+    if (video.readyState >= 1) onLoadedMetadata();
 
-    let next = EAGER_COUNT;
-    const idle: (cb: () => void) => number =
-      typeof window !== "undefined" && "requestIdleCallback" in window
-        ? (cb) => window.requestIdleCallback(cb, { timeout: 1000 })
-        : (cb) => window.setTimeout(cb, 200);
-    const loadNextBatch = () => {
-      if (cancelled || next >= FRAME_COUNT) return;
-      const end = Math.min(next + IDLE_BATCH_SIZE, FRAME_COUNT);
-      for (; next < end; next++) loadFrame(next);
-      idle(loadNextBatch);
-    };
-    idle(loadNextBatch);
-
-    return () => {
-      cancelled = true;
-    };
+    return () => video.removeEventListener("loadedmetadata", onLoadedMetadata);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      canvas.width = Math.max(1, Math.round(rect.width * dpr));
-      canvas.height = Math.max(1, Math.round(rect.height * dpr));
-      draw(Math.max(0, drawnIndexRef.current), true);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const target = Math.round(progress * (FRAME_COUNT - 1));
-    // Scroll can outrun the idle-loaded queue — jump the target frame (and a
-    // little lookahead in the scroll direction) to the front of the line so
-    // scrubbing doesn't stall on frames the idle batches haven't reached yet.
-    if (!loadedRef.current[target]) {
-      loadFrameRef.current(target);
-      for (let d = 1; d <= 4; d++) {
-        if (target + d < FRAME_COUNT) loadFrameRef.current(target + d);
-        if (target - d >= 0) loadFrameRef.current(target - d);
-      }
-    }
-    const idx = nearestLoaded(target);
-    if (idx !== -1) draw(idx);
+    pendingProgressRef.current = progress;
+    seekTo(progress);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress]);
 
   const depthTransform =
-    !isDesktop && !reducedMotion
-      ? `scale(${1.03 + 0.01 * progress})`
-      : undefined;
+    !isDesktop && !reducedMotion ? `scale(${1.03 + 0.01 * progress})` : undefined;
 
   return (
     <div className="h-full w-full">
-      <canvas
-        ref={canvasRef}
-        className={className}
+      <video
+        ref={videoRef}
+        src={VIDEO_SRC}
+        className={[className, "object-cover object-top"].filter(Boolean).join(" ")}
         style={{ transform: depthTransform, transformOrigin: "center top" }}
+        muted
+        playsInline
+        preload="auto"
         aria-hidden
       />
     </div>

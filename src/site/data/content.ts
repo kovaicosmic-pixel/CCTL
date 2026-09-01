@@ -154,7 +154,7 @@ export const services: ServiceDomain[] = [
     spec: "MIL-461",
     stats: [
       { label: "Standard", value: "MIL-STD-461" },
-      { label: "Frequency Range", value: "10 kHz – 48 GHz" },
+      { label: "Frequency Range", value: "10 kHz – 40 GHz" },
       { label: "Chamber", value: "CSAC" },
     ],
     detailedDescription:
@@ -349,7 +349,7 @@ export const services: ServiceDomain[] = [
     spec: "EN 50121",
     stats: [
       { label: "Standard", value: "EN 50121" },
-      { label: "Frequency Range", value: "10 kHz – 48 GHz" },
+      { label: "Frequency Range", value: "10 kHz – 40 GHz" },
       { label: "Chamber", value: "CSAC" },
     ],
     detailedDescription:
@@ -841,58 +841,10 @@ export const blogPlaceholders: BlogPost[] = [
   },
 ];
 
-export const clientLogos = [
-  "/images/clients/Picture1.png",
-  "/images/clients/Picture2.jpg",
-  "/images/clients/Picture3.png",
-  "/images/clients/Picture4.png",
-  "/images/clients/Picture5.jpg",
-  "/images/clients/Picture6.png",
-  "/images/clients/Picture7.png",
-  "/images/clients/Picture8.jpg",
-  "/images/clients/Picture9.png",
-  "/images/clients/Picture10.jpg",
-  "/images/clients/Picture11.jpg",
-  "/images/clients/Picture12.jpg",
-  "/images/clients/Picture13.png",
-  "/images/clients/Picture14.jpg",
-  "/images/clients/Picture15.jpg",
-  "/images/clients/Picture16.png",
-  "/images/clients/Picture17.png",
-  "/images/clients/Picture18.jpg",
-  "/images/clients/Picture19.png",
-  "/images/clients/Picture20.png",
-  "/images/clients/Picture21.jpg",
-  "/images/clients/Picture22.jpg",
-  "/images/clients/Picture23.jpg",
-  "/images/clients/Picture24.png",
-  "/images/clients/Picture25.png",
-  "/images/clients/Picture26.png",
-  "/images/clients/Picture27.jpg",
-  "/images/clients/Picture28.png",
-  "/images/clients/Picture29.jpg",
-  "/images/clients/Picture30.png",
-  "/images/clients/Picture31.jpg",
-  "/images/clients/Picture32.png",
-  "/images/clients/Picture33.png",
-  "/images/clients/Picture34.jpg",
-  "/images/clients/Picture35.png",
-  "/images/clients/Picture36.png",
-  "/images/clients/Picture37.png",
-  "/images/clients/Picture38.png",
-  "/images/clients/Picture39.jpg",
-  "/images/clients/Picture40.jpg",
-  "/images/clients/Picture41.png",
-  "/images/clients/Picture42.jpg",
-  "/images/clients/Picture43.png",
-  "/images/clients/Picture44.jpg",
-  "/images/clients/Picture45.jpg",
-  "/images/clients/Picture46.jpg",
-  "/images/clients/Picture47.png",
-  "/images/clients/Picture48.jpg",
-  "/images/clients/Picture49.jpg",
-  "/images/clients/Picture50.jpg",
-];
+export const clientLogos = Array.from(
+  { length: 50 },
+  (_, i) => `/images/clients/Picture${i + 1}.webp`,
+);
 
 // ─── FAQ Data for SEO ───────────────────────────────────────────────────────
 

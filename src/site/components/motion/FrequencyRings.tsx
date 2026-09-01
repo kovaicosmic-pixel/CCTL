@@ -67,7 +67,15 @@ export default function FrequencyRings({
                 className="absolute rounded-full bg-ink-100 p-1.5 shadow-[0_0_14px_rgba(26,108,245,0.5)]"
                 style={{ top: -14, left: "50%", marginLeft: -14 }}
               >
-                <img src={nodes[i].src} alt={nodes[i].alt} className="h-5 w-5 object-contain" />
+                <img
+                  src={nodes[i].src}
+                  alt={nodes[i].alt}
+                  className="h-5 w-5 object-contain"
+                  loading="lazy"
+                  decoding="async"
+                  width={20}
+                  height={20}
+                />
               </span>
             )}
           </div>
