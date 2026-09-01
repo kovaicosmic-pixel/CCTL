@@ -22,11 +22,25 @@ const VIDEO_SRC = "/images/chamber-scrub.mp4";
 const SEEK_EPSILON = 1 / 48;
 
 /**
- * iOS Safari refuses programmatic `currentTime` seeks on a video that has
- * never played, even when `preload="auto"` has fully buffered it. A muted,
- * inline play-then-immediately-pause primes the decoder so later seeks
- * actually take effect, without ever visibly starting playback.
+ * iOS Safari (and any iOS browser — all WebKit under Apple's policy) refuses
+ * programmatic `currentTime` seeks on a video that has never played, even
+ * with `preload="auto"`. No other engine has this restriction, so the
+ * play-then-pause workaround below must stay scoped to iOS: calling
+ * `.play()` on a `preload="auto"` video that's still downloading makes the
+ * browser renegotiate its fetch as a playback-driven range request,
+ * canceling the in-flight sequential preload — running it unconditionally
+ * on every browser was producing a canceled request + extra 206 range
+ * requests on page load for the ~95% of visitors that never needed it.
+ * iPadOS reports as "MacIntel" with touch support, hence the second check.
  */
+function isIOS(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return (
+    /iP(hone|od|ad)/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
 function unlockIOSScrubbing(video: HTMLVideoElement, onDone: () => void) {
   const playPromise = video.play();
   if (playPromise && typeof playPromise.then === "function") {
@@ -71,7 +85,11 @@ export default function ChamberFrames({
 
     const onLoadedMetadata = () => {
       readyRef.current = true;
-      unlockIOSScrubbing(video, () => seekTo(pendingProgressRef.current));
+      if (isIOS()) {
+        unlockIOSScrubbing(video, () => seekTo(pendingProgressRef.current));
+      } else {
+        seekTo(pendingProgressRef.current);
+      }
     };
 
     video.addEventListener("loadedmetadata", onLoadedMetadata);

@@ -266,7 +266,7 @@ function Capabilities() {
       images: [
         "/images/explore/domain-telecom.webp",
         "/images/explore/media.webp",
-        "/images/explore/AZ7_7776.webp",
+        "/images/explore/BCI_setup.webp",
         "/images/explore/civilLab.webp",
       ],
     },
@@ -280,7 +280,7 @@ function Capabilities() {
         "/images/explore/Picture1.jpg",
         "/images/explore/AZ7_7709%202023-09-11%2006_28_36.webp",
         "/images/explore/domain-railways.webp",
-        "/images/explore/AZ7_7722%202023-09-11%2006_29_56.webp",
+        "/images/explore/RE102_setup.webp",
       ],
     },
   ];
