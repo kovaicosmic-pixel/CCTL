@@ -33,7 +33,7 @@ export default function Footer() {
                 aria-label="LinkedIn"
               >
                 <img
-                  src="/images/linkedin.png"
+                  src="/images/linkedin.webp"
                   alt="LinkedIn"
                   className="h-4 w-4 object-contain"
                   loading="lazy"
@@ -45,7 +45,7 @@ export default function Footer() {
 
               <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
                 <img
-                  src="/images/NABL.jpg"
+                  src="/images/NABL.webp"
                   alt="NABL accredited"
                   className="h-6 w-6 rounded object-contain bg-white"
                   loading="lazy"
@@ -109,20 +109,20 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="container-x flex flex-col items-center justify-between gap-3 py-5 sm:flex-row">
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-white/60">
             © {new Date().getFullYear()} Cosmic Compliance Test Lab. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
               to="/privacy"
-              className="text-sm text-white/40 transition-colors hover:text-white"
+              className="text-sm text-white/60 transition-colors hover:text-white"
             >
               Privacy Policy
             </Link>
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="group inline-flex items-center gap-1.5 text-[0.7rem] font-mono uppercase tracking-[0.18em] text-white/40 transition-colors hover:text-cyan-glow"
+              className="group inline-flex items-center gap-1.5 text-[0.7rem] font-mono uppercase tracking-[0.18em] text-white/60 transition-colors hover:text-cyan-glow"
             >
               <span>Back to top</span>
               <ArrowUp

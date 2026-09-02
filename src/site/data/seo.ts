@@ -52,7 +52,7 @@ export const organizationSchema = {
   name: "Cosmic Compliance Test Lab",
   alternateName: "CCTL",
   url: SITE_URL,
-  logo: `${SITE_URL}/images/logo.png`,
+  logo: `${SITE_URL}/images/logo.webp`,
   image: `${SITE_URL}/images/about_us.jpg`,
   email: "emc@cosmictestlab.com",
   telephone: "+91 94442 72009",

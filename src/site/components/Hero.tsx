@@ -1,13 +1,32 @@
-import { useReducedMotion } from "framer-motion";
+import {
+  useReducedMotion,
+  useMotionValue,
+  useSpring,
+  useMotionValueEvent,
+} from "framer-motion";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 import { useSceneProgress } from "../hooks/useSceneProgress";
 import ChamberFrames from "./lab/ChamberFrames";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Hero() {
   const reducedMotion = useReducedMotion();
   const isDesktop = useIsDesktop();
-  const { ref, progress } = useSceneProgress<HTMLDivElement>();
+  const { ref, progress: rawProgress } = useSceneProgress<HTMLDivElement>();
+  /* Raw scroll progress updates in discrete per-frame jumps. Spring-smooth it
+     (same technique as the "What we deliver" scene) before ChamberFrames
+     seeks the video against it — the seek itself still costs ~30-47ms, but a
+     smoothed target reads as fluid motion catching up rather than a series
+     of steppy jumps landing on video frames. useSpring only tracks a
+     *MotionValue* source reactively, not a plain number that changes across
+     renders, so the raw number is bridged into one first. */
+  const rawProgressMV = useMotionValue(0);
+  useEffect(() => {
+    rawProgressMV.set(rawProgress);
+  }, [rawProgress, rawProgressMV]);
+  const smoothProgress = useSpring(rawProgressMV, { stiffness: 170, damping: 26, mass: 0.4 });
+  const [progress, setProgress] = useState(0);
+  useMotionValueEvent(smoothProgress, "change", (latest) => setProgress(latest));
 
   // Emit a global event with the current progress so listeners (Navbar) can
   // decide whether the hero scene is active. Navbar will make itself

@@ -13,6 +13,12 @@ import { DESKTOP_BREAKPOINT, useIsDesktop } from "../../hooks/useIsDesktop";
  * a keyframe) so an arbitrary seek lands on the exact frame instead of
  * snapping back to the nearest GOP boundary — that precision is what makes
  * scroll-scrubbing feel smooth instead of steppy.
+ *
+ * A seek itself isn't free — profiling measured ~30-47ms per seek to
+ * resolve, climbing past 400ms under sustained fast scroll if a new one is
+ * issued before the last resolves. `requestSeek`/`performSeek` below only
+ * ever let one seek be in flight at a time, coalescing every scroll tick
+ * that arrives in the meantime into a single catch-up seek once it resolves.
  */
 
 const VIDEO_SRC = "/images/chamber-scrub.mp4";
@@ -65,11 +71,16 @@ export default function ChamberFrames({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const readyRef = useRef(false);
+  // Always the most recently requested progress, even while a seek is still
+  // resolving — this is what a queued-up scroll gets coalesced down to.
   const pendingProgressRef = useRef(progress);
   const reducedMotion = useReducedMotion();
   const isDesktop = useIsDesktop(DESKTOP_BREAKPOINT);
 
-  const seekTo = (p: number) => {
+  // Unconditionally sets currentTime — callers must confirm no seek is
+  // already in flight (or be the 'seeked' handler resolving the previous
+  // one) before calling this directly.
+  const performSeek = (p: number) => {
     const video = videoRef.current;
     if (!video || !readyRef.current) return;
     const duration = video.duration;
@@ -79,6 +90,21 @@ export default function ChamberFrames({
     video.currentTime = target;
   };
 
+  // Measured: a seek takes ~30-47ms to resolve, 2-3x a 60fps frame budget —
+  // issuing a new one before the last resolves makes them queue up, and
+  // under sustained fast scroll that backlog compounds (seen up to 461ms
+  // latency in profiling). `video.seeking` is the source of truth for
+  // whether one is currently in flight: if so, just remember the latest
+  // requested value and let the 'seeked' handler below pick it up once the
+  // in-flight seek resolves — coalescing every intermediate scroll tick
+  // into a single catch-up seek instead of one seek per tick.
+  const requestSeek = (p: number) => {
+    pendingProgressRef.current = p;
+    const video = videoRef.current;
+    if (!video || video.seeking) return;
+    performSeek(p);
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -86,25 +112,36 @@ export default function ChamberFrames({
     const onLoadedMetadata = () => {
       readyRef.current = true;
       if (isIOS()) {
-        unlockIOSScrubbing(video, () => seekTo(pendingProgressRef.current));
+        unlockIOSScrubbing(video, () => requestSeek(pendingProgressRef.current));
       } else {
-        seekTo(pendingProgressRef.current);
+        requestSeek(pendingProgressRef.current);
       }
     };
 
+    // Once the in-flight seek resolves, jump straight to whatever the
+    // latest requested progress is *now* — not whatever it was when this
+    // seek started — so rapid scrolling collapses to the minimum number of
+    // seeks instead of draining a queue one stale value at a time.
+    const onSeeked = () => {
+      performSeek(pendingProgressRef.current);
+    };
+
     video.addEventListener("loadedmetadata", onLoadedMetadata);
+    video.addEventListener("seeked", onSeeked);
     // Metadata may already be available (e.g. fast cache hit before this
     // effect ran) — readyState 1 (HAVE_METADATA) or higher means duration
     // is already known and the event above won't fire again.
     if (video.readyState >= 1) onLoadedMetadata();
 
-    return () => video.removeEventListener("loadedmetadata", onLoadedMetadata);
+    return () => {
+      video.removeEventListener("loadedmetadata", onLoadedMetadata);
+      video.removeEventListener("seeked", onSeeked);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    pendingProgressRef.current = progress;
-    seekTo(progress);
+    requestSeek(progress);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress]);
 

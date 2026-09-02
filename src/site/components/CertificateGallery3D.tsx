@@ -130,9 +130,9 @@ export default function CertificateGallery3D({
                     <span className="font-mono text-[0.55rem] font-bold tracking-[0.2em] text-cyan-glow uppercase">
                       {item.code}
                     </span>
-                    <h4 className="font-display text-[0.7rem] font-extrabold uppercase leading-tight tracking-[-0.01em] text-white mt-2 max-w-[90%]">
+                    <h3 className="font-display text-[0.7rem] font-extrabold uppercase leading-tight tracking-[-0.01em] text-white mt-2 max-w-[90%]">
                       {item.title}
-                    </h4>
+                    </h3>
                     <p className="text-[0.55rem] text-white/80 font-semibold mt-1.5 max-w-[90%] leading-relaxed">
                       {item.issuer}
                     </p>

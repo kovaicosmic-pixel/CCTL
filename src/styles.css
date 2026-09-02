@@ -191,6 +191,13 @@ body {
   color: var(--color-ink-100);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  /* Mirrors html's overflow-x: clip (see the comment there) — without this,
+     browsers propagate <body>'s default `visible` to the actual viewport
+     scrolling box instead of html's `clip`, so transformed-off-screen
+     content (scroll-jacked rails, decorative blobs positioned past the
+     edge) still inflates document.scrollWidth and creates real horizontal
+     scroll room, even though html alone declares clip. */
+  overflow-x: clip;
 }
 
 ::selection {

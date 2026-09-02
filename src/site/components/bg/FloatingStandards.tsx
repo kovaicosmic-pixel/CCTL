@@ -75,7 +75,13 @@ export default function FloatingStandards({
         boxShadow: "0 0 12px -3px rgba(26, 108, 245, 0.2)",
       }
     : {
-        color: "#1a6cf5",
+        // Darkened from the brand's #1a6cf5 (same hue/saturation, lower
+        // lightness) — every "light" usage wraps this in a container with
+        // opacity 0.7 (see the `opacity` prop below), which dilutes the
+        // effective on-screen color toward the light background; #1a6cf5
+        // only cleared ~4.45:1 solid and dropped to ~2.8:1 once diluted.
+        // #052f75 clears ~5:1 even after that dilution.
+        color: "#052f75",
         border: "1px solid rgba(26, 108, 245, 0.25)",
         background: "rgba(26, 108, 245, 0.08)",
         boxShadow: "0 2px 10px -3px rgba(26, 108, 245, 0.2)",

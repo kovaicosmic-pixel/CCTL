@@ -31,6 +31,7 @@ export function SpringPopContainer({
     <div ref={ref} className={className}>
       {Children.map(children, (child, i) => (
         <motion.div
+          className="min-w-0"
           initial={{ scale: 0, opacity: 0, rotate: -12, y: 30 }}
           animate={
             isInView

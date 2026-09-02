@@ -48,7 +48,9 @@ const WINDOWS = [
     code: "01",
     title: whyChooseUs[0].title.match(/\(([^)]+)\)/)?.[1] ?? "CSAC",
     note: whyChooseUs[0].body,
-    image: "/images/chamber.webp",
+    // Dedicated smaller variant — this card renders far below the Hero's
+    // full-bleed size, so it doesn't need the same 1447x1087 source.
+    image: "/images/chamber-small.webp",
   },
   {
     code: "02",
@@ -549,10 +551,10 @@ function AboutBlurbScene() {
                       }
                 }
               >
-                {/* Top gradient accent */}
-                <div className="absolute inset-x-0 top-0 h-[1px] rounded-t-xl bg-gradient-to-r from-transparent via-cyan-glow/40 to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-100" />
-                <span className="glow-dot mb-4 block" />
                 <dt className="font-display text-base font-extrabold uppercase tracking-[-0.02em] text-ink-100">
+                  {/* Top gradient accent */}
+                  <div className="absolute inset-x-0 top-0 h-[1px] rounded-t-xl bg-gradient-to-r from-transparent via-cyan-glow/40 to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-100" />
+                  <span className="glow-dot mb-4 block" />
                   {s.title}
                 </dt>
                 <dd className="t-small mt-3 font-medium text-ink-300">{s.body}</dd>
@@ -1228,7 +1230,7 @@ function FinalScene() {
 
       <div className="container-x relative px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
         <div className="grid items-center gap-6 lg:grid-cols-[1.05fr_1.2fr] lg:gap-0">
-          <div className="relative z-10 max-w-[700px]">
+          <div className="relative z-10 min-w-0 max-w-[700px]">
             <p className="font-mono text-[0.8rem] font-bold uppercase tracking-[0.28em] text-cyan-glow">
               Get in touch
             </p>
@@ -1258,7 +1260,7 @@ function FinalScene() {
               ))}
             </SpringPopContainer>
 
-            <div className="mt-10 flex items-center gap-6">
+            <div className="mt-10 flex flex-wrap items-center gap-6">
               <Magnetic strength={0.25} className="inline-block">
                 <a
                   href={`tel:${company.phone.replace(/\s/g, "")}`}
