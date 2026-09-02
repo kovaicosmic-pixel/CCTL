@@ -13,10 +13,13 @@ const title =
 const description =
   "Cosmic Compliance Test Lab (CCTL) is India's leading NABL & ISO/IEC 17025 accredited EMI/EMC testing facility with labs in Coimbatore and Bangalore. 25+ expert engineers, 120+ projects, serving automotive, defence, aerospace, railway & telecom sectors.";
 
-const breadcrumbs = breadcrumbSchema([
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-]);
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+  ],
+  `${SITE_URL}/about#breadcrumb`,
+);
 
 const aboutPageSchema = {
   "@context": "https://schema.org",
