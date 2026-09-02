@@ -56,6 +56,25 @@ export const organizationSchema = {
   image: `${SITE_URL}/images/about_us.jpg`,
   email: "emc@cosmictestlab.com",
   telephone: "+91 94442 72009",
+  address: [
+    {
+      "@type": "PostalAddress",
+      streetAddress: "Annamalai Industrial Park, SF219, Sharp Nagar, Nehru Nagar West, Kalapatti",
+      addressLocality: "Coimbatore",
+      addressRegion: "Tamil Nadu",
+      postalCode: "641048",
+      addressCountry: "IN",
+    },
+    {
+      "@type": "PostalAddress",
+      streetAddress:
+        "Sy No.192/1, A-1, Munireddy Industrial Estate, 3rd Phase, Bommasandra Village, Attibele Hobli, Anekal Taluk",
+      addressLocality: "Bangalore",
+      addressRegion: "Karnataka",
+      postalCode: "560099",
+      addressCountry: "IN",
+    },
+  ],
   description:
     "NABL & ISO/IEC 17025 accredited EMI/EMC testing laboratory in Coimbatore and Bangalore, India. Specializing in automotive, defence, aerospace, railway and telecom EMC compliance testing.",
   foundingDate: "2021",
