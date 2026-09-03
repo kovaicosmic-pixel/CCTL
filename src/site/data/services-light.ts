@@ -77,7 +77,7 @@ export const servicesLight: ServiceDomainLight[] = [
       "/images/automotive/RE%20main%20pic%20.webp",
       "/images/automotive/receiver%20with%20software%20setup.webp"
     ],
-    "spec": "48 GHz",
+    "spec": "40 GHz",
     "stats": [
       {
         "label": "Turntable",
@@ -143,7 +143,7 @@ export const servicesLight: ServiceDomainLight[] = [
       },
       {
         "label": "Frequency Range",
-        "value": "Up to 48 GHz"
+        "value": "Up to 40 GHz"
       },
       {
         "label": "Chamber",

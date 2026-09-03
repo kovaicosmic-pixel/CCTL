@@ -95,7 +95,7 @@ export const about = {
 export const whyChooseUs = [
   {
     title: "Component Semi-Anechoic Chamber (CSAC)",
-    body: "Our updated facility includes a Component Semi-Anechoic Chamber (CSAC) up to 48 GHz, with a shielded control room and advanced instrumentation.",
+    body: "Our updated facility includes a Component Semi-Anechoic Chamber (CSAC) up to 40 GHz, with a shielded control room and advanced instrumentation.",
   },
   {
     title: "Vehicle Semi-Anechoic Chamber (VSAC)",
