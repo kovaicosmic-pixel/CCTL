@@ -134,7 +134,7 @@ export default function Blog() {
             </span>
           </div>
         </div>
-        <HorizontalRail heightVh={280} travel="-58%">
+        <HorizontalRail heightVh={280} mobileHeightVh={190} travel="-58%">
           {blogPlaceholders.map((post, i) => (
             <RailCard key={post.slug} post={post} index={i} />
           ))}

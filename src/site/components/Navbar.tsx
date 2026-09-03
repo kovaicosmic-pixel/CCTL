@@ -172,6 +172,13 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
+            <Link
+              to="/contact"
+              onClick={() => setOpen(false)}
+              className="btn-base btn-primary btn-sm mt-2 justify-center"
+            >
+              Get In Touch
+            </Link>
           </div>
         </div>
       )}

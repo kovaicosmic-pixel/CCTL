@@ -21,7 +21,7 @@ function DomainFan() {
   const fanOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
 
   return (
-    <div ref={ref} className="relative h-[180vh] md:h-[200vh]">
+    <div ref={ref} className="relative h-[120vh] md:h-[200vh]">
       <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-visible px-4 pb-16 pt-[4.5rem] sm:px-5 lg:px-8">
         <div
           aria-hidden
@@ -38,7 +38,7 @@ function DomainFan() {
           >
             Services
           </motion.span>
-          <h1 className="mt-5 flex w-max max-w-full flex-col overflow-visible text-[clamp(4rem,8.4vw,11rem)] font-display font-extrabold uppercase leading-[0.7] tracking-[-0.06em] text-ink-100">
+          <h1 className="mt-5 flex w-max max-w-full flex-col overflow-visible text-[clamp(3.1rem,8.4vw,11rem)] font-display font-extrabold uppercase leading-[0.7] tracking-[-0.06em] text-ink-100">
             {["Five domains.", "One facility."].map((line, i) => (
               <span key={line} className="block w-max max-w-full overflow-visible">
                 <motion.span

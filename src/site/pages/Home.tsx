@@ -74,7 +74,6 @@ const WINDOWS = [
 
 function WhyChooseUsScene() {
   const reducedMotion = useReducedMotion();
-  const isDesktop = useIsDesktop();
   const reduced = reducedMotion;
   const { ref, progress } = useSceneProgress<HTMLDivElement>();
   const p = reduced ? 1 : progress;
@@ -86,7 +85,7 @@ function WhyChooseUsScene() {
     <section
       ref={ref}
       className="seam relative"
-      style={{ height: reduced ? undefined : isDesktop ? "220vh" : "135vh" }}
+      style={{ height: reduced ? undefined : "220vh" }}
       aria-label="Why choose us"
     >
       <div
@@ -135,7 +134,7 @@ function WhyChooseUsScene() {
           </h2>
         </div>
 
-        <div className={`stage relative w-full ${reduced ? "" : "flex-1 min-h-[48rem] sm:min-h-[56rem] lg:min-h-0"}`}>
+        <div className={`stage relative w-full ${reduced ? "" : "flex-1"}`}>
           <div
             className={`grid grid-cols-2 grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 ${reduced ? "gap-3" : "absolute inset-0"}`}
           >
@@ -953,6 +952,11 @@ const EXPLORE_ITEMS = [
   { src: encodeURI("/images/explore/BCI_test_setup.webp"), title: "BCI Test Setup", width: 960, height: 540 },
   { src: encodeURI("/images/explore/RF_testing.webp"), title: "RF Testing", width: 960, height: 720 },
   { src: encodeURI("/images/explore/BCI-setup.webp"), title: "BCI Setup", width: 960, height: 540 },
+  { src: "/images/explore/eft_test.webp", title: "EFT Test Setup", width: 1537, height: 1023 },
+  { src: "/images/explore/lab_setup.webp", title: "Lab Setup", width: 1537, height: 1023 },
+  { src: "/images/explore/re_main_setup.webp", title: "Radiated Emissions Setup", width: 1672, height: 941 },
+  { src: "/images/explore/rf_antenna.webp", title: "RF Antenna Setup", width: 1672, height: 941 },
+  { src: "/images/explore/radiated_immunity_test.webp", title: "Radiated Immunity Test", width: 1672, height: 940 },
 ];
 
 function FacilityScene() {

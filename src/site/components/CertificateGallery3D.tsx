@@ -59,7 +59,10 @@ export default function CertificateGallery3D({
   };
 
   return (
-    <div className={`w-full overflow-hidden py-4 ${className ?? ""}`} onMouseLeave={handleLeave}>
+    <div
+      className={`cert-gallery-scroll w-full overflow-x-auto overflow-y-hidden py-4 ${className ?? ""}`}
+      onMouseLeave={handleLeave}
+    >
       <div
         ref={containerRef}
         className="flex w-full"
@@ -79,6 +82,7 @@ export default function CertificateGallery3D({
               role="button"
               tabIndex={0}
               onMouseEnter={() => handleHover(index)}
+              onTouchStart={() => handleHover(index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               aria-label={item.title}
               layout

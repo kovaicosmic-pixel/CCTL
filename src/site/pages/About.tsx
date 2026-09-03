@@ -209,7 +209,7 @@ function PillarLadder() {
 
 const capabilities = [
   "Radiated and Conducted emissions as per various CISPR and Military standards.",
-  "Radiated Immunity 10 kHz to 40 GHz Field strength 150V/m.",
+  "Radiated Immunity 10 kHz to 40 GHz Field strength 200V/m.",
   "Conducted transient emissions on power leads, as per IEC standards.",
   "Immunity to conducted transients' disturbances, as per IEC standards.",
   "Immunity to Electrostatic Discharge (ESD) as per ISO 10605/IEC 61000-4-2.",
@@ -241,6 +241,7 @@ function Capabilities() {
         "/images/explore/AZ7_7776.webp",
         "/images/explore/civilLab.webp",
         "/images/explore/Picture1.jpg",
+        "/images/explore/eft_test.webp",
       ],
     },
     {
@@ -255,6 +256,7 @@ function Capabilities() {
         "/images/explore/AZ7_7777.webp",
         "/images/explore/domain-railways.webp",
         "/images/explore/Labcivil.webp",
+        "/images/explore/lab_setup.webp",
       ],
     },
     {
@@ -268,6 +270,7 @@ function Capabilities() {
         "/images/explore/media.webp",
         "/images/explore/BCI_setup.webp",
         "/images/explore/civilLab.webp",
+        "/images/explore/re_main_setup.webp",
       ],
     },
     {
@@ -281,6 +284,8 @@ function Capabilities() {
         "/images/explore/AZ7_7709%202023-09-11%2006_28_36.webp",
         "/images/explore/domain-railways.webp",
         "/images/explore/RE102_setup.webp",
+        "/images/explore/rf_antenna.webp",
+        "/images/explore/radiated_immunity_test.webp",
       ],
     },
   ];

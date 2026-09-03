@@ -1550,3 +1550,16 @@ img.nav-logo,
     margin-right: 0.75rem;
   }
 }
+
+/* CertificateGallery3D: on narrow viewports the cards' combined min-width can
+   exceed the visible width even after shrinking as far as flexbox allows —
+   this lets the row scroll to reach the remaining cards instead of silently
+   clipping them, while staying visually identical to a plain overflow-hidden
+   row whenever nothing actually overflows (i.e. on desktop). */
+.cert-gallery-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.cert-gallery-scroll::-webkit-scrollbar {
+  display: none;
+}
