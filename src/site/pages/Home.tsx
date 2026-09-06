@@ -198,8 +198,20 @@ function WhyChooseUsScene() {
 
 function DeliverScene() {
   const reducedMotion = useReducedMotion();
+  /* Run the full pinned-rail scroll animation on mobile too, matching the laptop
+     experience. The desktop branch below is unchanged — it already uses responsive
+     units (text-[13vw] base -> lg:text-[7vw], sm:/lg: paddings) so the same markup
+     scales down to phones. Only a genuine prefers-reduced-motion preference still
+     falls back to the static grid. */
+  const reduced = reducedMotion;
+  /* isDesktop is NOT used to switch to the static grid (that stays reduced-motion
+     only). It's used purely to keep the 3D tilt/depth values identical on laptop
+     while softening them on phones: the fixed 1600px perspective + rotateY(-16deg)
+     that reads as gentle depth on a wide viewport turns into an extreme collapsing
+     skew on a narrow one, because the panel is tiny relative to that perspective.
+     Mobile therefore uses a shallower tilt and less Z travel so panels slide in
+     cleanly, the same left-to-right direction as laptop. */
   const isDesktop = useIsDesktop(1024);
-  const reduced = reducedMotion || !isDesktop;
   const { ref, progress: rawProgress } = useSceneProgress<HTMLDivElement>();
   /* Raw scroll progress updates in discrete per-frame jumps, which is what made the
      label crossfade feel like a jump-cut instead of a blend. Spring-smooth it (same
@@ -355,9 +367,16 @@ function DeliverScene() {
             className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
             style={{ opacity: 1 - swapP }}
           >
+            {/* whitespace-nowrap keeps this a single line so its measured box is a
+                clean rectangle the morph can scale onto the label uniformly. On
+                desktop "What we deliver" already fits one line at 7vw, so nowrap
+                changes nothing there — but on a phone the old 13vw wrapped to
+                multiple lines, which distorted the measured box and produced the
+                broken mid-transition. A smaller mobile size (8.5vw) keeps it on one
+                line at phone widths; lg:text-[7vw] is unchanged for laptop. */}
             <span
               ref={bigRef}
-              className="display-xl block text-[13vw] leading-[0.85] text-ink-100 lg:text-[7vw]"
+              className="display-xl block whitespace-nowrap text-[8.5vw] leading-[0.85] text-ink-100 lg:text-[7vw]"
               style={{
                 transformOrigin: "0 0",
                 transform: `translate3d(${lerp(0, morph.dx, morphP)}px, ${lerp(0, morph.dy, morphP)}px, 0) scale(${lerp(1, morph.sx, morphP)}, ${lerp(1, morph.sy, morphP)})`,
@@ -384,8 +403,14 @@ function DeliverScene() {
                   className="flex w-screen shrink-0 flex-col justify-center px-6 will-change-transform sm:px-10 lg:px-16"
                   style={{
                     opacity: lerp(0.18, 1, focus),
-                    transform: `rotateY(${offset * -16}deg) translateZ(${lerp(-320, 0, focus)}px) scale(${lerp(0.9, 1, focus)})`,
-                    filter: `blur(${lerp(5, 0, focus)}px)`,
+                    /* Desktop keeps its original values (-16deg / -320px / 0.9).
+                       Mobile softens the tilt and depth so the narrow panel doesn't
+                       collapse into a skewed slab under the fixed 1600px perspective —
+                       it slides in from the side the same way laptop does. */
+                    transform: isDesktop
+                      ? `rotateY(${offset * -16}deg) translateZ(${lerp(-320, 0, focus)}px) scale(${lerp(0.9, 1, focus)})`
+                      : `translate3d(${offset * 12}vw, 0, 0) scale(${lerp(0.92, 1, focus)})`,
+                    filter: `blur(${lerp(isDesktop ? 5 : 3, 0, focus)}px)`,
                   }}
                 >
                   <span
@@ -686,8 +711,13 @@ function TrustScene() {
 
 function DomainStack() {
   const reducedMotion = useReducedMotion();
-  const isDesktop = useIsDesktop(1024);
-  const reduced = reducedMotion || !isDesktop;
+  /* Same rationale as DeliverScene: this section runs its full z-depth stack
+     interaction on mobile too, matching the laptop experience, instead of
+     dropping to a static grid on small screens. The animated markup already
+     uses responsive units (vw card sizes, text-[10vw] heading, sm:/lg:
+     paddings) so it scales down cleanly. Only a genuine prefers-reduced-motion
+     preference falls back to the static grid now. */
+  const reduced = reducedMotion;
   const navigate = useNavigate();
   const activeCardRef = useRef<HTMLAnchorElement | null>(null);
   const { ref, progress } = useSceneProgress<HTMLDivElement>();
