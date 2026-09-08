@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { Lock } from "lucide-react";
 import Magnetic from "./motion/Magnetic";
 
 const links = [
@@ -130,7 +131,16 @@ export default function Navbar() {
               />
             </Link>
           ))}
-          <div className="ml-4">
+          <div className="ml-4 flex items-center gap-2">
+            <a
+              href="https://www.cosmictrf.in/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 px-4 py-2 text-[0.8125rem] font-semibold text-gray-700 transition-colors hover:border-cyan-glow hover:text-cyan-glow"
+            >
+              <Lock className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+              Staff Login
+            </a>
             <Link to="/contact" className="btn-base btn-primary btn-sm">
               Get In Touch
             </Link>
@@ -172,6 +182,16 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
+            <a
+              href="https://www.cosmictrf.in/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 px-3 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:border-cyan-glow hover:text-cyan-glow"
+            >
+              <Lock className="h-4 w-4" strokeWidth={2} aria-hidden />
+              Staff Login
+            </a>
             <Link
               to="/contact"
               onClick={() => setOpen(false)}
