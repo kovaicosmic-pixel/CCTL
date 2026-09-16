@@ -64,7 +64,7 @@ export const Route = createFileRoute("/services/$slug")({
       ? professionalServiceSchema({
           name: `${service.name} EMI/EMC Testing`,
           description,
-          slug: service.slug,
+          path: `/services/${service.slug}`,
           image: service.image,
         })
       : undefined;

@@ -18,7 +18,10 @@ export const canonical = (path: string) =>
 
 // ─── Open Graph Images ──────────────────────────────────────────────────────
 
-const DEFAULT_OG_IMAGE = "/images/og-image.jpg";
+// chamber.webp is the canonical fallback — a real image that exists in /public/images/.
+// og-image.jpg is intentionally kept as the ideal target; replace it with a
+// professionally designed 1200×630 branded graphic when available.
+const DEFAULT_OG_IMAGE = "/images/chamber.webp";
 
 export const ogImage = (path: string = DEFAULT_OG_IMAGE) =>
   `${SITE_URL}${path}`;
@@ -174,11 +177,6 @@ export function localBusinessSchema(loc: LabLocation) {
       opens: "00:00",
       closes: "23:59",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "45",
-    },
   };
 }
 
@@ -208,7 +206,10 @@ export function breadcrumbSchema(items: BreadcrumbItem[], id?: string) {
 export interface ServiceSchemaInput {
   name: string;
   description: string;
-  slug: string;
+  /** Full site path for this service, e.g. "/services/automotive" or
+   *  "/automotive/cispr-25-testing" — not every service page lives under
+   *  /services/, so the full path is required rather than assumed. */
+  path: string;
   image?: string;
 }
 
@@ -216,10 +217,10 @@ export function professionalServiceSchema(svc: ServiceSchemaInput) {
   return {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    "@id": `${SITE_URL}/services/${svc.slug}#service`,
+    "@id": `${SITE_URL}${svc.path}#service`,
     name: svc.name,
     description: svc.description,
-    url: canonical(`/services/${svc.slug}`),
+    url: canonical(svc.path),
     image: svc.image ? `${SITE_URL}${svc.image}` : undefined,
     provider: { "@id": `${SITE_URL}/#organization` },
     areaServed: [
@@ -246,7 +247,7 @@ export interface BlogSchemaInput {
 export function articleSchema(post: BlogSchemaInput) {
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "TechArticle",
     headline: post.title,
     description: post.description,
     url: canonical(`/blog/${post.slug}`),
@@ -258,6 +259,10 @@ export function articleSchema(post: BlogSchemaInput) {
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": canonical(`/blog/${post.slug}`),
+    },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", "h2", ".t-lead"],
     },
   };
 }
@@ -294,6 +299,14 @@ export const webSiteSchema = {
   alternateName: "CCTL",
   url: SITE_URL,
   publisher: { "@id": `${SITE_URL}/#organization` },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE_URL}/blog?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
 };
 
 // ─── Meta helpers ───────────────────────────────────────────────────────────
@@ -304,4 +317,182 @@ export function metaDescription(text: string, maxLen = 155): string {
   const truncated = text.slice(0, maxLen);
   const lastSpace = truncated.lastIndexOf(" ");
   return `${truncated.slice(0, lastSpace > 100 ? lastSpace : maxLen)}...`;
+}
+
+// ─── Structured Data: VideoObject ───────────────────────────────────────────
+
+export interface VideoSchemaInput {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  embedUrl?: string;
+  contentUrl?: string;
+  duration?: string; // ISO 8601 e.g. "PT4M33S"
+}
+
+export function videoObjectSchema(video: VideoSchemaInput) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: video.name,
+    description: video.description,
+    thumbnailUrl: video.thumbnailUrl,
+    uploadDate: video.uploadDate,
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    ...(video.embedUrl ? { embedUrl: video.embedUrl } : {}),
+    ...(video.contentUrl ? { contentUrl: video.contentUrl } : {}),
+    ...(video.duration ? { duration: video.duration } : {}),
+  };
+}
+
+// ─── Structured Data: AggregateRating / Review ──────────────────────────────
+
+export interface ReviewInput {
+  reviewBody: string;
+  authorName: string;
+  authorOrg?: string;
+  ratingValue?: number;
+  datePublished?: string;
+}
+
+export function aggregateRatingSchema(reviews: ReviewInput[]) {
+  const ratedReviews = reviews.filter((r) => r.ratingValue !== undefined);
+  const avg =
+    ratedReviews.length > 0
+      ? ratedReviews.reduce((s, r) => s + (r.ratingValue ?? 0), 0) / ratedReviews.length
+      : undefined;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${SITE_URL}/#organization`,
+    name: "Cosmic Compliance Test Lab",
+    ...(avg !== undefined
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: avg.toFixed(1),
+            reviewCount: ratedReviews.length,
+            bestRating: "5",
+            worstRating: "1",
+          },
+        }
+      : {}),
+    review: reviews.map((r) => ({
+      "@type": "Review",
+      reviewBody: r.reviewBody,
+      author: {
+        "@type": "Person",
+        name: r.authorName,
+        worksFor: r.authorOrg
+          ? { "@type": "Organization", name: r.authorOrg }
+          : undefined,
+      },
+      ...(r.ratingValue !== undefined
+        ? {
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: r.ratingValue,
+              bestRating: "5",
+              worstRating: "1",
+            },
+          }
+        : {}),
+      ...(r.datePublished ? { datePublished: r.datePublished } : {}),
+    })),
+  };
+}
+
+// ─── Structured Data: HowTo ─────────────────────────────────────────────────
+
+export interface HowToStep {
+  name: string;
+  text: string;
+  image?: string;
+  url?: string;
+}
+
+export function howToSchema(input: {
+  name: string;
+  description: string;
+  totalTime?: string; // ISO 8601 e.g. "P3D"
+  steps: HowToStep[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: input.name,
+    description: input.description,
+    ...(input.totalTime ? { totalTime: input.totalTime } : {}),
+    supply: [{ "@type": "HowToSupply", name: "Electronic Device Under Test (EUT)" }],
+    tool: [
+      { "@type": "HowToTool", name: "Semi-Anechoic Chamber (CSAC/VSAC)" },
+      { "@type": "HowToTool", name: "EMC Test Receiver" },
+    ],
+    step: input.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+      ...(s.image ? { image: `${SITE_URL}${s.image}` } : {}),
+      ...(s.url ? { url: canonical(s.url) } : {}),
+    })),
+  };
+}
+
+// ─── Structured Data: Person (E-E-A-T author/expert) ────────────────────────
+
+/**
+ * Person schema for a named CCTL expert or article author.
+ *
+ * E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) is
+ * strengthened when technical content is attributed to a real, named expert
+ * rather than only to the organisation.
+ *
+ * IMPORTANT — do not invent a person. Populate `EMC_EXPERTS` below ONLY with
+ * genuine CCTL personnel whose details CCTL has confirmed. Until real names
+ * are supplied, this data stays empty and no Person schema is emitted.
+ */
+export interface ExpertPerson {
+  /** Full name — required and must be a real CCTL person */
+  name: string;
+  /** Job title, e.g. "Senior EMC Test Engineer" */
+  jobTitle: string;
+  /** Optional short professional description */
+  description?: string;
+  /** Optional LinkedIn or professional profile URL */
+  sameAs?: string[];
+  /** Optional areas of expertise */
+  knowsAbout?: string[];
+}
+
+/**
+ * Genuine CCTL experts — populate with real personnel details supplied by CCTL.
+ * Left intentionally empty; do not add fabricated entries.
+ */
+export const EMC_EXPERTS: ExpertPerson[] = [];
+
+export function personSchema(person: ExpertPerson) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: person.name,
+    jobTitle: person.jobTitle,
+    worksFor: { "@id": `${SITE_URL}/#organization` },
+    ...(person.description ? { description: person.description } : {}),
+    ...(person.sameAs && person.sameAs.length > 0 ? { sameAs: person.sameAs } : {}),
+    ...(person.knowsAbout && person.knowsAbout.length > 0
+      ? { knowsAbout: person.knowsAbout }
+      : {}),
+  };
+}
+
+/**
+ * Returns Person JSON-LD schema objects for all confirmed experts.
+ * Safe to spread into a route's meta array — emits nothing while EMC_EXPERTS
+ * is empty, so no fabricated author data is ever published.
+ */
+export function expertsSchema() {
+  return EMC_EXPERTS.map((p) => personSchema(p));
 }

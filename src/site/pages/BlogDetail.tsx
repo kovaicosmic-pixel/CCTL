@@ -9,11 +9,62 @@ import { blogPlaceholders } from "../data/content";
 import { blogBodies } from "../data/blog-bodies";
 
 /**
+ * Parse inline markdown links [text](url) within a text string and return an
+ * array of React nodes. Internal links (starting with "/") render as TanStack
+ * <Link> for client-side navigation; external links render as <a>. This is what
+ * makes the "Related Services" cross-links in article bodies clickable.
+ */
+function renderInlineText(text: string): ReactNode {
+  const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = linkPattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const label = match[1];
+    const href = match[2];
+    if (href.startsWith("/")) {
+      parts.push(
+        <Link
+          key={`lnk-${key++}`}
+          to={href}
+          className="font-semibold text-cyan-glow underline decoration-cyan-glow/40 underline-offset-2 hover:decoration-cyan-glow"
+        >
+          {label}
+        </Link>,
+      );
+    } else {
+      parts.push(
+        <a
+          key={`lnk-${key++}`}
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          className="font-semibold text-cyan-glow underline decoration-cyan-glow/40 underline-offset-2 hover:decoration-cyan-glow"
+        >
+          {label}
+        </a>,
+      );
+    }
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts.length > 0 ? parts : text;
+}
+
+/**
  * Renders blog body blocks with rich formatting:
  * - "## " prefix → h2 heading
  * - "### " prefix → h3 heading
  * - "- " prefix → bullet list item (consecutive items grouped)
  * - "| " prefix → table row (first row = header, pipe-separated)
+ * - Inline [text](url) → clickable link (internal via <Link>, external via <a>)
  * - Anything else → paragraph (first paragraph gets drop-cap)
  */
 function renderBlogBody(body: string[], reduced: boolean | null) {
@@ -155,7 +206,7 @@ function renderBlogBody(body: string[], reduced: boolean | null) {
               <span className="mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan-glow/10">
                 <span className="h-1.5 w-1.5 rounded-full bg-cyan-glow shadow-[0_0_6px_1px_rgba(26,108,245,0.4)]" />
               </span>
-              <span>{item}</span>
+              <span>{renderInlineText(item)}</span>
             </li>
           ))}
         </motion.ul>,
@@ -178,7 +229,7 @@ function renderBlogBody(body: string[], reduced: boolean | null) {
               : "t-body"
           }
         >
-          {line}
+          {renderInlineText(line)}
         </motion.p>,
       );
     }
@@ -309,7 +360,7 @@ export default function BlogDetail() {
                       <div className="relative overflow-hidden">
                         <img
                           src={r.image}
-                          alt=""
+                          alt={r.title}
                           loading="lazy"
                           className="aspect-[16/10] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
                         />

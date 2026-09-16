@@ -6,12 +6,42 @@ import {
   ogImage,
   breadcrumbSchema,
   localBusinessSchema,
+  faqSchema,
+  type FAQItem,
 } from "@/site/data/seo";
 
 const title =
   "Contact CCTL | EMI/EMC Testing Labs in Coimbatore & Bangalore, India";
 const description =
   "Contact Cosmic Compliance Test Lab for EMI/EMC testing services in Coimbatore and Bangalore, India. Get quotes for automotive, defence, railway & telecom EMC compliance testing. Call +91 94442 72009.";
+
+const contactFaqs: FAQItem[] = [
+  {
+    question: "How do I request EMC testing from CCTL?",
+    answer:
+      "Contact CCTL by email at emc@cosmictestlab.com or call +91 94442 72009 (Bangalore) / +91 97909 01184 (Coimbatore). Share your product details, applicable standard, and testing requirements and our team will review and guide you on the next steps.",
+  },
+  {
+    question: "Where is CCTL's Coimbatore laboratory?",
+    answer:
+      "CCTL Coimbatore is located at Annamalai Industrial Park, SF219, Sharp Nagar, Nehru Nagar West, Kalapatti, Coimbatore, Tamil Nadu – 641048. Contact: +91 97909 01184 / kovaiemc@cosmictestlab.com.",
+  },
+  {
+    question: "Where is CCTL's Bangalore laboratory?",
+    answer:
+      "CCTL Bangalore is located at Sy No.192/1, A-1, Munireddy Industrial Estate, 3rd Phase, Bommasandra Village, Attibele Hobli, Anekal Taluk, Bangalore – 560099. Contact: +91 94442 72009 / emc@cosmictestlab.com.",
+  },
+  {
+    question: "What are CCTL's laboratory operating hours?",
+    answer:
+      "CCTL laboratories operate Monday to Saturday, 24 hours a day (24×6). For urgent or time-critical projects, contact us to discuss scheduling options.",
+  },
+  {
+    question: "How long does it take to get a quote for EMC testing?",
+    answer:
+      "Typically CCTL responds to testing enquiries within one business day. Send your product details, applicable standard, and required test scope to emc@cosmictestlab.com for the fastest response.",
+  },
+];
 
 const breadcrumbs = breadcrumbSchema([
   { name: "Home", path: "/" },
@@ -44,6 +74,7 @@ export const Route = createFileRoute("/contact")({
       { name: "geo.position", content: "11.0168;76.9558" },
       { "script:ld+json": locationsLd[0] },
       { "script:ld+json": locationsLd[1] },
+      { "script:ld+json": faqSchema(contactFaqs) },
       { "script:ld+json": breadcrumbs },
     ],
     links: [{ rel: "canonical", href: canonical("/contact") }],

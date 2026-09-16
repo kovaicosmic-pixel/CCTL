@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import ConsultationForm from "../components/ConsultationForm";
 import Magnetic from "../components/motion/Magnetic";
@@ -143,6 +144,12 @@ export default function Contact() {
                   <div className="space-y-2 p-4 text-sm text-[#1e293b]">
                     <p className="font-bold text-[#0f172a]">CCTL Coimbatore</p>
                     <p className="leading-relaxed font-medium">Annamalai Industrial Park, SF219, Sharp Nagar, Nehru Nagar West, Kalapatti, Coimbatore, Tamil Nadu 641048</p>
+                    <Link
+                      to="/locations/coimbatore"
+                      className="inline-flex items-center gap-1.5 pt-1 text-[0.8rem] font-bold uppercase tracking-[0.08em] text-cyan-glow hover:underline"
+                    >
+                      View Coimbatore lab details →
+                    </Link>
                   </div>
                 </div>
 
@@ -173,6 +180,12 @@ export default function Contact() {
                   <div className="space-y-2 p-4 text-sm text-[#1e293b]">
                     <p className="font-bold text-[#0f172a]">CCTL Bangalore</p>
                     <p className="leading-relaxed font-medium">Sy No.192/1, A-1, Munireddy Industrial Estate, 3rd Phase, Bommasandra Village, Attibele Hobli, Anekal Taluk, Bangalore - 560099</p>
+                    <Link
+                      to="/locations/bangalore"
+                      className="inline-flex items-center gap-1.5 pt-1 text-[0.8rem] font-bold uppercase tracking-[0.08em] text-cyan-glow hover:underline"
+                    >
+                      View Bangalore lab details →
+                    </Link>
                   </div>
                 </div>
               </div>

@@ -31,6 +31,17 @@ const blogDates: Record<string, { published: string; modified: string }> = {
     published: "2025-03-25",
     modified: "2025-05-12",
   },
+  // New Phase 5 articles
+  "what-is-emc-testing": { published: "2025-09-10", modified: "2025-09-10" },
+  "what-is-mil-std-461-testing": { published: "2025-09-10", modified: "2025-09-10" },
+  "what-is-cispr-25-testing": { published: "2025-09-10", modified: "2025-09-10" },
+  "what-is-emc-pre-compliance-testing": { published: "2025-09-10", modified: "2025-09-10" },
+  "how-to-prepare-for-emc-testing": { published: "2025-09-10", modified: "2025-09-10" },
+  "how-to-reduce-radiated-emissions": { published: "2025-09-10", modified: "2025-09-10" },
+  "esd-testing-explained": { published: "2025-09-10", modified: "2025-09-10" },
+  "automotive-emc-testing-guide": { published: "2025-09-10", modified: "2025-09-10" },
+  "what-happens-during-emc-testing": { published: "2025-09-10", modified: "2025-09-10" },
+  "emc-testing-for-defence-electronics": { published: "2025-09-10", modified: "2025-09-10" },
 };
 
 /** Improved meta descriptions with keyword targeting */
@@ -45,6 +56,27 @@ const blogMetaDescriptions: Record<string, string> = {
     "EMI vs EMC: understand the key differences between electromagnetic interference and electromagnetic compatibility. Expert comparison guide from Cosmic Compliance Test Lab, India.",
   "how-to-pass-emc-test":
     "Expert tips and strategies to pass your EMC test on the first attempt. PCB design, shielding, filtering and pre-compliance best practices from CCTL engineers.",
+  // Phase 5 knowledge articles
+  "what-is-emc-testing":
+    "What is EMC testing? A plain-language guide covering emissions and immunity testing, why it is required, which standards apply, and what a test report contains. From CCTL, India.",
+  "what-is-mil-std-461-testing":
+    "What is MIL-STD-461? A technical guide to US military EMI testing covering all test method categories (CE, RE, CS, RS), platform applicability, and preparation. CCTL, India.",
+  "what-is-cispr-25-testing":
+    "What is CISPR 25 testing? Explains automotive component radio disturbance testing, what is measured, limit classes, test configuration, and who needs it. CCTL India.",
+  "what-is-emc-pre-compliance-testing":
+    "What is EMC pre-compliance testing? Learn how early-stage EMC testing reduces costs, speeds compliance, and helps identify design issues before formal testing.",
+  "how-to-prepare-for-emc-testing":
+    "How to prepare for EMC testing: a practical engineering checklist covering product configuration, cables, power, operating modes, and documentation. CCTL, India.",
+  "how-to-reduce-radiated-emissions":
+    "How to reduce radiated emissions: PCB layout, ground planes, cable management, ferrite clamps, enclosure shielding, and spread spectrum techniques explained.",
+  "esd-testing-explained":
+    "ESD testing explained: what IEC 61000-4-2 electrostatic discharge immunity testing evaluates, test levels, contact vs air discharge, and performance criteria.",
+  "automotive-emc-testing-guide":
+    "Automotive EMC testing guide: CISPR 25 emission testing and ISO 11452 immunity testing for electronic components — what is tested, how it works, and how to prepare.",
+  "what-happens-during-emc-testing":
+    "What happens during EMC testing? A step-by-step walkthrough from product setup in the laboratory to receiving the test report. CCTL, Coimbatore and Bangalore.",
+  "emc-testing-for-defence-electronics":
+    "EMC testing for defence electronics: MIL-STD-461 test methods, platform categories, emission and susceptibility requirements, and preparation guidance. CCTL India.",
 };
 
 export const Route = createFileRoute("/blog/$slug")({

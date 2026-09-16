@@ -5,9 +5,23 @@ import { company } from "../data/content";
 const quickLinks = [
   { to: "/", label: "Home" },
   { to: "/services", label: "Services" },
+  { to: "/standards", label: "Standards" },
   { to: "/blog", label: "Blog" },
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
+];
+
+const serviceLinks = [
+  { to: "/services/emc-testing", label: "EMC Testing" },
+  { to: "/services/emi-testing", label: "EMI Testing" },
+  { to: "/services/emc-compliance-testing", label: "EMC Compliance" },
+  { to: "/services/emc-pre-compliance-testing", label: "Pre-Compliance Testing" },
+  { to: "/services/emc-troubleshooting", label: "EMC Troubleshooting" },
+];
+
+const locationLinks = [
+  { to: "/locations/coimbatore", label: "Coimbatore Lab" },
+  { to: "/locations/bangalore", label: "Bangalore Lab" },
 ];
 
 export default function Footer() {

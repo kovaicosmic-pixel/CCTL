@@ -2,11 +2,17 @@ import { useRef } from "react";
 import { Link, Navigate, useParams } from "@tanstack/react-router";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Magnetic from "../components/motion/Magnetic";
-import { services, company } from "../data/content";
+import { services, company, blogPlaceholders } from "../data/content";
 import { serviceDetails } from "../data/service-details";
 
 /* Spring-like easing */
 const ease = [0.22, 1, 0.36, 1] as const;
+
+/* Knowledge articles relevant to any testing domain — shown on every
+   Service Detail page. Filtered against the real blog data so a renamed
+   or removed slug just drops off the list instead of breaking. */
+const RELATED_ARTICLE_SLUGS = ["emi-vs-emc", "how-to-pass-emc-test", "emc-testing-early-in-design"];
+const relatedArticles = blogPlaceholders.filter((p) => RELATED_ARTICLE_SLUGS.includes(p.slug));
 
 /* Real dimensions of the 5 domain images (service.image), used to reserve
    layout space ahead of load — aspect ratios differ per domain so a single
@@ -305,6 +311,85 @@ export default function ServiceDetail() {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════
+          STANDARD PAGES — Editorial index list. Deliberately not another
+          card grid: a directory-style row list linking out to each
+          standard's own standalone page (e.g. CISPR 25, ISO 11452).
+      ═══════════════════════════════════════════════════════════════════ */}
+      {service.standardPages && service.standardPages.length > 0 && (
+        <section className="container-x bg-space-900 pb-24 pt-12 lg:pb-32 lg:pt-16">
+          <div className="mx-auto max-w-5xl">
+            <span className="meta inline-flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-glow" />
+              Go deeper
+            </span>
+            <h2 className="t-h2 mt-5">Standard-Specific Pages</h2>
+
+            <div className="mt-12 border-t border-line-strong/10">
+              {service.standardPages.map((std, i) => {
+                const row = (
+                  <>
+                    <span className="figure-accent w-12 shrink-0 text-3xl sm:w-16 sm:text-4xl">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-display text-[1.1rem] font-bold leading-snug text-ink-100 sm:text-[1.35rem]">
+                        {std.title}
+                      </p>
+                      <p className="t-body mt-1.5 max-w-lg text-[0.85rem]">{std.summary}</p>
+                    </div>
+                    {std.image && (
+                      <div className="hidden h-16 w-24 shrink-0 overflow-hidden rounded-lg sm:block">
+                        <img
+                          src={std.image}
+                          alt=""
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    {std.href ? (
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-line-strong/10 transition-colors group-hover:border-cyan-glow/50 group-hover:bg-cyan-glow/10">
+                        <svg
+                          className="h-5 w-5 text-ink-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-cyan-glow"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                        >
+                          <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                      </span>
+                    ) : (
+                      <span className="shrink-0 rounded-full bg-line-strong/10 px-3 py-1.5 text-[0.6rem] font-bold uppercase tracking-[0.08em] text-ink-500">
+                        Coming soon
+                      </span>
+                    )}
+                  </>
+                );
+
+                return std.href ? (
+                  <Link
+                    key={std.slug}
+                    to={std.href}
+                    className="group flex items-center gap-5 border-b border-line-strong/10 py-7 transition-colors hover:bg-line-strong/[0.03] sm:gap-8"
+                  >
+                    {row}
+                  </Link>
+                ) : (
+                  <div
+                    key={std.slug}
+                    className="group flex items-center gap-5 border-b border-line-strong/10 py-7 opacity-60 sm:gap-8"
+                  >
+                    {row}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
           VALUE PROPS — 4-up stats band style
       ═══════════════════════════════════════════════════════════════════ */}
       {service.valueProps && service.valueProps.length > 0 && (
@@ -455,6 +540,48 @@ export default function ServiceDetail() {
                 >
                   {svc}
                 </motion.span>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          RELATED READING — Links out to genuine CCTL knowledge articles
+      ═══════════════════════════════════════════════════════════════════ */}
+      {relatedArticles.length > 0 && (
+        <section className="container-x bg-space-900 pb-24 pt-12 lg:pb-32 lg:pt-16">
+          <div className="mx-auto max-w-5xl">
+            <span className="meta inline-flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-glow" />
+              Keep reading
+            </span>
+            <h2 className="t-h2 mt-5">Related Reading</h2>
+
+            <div className="grid-gutter mt-10 grid gap-6 sm:grid-cols-3">
+              {relatedArticles.map((post, i) => (
+                <motion.div
+                  key={post.slug}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.6, delay: i * 0.1, ease }}
+                >
+                  <Link to="/blog/$slug" params={{ slug: post.slug }} className="surface surface-hover group block overflow-hidden">
+                    <div className="aspect-[16/10] overflow-hidden">
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="t-h3 text-base leading-snug">{post.title}</h3>
+                      <p className="t-body mt-2 text-[0.8rem]">{post.subtitle}</p>
+                    </div>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           </div>

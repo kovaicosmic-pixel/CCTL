@@ -666,7 +666,8 @@ function TrustScene() {
                   <img
                     key={`logo-${i}`}
                     src={src}
-                    alt={`Client ${(i % clientLogos.length) + 1}`}
+                    alt=""
+                    aria-hidden="true"
                     className="mx-4 h-14 w-24 shrink-0 rounded-xl border border-white/10 bg-white/[0.06] object-contain p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_1px_2px_rgba(0,0,0,0.2),0_8px_20px_-14px_rgba(0,0,0,0.4)] sm:h-16 sm:w-32"
                     loading="lazy"
                     decoding="async"

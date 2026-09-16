@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- ── Core pages ─────────────────────────────────────────────── -->
   <url>
     <loc>https://www.cosmictestlab.com/</loc>
     <lastmod>2025-06-01</lastmod>
@@ -13,6 +14,20 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://www.cosmictestlab.com/contact</loc>
+    <lastmod>2025-05-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/privacy</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- ── Service domain pages ──────────────────────────────────── -->
+  <url>
     <loc>https://www.cosmictestlab.com/services</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>monthly</changefreq>
@@ -22,38 +37,156 @@
     <loc>https://www.cosmictestlab.com/services/mil-aero</loc>
     <lastmod>2025-05-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.cosmictestlab.com/services/civilian</loc>
-    <lastmod>2025-05-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.cosmictestlab.com/services/automotive</loc>
     <lastmod>2025-05-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/services/civilian</loc>
+    <lastmod>2025-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.cosmictestlab.com/services/railway</loc>
     <lastmod>2025-05-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.cosmictestlab.com/services/telecom-wireless</loc>
     <lastmod>2025-05-20</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- ── Service helper pages ──────────────────────────────────── -->
+  <url>
+    <loc>https://www.cosmictestlab.com/services/emc-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/services/emi-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/services/emc-compliance-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/services/emc-pre-compliance-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/services/emc-troubleshooting</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ── Standard-specific pages ──────────────────────────────── -->
+  <url>
+    <loc>https://www.cosmictestlab.com/automotive/cispr-25-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.cosmictestlab.com/contact</loc>
-    <lastmod>2025-05-15</lastmod>
+    <loc>https://www.cosmictestlab.com/automotive/iso-11452-testing</loc>
+    <lastmod>2025-09-10</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/military/mil-std-461-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/military/mil-std-704-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/civilian/cispr-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/civilian/iec-61000-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/civilian/en-55032-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/railway/railway-emc-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/railway/en-50121-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/telecom/telecom-emc-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/telecom/wireless-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ── Location pages ────────────────────────────────────────── -->
+  <url>
+    <loc>https://www.cosmictestlab.com/locations/coimbatore</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/locations/bangalore</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- ── Standards hub ─────────────────────────────────────────── -->
+  <url>
+    <loc>https://www.cosmictestlab.com/standards</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- ── Blog ──────────────────────────────────────────────────── -->
   <url>
     <loc>https://www.cosmictestlab.com/blog</loc>
     <lastmod>2025-05-12</lastmod>
@@ -91,9 +224,63 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.cosmictestlab.com/privacy</loc>
-    <lastmod>2025-01-01</lastmod>
+    <loc>https://www.cosmictestlab.com/blog/what-is-emc-testing</loc>
+    <lastmod>2025-09-10</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/what-is-mil-std-461-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/what-is-cispr-25-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/what-is-emc-pre-compliance-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/how-to-prepare-for-emc-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/how-to-reduce-radiated-emissions</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/esd-testing-explained</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/automotive-emc-testing-guide</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/what-happens-during-emc-testing</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmictestlab.com/blog/emc-testing-for-defence-electronics</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.65</priority>
   </url>
 </urlset>

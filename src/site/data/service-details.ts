@@ -2,7 +2,12 @@ import type { ServiceDomain } from "./content";
 
 type ServiceDetailFields = Pick<
   ServiceDomain,
-  "detailedDescription" | "valueProps" | "serviceOfferings" | "labTesting" | "additionalServices"
+  | "detailedDescription"
+  | "valueProps"
+  | "serviceOfferings"
+  | "labTesting"
+  | "additionalServices"
+  | "standardPages"
 >;
 
 /** Heavy per-domain detail text — imported only by ServiceDetail.tsx so it
@@ -64,6 +69,21 @@ export const serviceDetails: Record<string, ServiceDetailFields> = {
         "RS103"
       ]
     },
+    "standardPages": [
+      {
+        "slug": "mil-std-461",
+        "title": "MIL-STD-461 Testing",
+        "summary": "Electromagnetic interference emission and susceptibility testing for military equipment.",
+        "image": "/images/mil-aero/WhatsApp Image 2024-04-23 at 5.30.59 PM (1).webp",
+        "href": "/military/mil-std-461-testing"
+      },
+      {
+        "slug": "mil-std-704",
+        "title": "MIL-STD-704 Testing",
+        "summary": "Aircraft electrical power compatibility testing at the equipment input terminals.",
+        "href": "/military/mil-std-704-testing"
+      }
+    ],
     "additionalServices": [
       "Expert Training Courses",
       "Product Testing & Review",
@@ -133,7 +153,30 @@ export const serviceDetails: Record<string, ServiceDetailFields> = {
         "IEC 61000-4-14 (Voltage Fluctuation Immunity)",
         "IEC 61000-4-17 (DC Ripple Immunity)"
       ]
-    }
+    },
+    "standardPages": [
+      {
+        "slug": "cispr",
+        "title": "CISPR Testing",
+        "summary": "Radio disturbance emission testing — conducted and radiated evaluation against applicable CISPR standards.",
+        "image": "/images/civilianDomain.webp",
+        "href": "/civilian/cispr-testing"
+      },
+      {
+        "slug": "iec-61000",
+        "title": "IEC 61000 Testing",
+        "summary": "Immunity and power-quality test methods across the applicable IEC 61000-4 and IEC 61000-3 series.",
+        "image": "/images/civilian/IMG_20240418_173040.webp",
+        "href": "/civilian/iec-61000-testing"
+      },
+      {
+        "slug": "en-55032",
+        "title": "EN 55032 Testing",
+        "summary": "Emission testing for multimedia equipment under the applicable CISPR 32 / EN 55032 requirements.",
+        "image": "/images/civilian/IMG_20240418_175038.webp",
+        "href": "/civilian/en-55032-testing"
+      }
+    ]
   },
   "automotive": {
     "detailedDescription": "At Cosmic Compliance Test Lab (CCTL), we specialize in providing comprehensive testing solutions and consultancy services tailored specifically for the automotive industry. With our state-of-the-art facilities and experienced team of engineers, we ensure that automotive systems and electronic components meet the highest standards of quality, reliability, and regulatory compliance. At the heart of our automotive domain services lies our extensive electromagnetic compatibility (EMC) testing capabilities. With RF emission and immunity measurement systems covering a broad frequency range, radiated emission and immunity testing facilities, bulk current injection (BCI) testing, conducted emission testing, and electrostatic discharge (ESD) testing, we offer comprehensive solutions to assess and validate the EMC performance of automotive systems and components.",
@@ -171,7 +214,23 @@ export const serviceDetails: Record<string, ServiceDetailFields> = {
         "ISO 11452-4",
         "ESD as per ISO 10605"
       ]
-    }
+    },
+    "standardPages": [
+      {
+        "slug": "cispr-25",
+        "title": "CISPR 25 Testing",
+        "summary": "Automotive component radio disturbance testing — conducted and radiated emission evaluation.",
+        "image": "/images/automotive/RE main pic .webp",
+        "href": "/automotive/cispr-25-testing"
+      },
+      {
+        "slug": "iso-11452",
+        "title": "ISO 11452 Testing",
+        "summary": "Automotive component immunity testing against radiated and conducted RF disturbances.",
+        "image": "/images/explore/BCI_setup.webp",
+        "href": "/automotive/iso-11452-testing"
+      }
+    ]
   },
   "railway": {
     "detailedDescription": "CCTL is the preeminent choice for EMC testing in the railway sector, boasting unparalleled expertise and cutting-edge facilities. We meticulously measure and monitor electromagnetic emissions, adhering to stringent international standards such as IEC 60571, IEC 62236 3-1,2, IEC 62236-4 & 5, and the EN 50121 series. Our state-of-the-art laboratories feature expansive EMC test chambers designed to accommodate all locomotive subsystems, ensuring comprehensive evaluation regardless of product size or complexity. Backed by a team of seasoned railway compliance specialists, we provide comprehensive guidance on all aspects of EMC compliance, offering flexible testing options at manufacturers' sites or on-site for large-scale products and infrastructure.",
@@ -220,7 +279,22 @@ export const serviceDetails: Record<string, ServiceDetailFields> = {
         "",
         ""
       ]
-    }
+    },
+    "standardPages": [
+      {
+        "slug": "railway-emc-testing",
+        "title": "Railway EMC Testing",
+        "summary": "EMC testing support for railway equipment and systems, covering emissions and immunity.",
+        "image": "/images/railway/Radiated-Emission-test-1-4-scaled-1.webp",
+        "href": "/railway/railway-emc-testing"
+      },
+      {
+        "slug": "en-50121",
+        "title": "EN 50121 Testing",
+        "summary": "Railway EMC testing according to the applicable EN 50121 series requirements.",
+        "href": "/railway/en-50121-testing"
+      }
+    ]
   },
   "telecom-wireless": {
     "detailedDescription": "At CCTL, we are dedicated to helping our clients navigate the complexities of wireless device testing and certification, ensuring compliance with regulatory requirements and industry standards. With our state-of-the-art facilities and experienced team, we are your trusted partner for ensuring the safety and performance of wireless devices. The EMC/EMI test lab facility would also cover tests on various low-power wireless devices that are widely used in IT and Electronic where EMC is essential to comply with WPC requirements for satisfactory remote operations as per IS/IEC/EN/WPC/TEC requirements. Our test facility is equipped to examine the operations, performance, and safety of wireless devices, ensuring compliance with regulatory standards and guidelines. By conducting comprehensive testing, we assess the electromagnetic radiation levels emitted by wireless devices and verify their compliance with safety regulations. Our goal is to provide manufacturers and developers of wireless devices with the assurance that their products meet the necessary safety standards and regulations. By partnering with CCTL for wireless device testing, companies can demonstrate their commitment to safety and ensure the reliability and performance of their products on the market.",
@@ -279,6 +353,22 @@ export const serviceDetails: Record<string, ServiceDetailFields> = {
         "Wireless Access Systems",
         ""
       ]
-    }
+    },
+    "standardPages": [
+      {
+        "slug": "telecom-emc-testing",
+        "title": "Telecom EMC Testing",
+        "summary": "EMC testing for telecom and communication equipment, covering emissions and immunity.",
+        "image": "/images/telecom-wireless/DSC08114.webp",
+        "href": "/telecom/telecom-emc-testing"
+      },
+      {
+        "slug": "wireless-testing",
+        "title": "Wireless Testing",
+        "summary": "Wireless and RF testing for connected devices against applicable regulatory requirements.",
+        "image": "/images/domain-telecom.webp",
+        "href": "/telecom/wireless-testing"
+      }
+    ]
   }
 };

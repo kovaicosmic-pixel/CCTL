@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Services from "@/site/pages/Services";
-import { services } from "@/site/data/content";
+import { services, faqs } from "@/site/data/content";
 import {
   SITE_URL,
   canonical,
   ogImage,
   breadcrumbSchema,
+  faqSchema,
 } from "@/site/data/seo";
 
 const title =
@@ -86,6 +87,7 @@ export const Route = createFileRoute("/services/")({
       { "script:ld+json": serviceSchema },
       { "script:ld+json": serviceListSchema },
       { "script:ld+json": breadcrumbs },
+      { "script:ld+json": faqSchema(faqs) },
     ],
     links: [{ rel: "canonical", href: canonical("/services") }],
   }),

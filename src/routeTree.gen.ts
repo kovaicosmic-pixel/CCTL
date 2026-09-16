@@ -13,10 +13,29 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as AutomotiveCispr25TestingRouteImport } from './routes/automotive.cispr-25-testing'
+import { Route as AutomotiveIso11452TestingRouteImport } from './routes/automotive.iso-11452-testing'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as CivilianCisprTestingRouteImport } from './routes/civilian.cispr-testing'
+import { Route as CivilianEn55032TestingRouteImport } from './routes/civilian.en-55032-testing'
+import { Route as CivilianIec61000TestingRouteImport } from './routes/civilian.iec-61000-testing'
+import { Route as LocationsBangaloreRouteImport } from './routes/locations.bangalore'
+import { Route as LocationsCoimbatoreRouteImport } from './routes/locations.coimbatore'
+import { Route as MilitaryMilStd461TestingRouteImport } from './routes/military.mil-std-461-testing'
+import { Route as MilitaryMilStd704TestingRouteImport } from './routes/military.mil-std-704-testing'
+import { Route as RailwayEn50121TestingRouteImport } from './routes/railway.en-50121-testing'
+import { Route as RailwayRailwayEmcTestingRouteImport } from './routes/railway.railway-emc-testing'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as ServicesEmcComplianceTestingRouteImport } from './routes/services.emc-compliance-testing'
+import { Route as ServicesEmcPreComplianceTestingRouteImport } from './routes/services.emc-pre-compliance-testing'
+import { Route as ServicesEmcTestingRouteImport } from './routes/services.emc-testing'
+import { Route as ServicesEmcTroubleshootingRouteImport } from './routes/services.emc-troubleshooting'
+import { Route as ServicesEmiTestingRouteImport } from './routes/services.emi-testing'
+import { Route as StandardsIndexRouteImport } from './routes/standards.index'
+import { Route as TelecomTelecomEmcTestingRouteImport } from './routes/telecom.telecom-emc-testing'
+import { Route as TelecomWirelessTestingRouteImport } from './routes/telecom.wireless-testing'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,6 +57,18 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AutomotiveCispr25TestingRoute =
+  AutomotiveCispr25TestingRouteImport.update({
+    id: '/automotive/cispr-25-testing',
+    path: '/automotive/cispr-25-testing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AutomotiveIso11452TestingRoute =
+  AutomotiveIso11452TestingRouteImport.update({
+    id: '/automotive/iso-11452-testing',
+    path: '/automotive/iso-11452-testing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -48,6 +79,54 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CivilianCisprTestingRoute = CivilianCisprTestingRouteImport.update({
+  id: '/civilian/cispr-testing',
+  path: '/civilian/cispr-testing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CivilianEn55032TestingRoute = CivilianEn55032TestingRouteImport.update({
+  id: '/civilian/en-55032-testing',
+  path: '/civilian/en-55032-testing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CivilianIec61000TestingRoute = CivilianIec61000TestingRouteImport.update({
+  id: '/civilian/iec-61000-testing',
+  path: '/civilian/iec-61000-testing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocationsBangaloreRoute = LocationsBangaloreRouteImport.update({
+  id: '/locations/bangalore',
+  path: '/locations/bangalore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocationsCoimbatoreRoute = LocationsCoimbatoreRouteImport.update({
+  id: '/locations/coimbatore',
+  path: '/locations/coimbatore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MilitaryMilStd461TestingRoute =
+  MilitaryMilStd461TestingRouteImport.update({
+    id: '/military/mil-std-461-testing',
+    path: '/military/mil-std-461-testing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MilitaryMilStd704TestingRoute =
+  MilitaryMilStd704TestingRouteImport.update({
+    id: '/military/mil-std-704-testing',
+    path: '/military/mil-std-704-testing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const RailwayEn50121TestingRoute = RailwayEn50121TestingRouteImport.update({
+  id: '/railway/en-50121-testing',
+  path: '/railway/en-50121-testing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RailwayRailwayEmcTestingRoute =
+  RailwayRailwayEmcTestingRouteImport.update({
+    id: '/railway/railway-emc-testing',
+    path: '/railway/railway-emc-testing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
@@ -58,26 +137,108 @@ const ServicesSlugRoute = ServicesSlugRouteImport.update({
   path: '/services/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesEmcComplianceTestingRoute =
+  ServicesEmcComplianceTestingRouteImport.update({
+    id: '/services/emc-compliance-testing',
+    path: '/services/emc-compliance-testing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ServicesEmcPreComplianceTestingRoute =
+  ServicesEmcPreComplianceTestingRouteImport.update({
+    id: '/services/emc-pre-compliance-testing',
+    path: '/services/emc-pre-compliance-testing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ServicesEmcTestingRoute = ServicesEmcTestingRouteImport.update({
+  id: '/services/emc-testing',
+  path: '/services/emc-testing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesEmcTroubleshootingRoute =
+  ServicesEmcTroubleshootingRouteImport.update({
+    id: '/services/emc-troubleshooting',
+    path: '/services/emc-troubleshooting',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ServicesEmiTestingRoute = ServicesEmiTestingRouteImport.update({
+  id: '/services/emi-testing',
+  path: '/services/emi-testing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StandardsIndexRoute = StandardsIndexRouteImport.update({
+  id: '/standards/',
+  path: '/standards/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TelecomTelecomEmcTestingRoute =
+  TelecomTelecomEmcTestingRouteImport.update({
+    id: '/telecom/telecom-emc-testing',
+    path: '/telecom/telecom-emc-testing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TelecomWirelessTestingRoute = TelecomWirelessTestingRouteImport.update({
+  id: '/telecom/wireless-testing',
+  path: '/telecom/wireless-testing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
+  '/automotive/cispr-25-testing': typeof AutomotiveCispr25TestingRoute
+  '/automotive/iso-11452-testing': typeof AutomotiveIso11452TestingRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/civilian/cispr-testing': typeof CivilianCisprTestingRoute
+  '/civilian/en-55032-testing': typeof CivilianEn55032TestingRoute
+  '/civilian/iec-61000-testing': typeof CivilianIec61000TestingRoute
+  '/locations/bangalore': typeof LocationsBangaloreRoute
+  '/locations/coimbatore': typeof LocationsCoimbatoreRoute
+  '/military/mil-std-461-testing': typeof MilitaryMilStd461TestingRoute
+  '/military/mil-std-704-testing': typeof MilitaryMilStd704TestingRoute
+  '/railway/en-50121-testing': typeof RailwayEn50121TestingRoute
+  '/railway/railway-emc-testing': typeof RailwayRailwayEmcTestingRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/services/emc-compliance-testing': typeof ServicesEmcComplianceTestingRoute
+  '/services/emc-pre-compliance-testing': typeof ServicesEmcPreComplianceTestingRoute
+  '/services/emc-testing': typeof ServicesEmcTestingRoute
+  '/services/emc-troubleshooting': typeof ServicesEmcTroubleshootingRoute
+  '/services/emi-testing': typeof ServicesEmiTestingRoute
+  '/telecom/telecom-emc-testing': typeof TelecomTelecomEmcTestingRoute
+  '/telecom/wireless-testing': typeof TelecomWirelessTestingRoute
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/standards/': typeof StandardsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
+  '/automotive/cispr-25-testing': typeof AutomotiveCispr25TestingRoute
+  '/automotive/iso-11452-testing': typeof AutomotiveIso11452TestingRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/civilian/cispr-testing': typeof CivilianCisprTestingRoute
+  '/civilian/en-55032-testing': typeof CivilianEn55032TestingRoute
+  '/civilian/iec-61000-testing': typeof CivilianIec61000TestingRoute
+  '/locations/bangalore': typeof LocationsBangaloreRoute
+  '/locations/coimbatore': typeof LocationsCoimbatoreRoute
+  '/military/mil-std-461-testing': typeof MilitaryMilStd461TestingRoute
+  '/military/mil-std-704-testing': typeof MilitaryMilStd704TestingRoute
+  '/railway/en-50121-testing': typeof RailwayEn50121TestingRoute
+  '/railway/railway-emc-testing': typeof RailwayRailwayEmcTestingRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/services/emc-compliance-testing': typeof ServicesEmcComplianceTestingRoute
+  '/services/emc-pre-compliance-testing': typeof ServicesEmcPreComplianceTestingRoute
+  '/services/emc-testing': typeof ServicesEmcTestingRoute
+  '/services/emc-troubleshooting': typeof ServicesEmcTroubleshootingRoute
+  '/services/emi-testing': typeof ServicesEmiTestingRoute
+  '/telecom/telecom-emc-testing': typeof TelecomTelecomEmcTestingRoute
+  '/telecom/wireless-testing': typeof TelecomWirelessTestingRoute
   '/blog': typeof BlogIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/standards': typeof StandardsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +246,29 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
+  '/automotive/cispr-25-testing': typeof AutomotiveCispr25TestingRoute
+  '/automotive/iso-11452-testing': typeof AutomotiveIso11452TestingRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/civilian/cispr-testing': typeof CivilianCisprTestingRoute
+  '/civilian/en-55032-testing': typeof CivilianEn55032TestingRoute
+  '/civilian/iec-61000-testing': typeof CivilianIec61000TestingRoute
+  '/locations/bangalore': typeof LocationsBangaloreRoute
+  '/locations/coimbatore': typeof LocationsCoimbatoreRoute
+  '/military/mil-std-461-testing': typeof MilitaryMilStd461TestingRoute
+  '/military/mil-std-704-testing': typeof MilitaryMilStd704TestingRoute
+  '/railway/en-50121-testing': typeof RailwayEn50121TestingRoute
+  '/railway/railway-emc-testing': typeof RailwayRailwayEmcTestingRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/services/emc-compliance-testing': typeof ServicesEmcComplianceTestingRoute
+  '/services/emc-pre-compliance-testing': typeof ServicesEmcPreComplianceTestingRoute
+  '/services/emc-testing': typeof ServicesEmcTestingRoute
+  '/services/emc-troubleshooting': typeof ServicesEmcTroubleshootingRoute
+  '/services/emi-testing': typeof ServicesEmiTestingRoute
+  '/telecom/telecom-emc-testing': typeof TelecomTelecomEmcTestingRoute
+  '/telecom/wireless-testing': typeof TelecomWirelessTestingRoute
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/standards/': typeof StandardsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,30 +277,87 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/privacy'
+    | '/automotive/cispr-25-testing'
+    | '/automotive/iso-11452-testing'
     | '/blog/$slug'
+    | '/civilian/cispr-testing'
+    | '/civilian/en-55032-testing'
+    | '/civilian/iec-61000-testing'
+    | '/locations/bangalore'
+    | '/locations/coimbatore'
+    | '/military/mil-std-461-testing'
+    | '/military/mil-std-704-testing'
+    | '/railway/en-50121-testing'
+    | '/railway/railway-emc-testing'
     | '/services/$slug'
+    | '/services/emc-compliance-testing'
+    | '/services/emc-pre-compliance-testing'
+    | '/services/emc-testing'
+    | '/services/emc-troubleshooting'
+    | '/services/emi-testing'
+    | '/telecom/telecom-emc-testing'
+    | '/telecom/wireless-testing'
     | '/blog/'
     | '/services/'
+    | '/standards/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/contact'
     | '/privacy'
+    | '/automotive/cispr-25-testing'
+    | '/automotive/iso-11452-testing'
     | '/blog/$slug'
+    | '/civilian/cispr-testing'
+    | '/civilian/en-55032-testing'
+    | '/civilian/iec-61000-testing'
+    | '/locations/bangalore'
+    | '/locations/coimbatore'
+    | '/military/mil-std-461-testing'
+    | '/military/mil-std-704-testing'
+    | '/railway/en-50121-testing'
+    | '/railway/railway-emc-testing'
     | '/services/$slug'
+    | '/services/emc-compliance-testing'
+    | '/services/emc-pre-compliance-testing'
+    | '/services/emc-testing'
+    | '/services/emc-troubleshooting'
+    | '/services/emi-testing'
+    | '/telecom/telecom-emc-testing'
+    | '/telecom/wireless-testing'
     | '/blog'
     | '/services'
+    | '/standards'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/contact'
     | '/privacy'
+    | '/automotive/cispr-25-testing'
+    | '/automotive/iso-11452-testing'
     | '/blog/$slug'
+    | '/civilian/cispr-testing'
+    | '/civilian/en-55032-testing'
+    | '/civilian/iec-61000-testing'
+    | '/locations/bangalore'
+    | '/locations/coimbatore'
+    | '/military/mil-std-461-testing'
+    | '/military/mil-std-704-testing'
+    | '/railway/en-50121-testing'
+    | '/railway/railway-emc-testing'
     | '/services/$slug'
+    | '/services/emc-compliance-testing'
+    | '/services/emc-pre-compliance-testing'
+    | '/services/emc-testing'
+    | '/services/emc-troubleshooting'
+    | '/services/emi-testing'
+    | '/telecom/telecom-emc-testing'
+    | '/telecom/wireless-testing'
     | '/blog/'
     | '/services/'
+    | '/standards/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,10 +365,29 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   PrivacyRoute: typeof PrivacyRoute
+  AutomotiveCispr25TestingRoute: typeof AutomotiveCispr25TestingRoute
+  AutomotiveIso11452TestingRoute: typeof AutomotiveIso11452TestingRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  CivilianCisprTestingRoute: typeof CivilianCisprTestingRoute
+  CivilianEn55032TestingRoute: typeof CivilianEn55032TestingRoute
+  CivilianIec61000TestingRoute: typeof CivilianIec61000TestingRoute
+  LocationsBangaloreRoute: typeof LocationsBangaloreRoute
+  LocationsCoimbatoreRoute: typeof LocationsCoimbatoreRoute
+  MilitaryMilStd461TestingRoute: typeof MilitaryMilStd461TestingRoute
+  MilitaryMilStd704TestingRoute: typeof MilitaryMilStd704TestingRoute
+  RailwayEn50121TestingRoute: typeof RailwayEn50121TestingRoute
+  RailwayRailwayEmcTestingRoute: typeof RailwayRailwayEmcTestingRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
+  ServicesEmcComplianceTestingRoute: typeof ServicesEmcComplianceTestingRoute
+  ServicesEmcPreComplianceTestingRoute: typeof ServicesEmcPreComplianceTestingRoute
+  ServicesEmcTestingRoute: typeof ServicesEmcTestingRoute
+  ServicesEmcTroubleshootingRoute: typeof ServicesEmcTroubleshootingRoute
+  ServicesEmiTestingRoute: typeof ServicesEmiTestingRoute
+  TelecomTelecomEmcTestingRoute: typeof TelecomTelecomEmcTestingRoute
+  TelecomWirelessTestingRoute: typeof TelecomWirelessTestingRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  StandardsIndexRoute: typeof StandardsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -164,6 +420,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/automotive/cispr-25-testing': {
+      id: '/automotive/cispr-25-testing'
+      path: '/automotive/cispr-25-testing'
+      fullPath: '/automotive/cispr-25-testing'
+      preLoaderRoute: typeof AutomotiveCispr25TestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/automotive/iso-11452-testing': {
+      id: '/automotive/iso-11452-testing'
+      path: '/automotive/iso-11452-testing'
+      fullPath: '/automotive/iso-11452-testing'
+      preLoaderRoute: typeof AutomotiveIso11452TestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
@@ -176,6 +446,69 @@ declare module '@tanstack/react-router' {
       path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/civilian/cispr-testing': {
+      id: '/civilian/cispr-testing'
+      path: '/civilian/cispr-testing'
+      fullPath: '/civilian/cispr-testing'
+      preLoaderRoute: typeof CivilianCisprTestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/civilian/en-55032-testing': {
+      id: '/civilian/en-55032-testing'
+      path: '/civilian/en-55032-testing'
+      fullPath: '/civilian/en-55032-testing'
+      preLoaderRoute: typeof CivilianEn55032TestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/civilian/iec-61000-testing': {
+      id: '/civilian/iec-61000-testing'
+      path: '/civilian/iec-61000-testing'
+      fullPath: '/civilian/iec-61000-testing'
+      preLoaderRoute: typeof CivilianIec61000TestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/locations/bangalore': {
+      id: '/locations/bangalore'
+      path: '/locations/bangalore'
+      fullPath: '/locations/bangalore'
+      preLoaderRoute: typeof LocationsBangaloreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/locations/coimbatore': {
+      id: '/locations/coimbatore'
+      path: '/locations/coimbatore'
+      fullPath: '/locations/coimbatore'
+      preLoaderRoute: typeof LocationsCoimbatoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/military/mil-std-461-testing': {
+      id: '/military/mil-std-461-testing'
+      path: '/military/mil-std-461-testing'
+      fullPath: '/military/mil-std-461-testing'
+      preLoaderRoute: typeof MilitaryMilStd461TestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/military/mil-std-704-testing': {
+      id: '/military/mil-std-704-testing'
+      path: '/military/mil-std-704-testing'
+      fullPath: '/military/mil-std-704-testing'
+      preLoaderRoute: typeof MilitaryMilStd704TestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/railway/en-50121-testing': {
+      id: '/railway/en-50121-testing'
+      path: '/railway/en-50121-testing'
+      fullPath: '/railway/en-50121-testing'
+      preLoaderRoute: typeof RailwayEn50121TestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/railway/railway-emc-testing': {
+      id: '/railway/railway-emc-testing'
+      path: '/railway/railway-emc-testing'
+      fullPath: '/railway/railway-emc-testing'
+      preLoaderRoute: typeof RailwayRailwayEmcTestingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/': {
@@ -192,6 +525,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/emc-compliance-testing': {
+      id: '/services/emc-compliance-testing'
+      path: '/services/emc-compliance-testing'
+      fullPath: '/services/emc-compliance-testing'
+      preLoaderRoute: typeof ServicesEmcComplianceTestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/emc-pre-compliance-testing': {
+      id: '/services/emc-pre-compliance-testing'
+      path: '/services/emc-pre-compliance-testing'
+      fullPath: '/services/emc-pre-compliance-testing'
+      preLoaderRoute: typeof ServicesEmcPreComplianceTestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/emc-testing': {
+      id: '/services/emc-testing'
+      path: '/services/emc-testing'
+      fullPath: '/services/emc-testing'
+      preLoaderRoute: typeof ServicesEmcTestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/emc-troubleshooting': {
+      id: '/services/emc-troubleshooting'
+      path: '/services/emc-troubleshooting'
+      fullPath: '/services/emc-troubleshooting'
+      preLoaderRoute: typeof ServicesEmcTroubleshootingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/emi-testing': {
+      id: '/services/emi-testing'
+      path: '/services/emi-testing'
+      fullPath: '/services/emi-testing'
+      preLoaderRoute: typeof ServicesEmiTestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/standards/': {
+      id: '/standards/'
+      path: '/standards'
+      fullPath: '/standards/'
+      preLoaderRoute: typeof StandardsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/telecom/telecom-emc-testing': {
+      id: '/telecom/telecom-emc-testing'
+      path: '/telecom/telecom-emc-testing'
+      fullPath: '/telecom/telecom-emc-testing'
+      preLoaderRoute: typeof TelecomTelecomEmcTestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/telecom/wireless-testing': {
+      id: '/telecom/wireless-testing'
+      path: '/telecom/wireless-testing'
+      fullPath: '/telecom/wireless-testing'
+      preLoaderRoute: typeof TelecomWirelessTestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -200,10 +589,29 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   PrivacyRoute: PrivacyRoute,
+  AutomotiveCispr25TestingRoute: AutomotiveCispr25TestingRoute,
+  AutomotiveIso11452TestingRoute: AutomotiveIso11452TestingRoute,
   BlogSlugRoute: BlogSlugRoute,
+  CivilianCisprTestingRoute: CivilianCisprTestingRoute,
+  CivilianEn55032TestingRoute: CivilianEn55032TestingRoute,
+  CivilianIec61000TestingRoute: CivilianIec61000TestingRoute,
+  LocationsBangaloreRoute: LocationsBangaloreRoute,
+  LocationsCoimbatoreRoute: LocationsCoimbatoreRoute,
+  MilitaryMilStd461TestingRoute: MilitaryMilStd461TestingRoute,
+  MilitaryMilStd704TestingRoute: MilitaryMilStd704TestingRoute,
+  RailwayEn50121TestingRoute: RailwayEn50121TestingRoute,
+  RailwayRailwayEmcTestingRoute: RailwayRailwayEmcTestingRoute,
   ServicesSlugRoute: ServicesSlugRoute,
+  ServicesEmcComplianceTestingRoute: ServicesEmcComplianceTestingRoute,
+  ServicesEmcPreComplianceTestingRoute: ServicesEmcPreComplianceTestingRoute,
+  ServicesEmcTestingRoute: ServicesEmcTestingRoute,
+  ServicesEmcTroubleshootingRoute: ServicesEmcTroubleshootingRoute,
+  ServicesEmiTestingRoute: ServicesEmiTestingRoute,
+  TelecomTelecomEmcTestingRoute: TelecomTelecomEmcTestingRoute,
+  TelecomWirelessTestingRoute: TelecomWirelessTestingRoute,
   BlogIndexRoute: BlogIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  StandardsIndexRoute: StandardsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -32,7 +32,8 @@ export const company = {
       address:
         "Sy No.192/1, A-1, Munireddy Industrial Estate, 3rd Phase, Bommasandra Village, Attibele Hobli, Anekal Taluk, Bangalore - 560099",
       map: { x: 74, y: 64 },
-      coords: { lat: 12.9716, lng: 77.5946 },
+      // Corrected: Bommasandra Industrial Estate, Anekal Taluk (not Bangalore city centre)
+      coords: { lat: 12.8116, lng: 77.6857 },
       phone: "+91 94442 72009",
       email: "emc@cosmictestlab.com",
     },
@@ -113,6 +114,29 @@ export const whyChooseUs = [
 
 export type DomainStat = { label: string; value: string };
 
+/** A compact preview linking out to a standard's own standalone page (e.g.
+ *  CISPR 25 under the automotive domain lives at /automotive/cispr-25-testing).
+ *  `href` is only set once that standalone page actually exists — until then
+ *  the preview renders as a muted "coming soon" row instead of a broken link. */
+export type StandardPagePreview = {
+  slug: string;
+  title: string;
+  summary: string;
+  image?: string;
+  href?:
+    | "/automotive/cispr-25-testing"
+    | "/automotive/iso-11452-testing"
+    | "/military/mil-std-461-testing"
+    | "/military/mil-std-704-testing"
+    | "/civilian/cispr-testing"
+    | "/civilian/iec-61000-testing"
+    | "/civilian/en-55032-testing"
+    | "/railway/railway-emc-testing"
+    | "/railway/en-50121-testing"
+    | "/telecom/telecom-emc-testing"
+    | "/telecom/wireless-testing";
+};
+
 export type ServiceDomain = {
   slug: string;
   name: string;
@@ -135,6 +159,8 @@ export type ServiceDomain = {
   labTesting?: { col1Header: string; col2Header: string; col1: string[]; col2: string[] };
   /** Additional services list. */
   additionalServices?: string[];
+  /** Previews linking out to individual standard pages (e.g. CISPR 25, ISO 11452). */
+  standardPages?: StandardPagePreview[];
 };
 
 export { servicesLight as services } from "./services-light";

@@ -90,6 +90,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "NABL & ISO/IEC 17025 accredited EMI/EMC testing laboratory in Coimbatore and Bangalore, India. Expert electromagnetic compatibility testing for automotive, defence, aerospace, railway and telecom programmes.",
       },
       { name: "author", content: "Cosmic Compliance Test Lab" },
+      /**
+       * Google Search Console site verification.
+       * Replace REPLACE_WITH_GSC_VERIFICATION_CODE with the actual code from:
+       * Google Search Console → Settings → Ownership verification → HTML tag method.
+       * Example: "abc123XYZ_google-site-verification"
+       */
+      { name: "google-site-verification", content: "REPLACE_WITH_GSC_VERIFICATION_CODE" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Cosmic Compliance Test Lab" },
       { property: "og:locale", content: "en_IN" },

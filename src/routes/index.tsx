@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Home from "@/site/pages/Home";
-import { company } from "@/site/data/content";
+import { company, testimonials } from "@/site/data/content";
 import {
   SITE_URL,
   canonical,
@@ -10,6 +10,7 @@ import {
   localBusinessSchema,
   faqSchema,
   breadcrumbSchema,
+  aggregateRatingSchema,
   type FAQItem,
 } from "@/site/data/seo";
 
@@ -56,6 +57,15 @@ const locationsLd = company.locations.map((loc) => localBusinessSchema(loc));
 
 const breadcrumbs = breadcrumbSchema([{ name: "Home", path: "/" }]);
 
+// Review schema built from real client testimonials in content.ts
+const reviewSchema = aggregateRatingSchema(
+  testimonials.map((t) => ({
+    reviewBody: t.quote,
+    authorName: t.author,
+    authorOrg: t.org,
+  })),
+);
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -86,6 +96,7 @@ export const Route = createFileRoute("/")({
       { "script:ld+json": locationsLd[0] },
       { "script:ld+json": locationsLd[1] },
       { "script:ld+json": faqSchema(homeFaqs) },
+      { "script:ld+json": reviewSchema },
       { "script:ld+json": breadcrumbs },
     ],
     links: [{ rel: "canonical", href: canonical("/") }],

@@ -1,0 +1,6 @@
+src/site/components/Navbar.tsx(43,35): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/site/components/Navbar.tsx(44,31): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/site/components/Navbar.tsx(48,38): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/site/components/Navbar.tsx(49,34): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/site/pages/Standards.tsx(238,21): error TS2322: Type '"/services/automotive" | "/services/civilian" | "/services/mil-aero" | "/services/railway" | "/services/telecom-wireless"' is not assignable to type '"/" | "/about" | "/services" | "/blog" | "." | ".." | "/contact" | "/privacy" | "/automotive/cispr-25-testing" | "/automotive/iso-11452-testing" | "/blog/$slug" | "/civilian/cispr-testing" | ... 16 more ... | "/standards"'.
+  Type '"/services/automotive"' is not assignable to type '"/" | "/about" | "/services" | "/blog" | "." | ".." | "/contact" | "/privacy" | "/automotive/cispr-25-testing" | "/automotive/iso-11452-testing" | "/blog/$slug" | "/civilian/cispr-testing" | ... 16 more ... | "/standards"'.
