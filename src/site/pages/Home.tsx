@@ -12,6 +12,7 @@ import Counter from "../components/Counter";
 import Spotlight from "../components/motion/Spotlight";
 import Magnetic from "../components/motion/Magnetic";
 import StylishCarousel from "../components/StylishCarousel";
+import CompanyGlimpse from "../components/CompanyGlimpse";
 import ParticleField from "../components/bg/ParticleField";
 import GradientOrbs from "../components/bg/GradientOrbs";
 import GridBackground from "../components/bg/GridBackground";
@@ -1428,6 +1429,13 @@ export default function Home() {
           <GradientOrbs variant="default" />
           <FloatingStandards count={8} opacity={0.35} theme="dark" className="hidden lg:block" />
           <AboutBlurbScene />
+        </div>
+
+        {/* Company Glimpse — CEO / overview video (DARK) */}
+        <div className="relative">
+          <GradientOrbs variant="subtle" />
+          <FloatingStandards count={6} opacity={0.3} theme="dark" className="hidden lg:block" />
+          <CompanyGlimpse />
         </div>
 
         {/* Trusted By (LIGHT) */}
