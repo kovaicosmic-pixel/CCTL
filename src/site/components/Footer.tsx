@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUp, Lock, Mail, Phone } from "lucide-react";
+import { ArrowUp, Lock, Mail, Phone, ShieldCheck } from "lucide-react";
 import { company } from "../data/content";
 
 const quickLinks = [
@@ -141,6 +141,15 @@ export default function Footer() {
             >
               <Lock className="h-3 w-3" strokeWidth={2} aria-hidden />
               Staff Login
+            </a>
+            <a
+              href="https://analysis.cosmictrf.in/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-cyan-glow"
+            >
+              <ShieldCheck className="h-3 w-3" strokeWidth={2} aria-hidden />
+              Admin Login
             </a>
             <button
               type="button"
