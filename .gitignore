@@ -36,3 +36,4 @@ dist-ssr
 
 # Large self-hosted videos — uploaded to the server directly, not committed
 public/videos/*.mp4
+vps-uploads/*.mp4
