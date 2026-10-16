@@ -11,12 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AutomotiveCispr25TestingRouteImport } from './routes/automotive.cispr-25-testing'
 import { Route as AutomotiveIso11452TestingRouteImport } from './routes/automotive.iso-11452-testing'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as CareersAdminRouteImport } from './routes/careers_.admin'
+import { Route as CareersApplyRouteImport } from './routes/careers_.apply'
 import { Route as CivilianCisprTestingRouteImport } from './routes/civilian.cispr-testing'
 import { Route as CivilianEn55032TestingRouteImport } from './routes/civilian.en-55032-testing'
 import { Route as CivilianIec61000TestingRouteImport } from './routes/civilian.iec-61000-testing'
@@ -45,6 +48,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -77,6 +85,16 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog/$slug',
   path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersAdminRoute = CareersAdminRouteImport.update({
+  id: '/careers_/admin',
+  path: '/careers/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersApplyRoute = CareersApplyRouteImport.update({
+  id: '/careers_/apply',
+  path: '/careers/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CivilianCisprTestingRoute = CivilianCisprTestingRouteImport.update({
@@ -185,11 +203,14 @@ const TelecomWirelessTestingRoute = TelecomWirelessTestingRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
   '/automotive/cispr-25-testing': typeof AutomotiveCispr25TestingRoute
   '/automotive/iso-11452-testing': typeof AutomotiveIso11452TestingRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/careers/admin': typeof CareersAdminRoute
+  '/careers/apply': typeof CareersApplyRoute
   '/civilian/cispr-testing': typeof CivilianCisprTestingRoute
   '/civilian/en-55032-testing': typeof CivilianEn55032TestingRoute
   '/civilian/iec-61000-testing': typeof CivilianIec61000TestingRoute
@@ -214,11 +235,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
   '/automotive/cispr-25-testing': typeof AutomotiveCispr25TestingRoute
   '/automotive/iso-11452-testing': typeof AutomotiveIso11452TestingRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/careers/admin': typeof CareersAdminRoute
+  '/careers/apply': typeof CareersApplyRoute
   '/civilian/cispr-testing': typeof CivilianCisprTestingRoute
   '/civilian/en-55032-testing': typeof CivilianEn55032TestingRoute
   '/civilian/iec-61000-testing': typeof CivilianIec61000TestingRoute
@@ -244,11 +268,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
   '/automotive/cispr-25-testing': typeof AutomotiveCispr25TestingRoute
   '/automotive/iso-11452-testing': typeof AutomotiveIso11452TestingRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/careers_/admin': typeof CareersAdminRoute
+  '/careers_/apply': typeof CareersApplyRoute
   '/civilian/cispr-testing': typeof CivilianCisprTestingRoute
   '/civilian/en-55032-testing': typeof CivilianEn55032TestingRoute
   '/civilian/iec-61000-testing': typeof CivilianIec61000TestingRoute
@@ -275,11 +302,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/careers'
     | '/contact'
     | '/privacy'
     | '/automotive/cispr-25-testing'
     | '/automotive/iso-11452-testing'
     | '/blog/$slug'
+    | '/careers/admin'
+    | '/careers/apply'
     | '/civilian/cispr-testing'
     | '/civilian/en-55032-testing'
     | '/civilian/iec-61000-testing'
@@ -304,11 +334,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/careers'
     | '/contact'
     | '/privacy'
     | '/automotive/cispr-25-testing'
     | '/automotive/iso-11452-testing'
     | '/blog/$slug'
+    | '/careers/admin'
+    | '/careers/apply'
     | '/civilian/cispr-testing'
     | '/civilian/en-55032-testing'
     | '/civilian/iec-61000-testing'
@@ -333,11 +366,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/careers'
     | '/contact'
     | '/privacy'
     | '/automotive/cispr-25-testing'
     | '/automotive/iso-11452-testing'
     | '/blog/$slug'
+    | '/careers_/admin'
+    | '/careers_/apply'
     | '/civilian/cispr-testing'
     | '/civilian/en-55032-testing'
     | '/civilian/iec-61000-testing'
@@ -363,11 +399,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   PrivacyRoute: typeof PrivacyRoute
   AutomotiveCispr25TestingRoute: typeof AutomotiveCispr25TestingRoute
   AutomotiveIso11452TestingRoute: typeof AutomotiveIso11452TestingRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  CareersAdminRoute: typeof CareersAdminRoute
+  CareersApplyRoute: typeof CareersApplyRoute
   CivilianCisprTestingRoute: typeof CivilianCisprTestingRoute
   CivilianEn55032TestingRoute: typeof CivilianEn55032TestingRoute
   CivilianIec61000TestingRoute: typeof CivilianIec61000TestingRoute
@@ -404,6 +443,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -446,6 +492,20 @@ declare module '@tanstack/react-router' {
       path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers_/admin': {
+      id: '/careers_/admin'
+      path: '/careers/admin'
+      fullPath: '/careers/admin'
+      preLoaderRoute: typeof CareersAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers_/apply': {
+      id: '/careers_/apply'
+      path: '/careers/apply'
+      fullPath: '/careers/apply'
+      preLoaderRoute: typeof CareersApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/civilian/cispr-testing': {
@@ -587,11 +647,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   PrivacyRoute: PrivacyRoute,
   AutomotiveCispr25TestingRoute: AutomotiveCispr25TestingRoute,
   AutomotiveIso11452TestingRoute: AutomotiveIso11452TestingRoute,
   BlogSlugRoute: BlogSlugRoute,
+  CareersAdminRoute: CareersAdminRoute,
+  CareersApplyRoute: CareersApplyRoute,
   CivilianCisprTestingRoute: CivilianCisprTestingRoute,
   CivilianEn55032TestingRoute: CivilianEn55032TestingRoute,
   CivilianIec61000TestingRoute: CivilianIec61000TestingRoute,

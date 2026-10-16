@@ -1,21 +1,31 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { services, company } from "../data/content";
 import { submitContactForm } from "../lib/contactForm";
+import ThemedSelect from "./ThemedSelect";
 
 const inputClass =
-  "w-full rounded-lg border border-line-strong/10 bg-line-strong/[0.04] px-4 py-3 text-sm text-ink-100 placeholder:text-ink-500 outline-none transition-colors focus:border-cyan-glow/60 focus:bg-line-strong/[0.06]";
+  "w-full rounded-xl border border-white/15 bg-white/[0.05] px-4 py-3 text-sm text-white placeholder:text-slate-400 outline-none transition-all hover:border-white/25 focus:border-cyan-glow focus:bg-white/[0.07] focus:ring-4 focus:ring-cyan-glow/15";
 
-const selectClass = `${inputClass} [&>option]:text-[#0f172a] [&>option]:bg-white`;
+const selectClass = `${inputClass} cursor-pointer`;
 
 export default function ConsultationForm({ signature = false }: { signature?: boolean }) {
   const [status, setStatus] = useState<"idle" | "submitting" | "sent" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // Themed dropdowns are controlled so they can be validated and reset with the form
+  const [locationId, setLocationId] = useState("");
+  const [service, setService] = useState("");
+  const [selectError, setSelectError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const selectedService = services.find((s) => s.slug === formData.get("service"));
+    if (!locationId || !service) {
+      setSelectError("Please choose your nearest lab and a service.");
+      return;
+    }
+    setSelectError(null);
+    const selectedService = services.find((s) => s.slug === service);
 
     setStatus("submitting");
     setErrorMessage(null);
@@ -28,14 +38,16 @@ export default function ConsultationForm({ signature = false }: { signature?: bo
           companyName: String(formData.get("companyName") ?? ""),
           phone: String(formData.get("phone") ?? ""),
           email: String(formData.get("email") ?? ""),
-          locationId: String(formData.get("locationId") ?? ""),
-          service: selectedService?.name ?? String(formData.get("service") ?? ""),
+          locationId,
+          service: selectedService?.name ?? service,
           message: String(formData.get("message") ?? ""),
           companyWebsite: String(formData.get("companyWebsite") ?? ""),
         },
       });
       setStatus("sent");
       form.reset();
+      setLocationId("");
+      setService("");
     } catch (err) {
       console.error(err);
       setErrorMessage(
@@ -76,41 +88,75 @@ export default function ConsultationForm({ signature = false }: { signature?: bo
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <input required name="firstName" placeholder="First name" className={inputClass} />
-        <input required name="lastName" placeholder="Last name" className={inputClass} />
+        <Field label="First name" htmlFor="cf-first">
+          <input id="cf-first" required name="firstName" autoComplete="given-name" placeholder="e.g. Priya" className={inputClass} />
+        </Field>
+        <Field label="Last name" htmlFor="cf-last">
+          <input id="cf-last" required name="lastName" autoComplete="family-name" placeholder="e.g. Raman" className={inputClass} />
+        </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <input required name="companyName" placeholder="Company" className={inputClass} />
-        <input required name="phone" type="tel" placeholder="Phone" className={inputClass} />
+        <Field label="Company" htmlFor="cf-company">
+          <input id="cf-company" required name="companyName" autoComplete="organization" placeholder="Company name" className={inputClass} />
+        </Field>
+        <Field label="Phone" htmlFor="cf-phone">
+          <input id="cf-phone" required name="phone" type="tel" autoComplete="tel" placeholder="+91 98765 43210" className={inputClass} />
+        </Field>
       </div>
-      <input
-        required
-        name="email"
-        type="email"
-        placeholder="Company email"
-        className={inputClass}
-      />
-      <select required name="locationId" defaultValue="" className={selectClass}>
-        <option value="" disabled>
-          Nearest lab
-        </option>
-        {company.locations.map((l) => (
-          <option key={l.id} value={l.id} className="text-[#0f172a] bg-white">
-            {l.label}
-          </option>
-        ))}
-      </select>
-      <select required name="service" defaultValue="" className={selectClass}>
-        <option value="" disabled>
-          Select a service
-        </option>
-        {services.map((s) => (
-          <option key={s.slug} value={s.slug} className="text-[#0f172a] bg-white">
-            {s.name}
-          </option>
-        ))}
-      </select>
-      <textarea required name="message" placeholder="Message" rows={4} className={inputClass} />
+      <Field label="Company email" htmlFor="cf-email">
+        <input
+          id="cf-email"
+          required
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@company.com"
+          className={inputClass}
+        />
+      </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Nearest lab" htmlFor="cf-lab">
+          <ThemedSelect
+            id="cf-lab"
+            tone="dark"
+            placeholder="Choose a lab"
+            value={locationId}
+            onValueChange={(v) => {
+              setLocationId(v);
+              setSelectError(null);
+            }}
+            invalid={!!selectError && !locationId}
+            options={company.locations.map((l) => ({ value: l.id, label: l.label }))}
+            triggerClassName={`${selectClass} ${selectError && !locationId ? "border-red-400/60" : ""}`}
+          />
+        </Field>
+        <Field label="Service" htmlFor="cf-service">
+          <ThemedSelect
+            id="cf-service"
+            tone="dark"
+            placeholder="Select a service"
+            value={service}
+            onValueChange={(v) => {
+              setService(v);
+              setSelectError(null);
+            }}
+            invalid={!!selectError && !service}
+            options={services.map((s) => ({ value: s.slug, label: s.name }))}
+            triggerClassName={`${selectClass} ${selectError && !service ? "border-red-400/60" : ""}`}
+          />
+        </Field>
+      </div>
+      {selectError && <p className="-mt-1 text-sm font-medium text-red-400">{selectError}</p>}
+      <Field label="Message" htmlFor="cf-message">
+        <textarea
+          id="cf-message"
+          required
+          name="message"
+          placeholder="Tell us about your product and the testing you need…"
+          rows={4}
+          className={inputClass}
+        />
+      </Field>
 
       {status === "error" && errorMessage && (
         <p className="text-sm font-medium text-red-400">{errorMessage}</p>
@@ -121,7 +167,7 @@ export default function ConsultationForm({ signature = false }: { signature?: bo
           <button
             type="submit"
             disabled={status === "submitting"}
-            className="w-full rounded-full bg-space-800-solid px-6 py-3 text-sm font-bold text-ink-100 transition-colors hover:bg-space-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-full bg-[#0b1830] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#13284f] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status === "submitting" ? "Sending…" : "Send Enquiry"}
           </button>
@@ -136,5 +182,28 @@ export default function ConsultationForm({ signature = false }: { signature?: bo
         </button>
       )}
     </form>
+  );
+}
+
+/** Label + required star above a contact-form control (every field here is required). */
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium text-slate-300">
+        {label}
+        <span className="ml-0.5 text-cyan-glow" aria-hidden>
+          *
+        </span>
+      </label>
+      {children}
+    </div>
   );
 }
