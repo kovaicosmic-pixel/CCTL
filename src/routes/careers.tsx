@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Careers from "@/site/pages/Careers";
+import { listActiveJobs } from "@/site/lib/careersAdmin";
 import {
   SITE_URL,
   canonical,
@@ -13,56 +14,18 @@ const title =
 const description =
   "Join Cosmic Compliance Test Lab (CCTL), India's NABL accredited EMI/EMC testing facility. We're hiring EMC test engineers in Coimbatore and Bangalore. Apply now and build the future of electromagnetic testing.";
 
-const breadcrumbs = breadcrumbSchema([
-  { name: "Home", path: "/" },
-  { name: "Careers", path: "/careers" },
-]);
-
-// JSON-LD JobPosting schema — helps jobs appear in Google for Jobs
-const jobPostingSchema = {
-  "@context": "https://schema.org",
-  "@type": "JobPosting",
-  title: "EMI/EMC Test Engineer",
-  description:
-    "Conduct EMI/EMC testing on electronic products and systems. Set up and operate test equipment including EMI receivers, antennas, and test chambers. Support pre-compliance and compliance testing against MIL, IEC, and automotive EMC standards.",
-  datePosted: new Date().toISOString().split("T")[0],
-  employmentType: "FULL_TIME",
-  hiringOrganization: {
-    "@type": "Organization",
-    name: "Cosmic Compliance Test Lab",
-    sameAs: SITE_URL,
-    logo: `${SITE_URL}/images/logo.webp`,
-  },
-  jobLocation: [
-    {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Coimbatore",
-        addressRegion: "Tamil Nadu",
-        addressCountry: "IN",
-      },
-    },
-    {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Bangalore",
-        addressRegion: "Karnataka",
-        addressCountry: "IN",
-      },
-    },
+// The @id must match careersPageSchema.breadcrumb below — without it Google
+// sees that reference as an empty BreadcrumbList ("Missing itemListElement").
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: "Home", path: "/" },
+    { name: "Careers", path: "/careers" },
   ],
-  experienceRequirements: "1–3 years of hands-on EMI/EMC testing experience",
-  educationRequirements: "Degree or diploma in Electrical, Electronics, or related field",
-  skills:
-    "EMI/EMC testing, MIL-STD-461, CISPR 25, IEC 61000, EMI receivers, antennas, test chambers",
-  directApply: true,
-  applicationContact: {
-    "@type": "ContactPoint",
-    email: "emc@cosmictestlab.com",
-  },
-};
+  `${SITE_URL}/careers#breadcrumb`,
+);
+
+// No JobPosting here: Google only accepts it on each job's own page
+// (/careers/jobs/$jobId), built from the database — see data/jobPostingSchema.ts.
 
 const careersPageSchema = {
   "@context": "https://schema.org",
@@ -75,6 +38,17 @@ const careersPageSchema = {
 };
 
 export const Route = createFileRoute("/careers")({
+  // Server-render the open positions so job links are in the initial HTML.
+  // A database hiccup must never take the page down: fall back to the
+  // browser fetching the list itself (react-query retries automatically).
+  loader: async () => {
+    try {
+      return await listActiveJobs();
+    } catch (err) {
+      console.error("careers loader: could not load jobs, client will retry", err);
+      return null;
+    }
+  },
   head: () => ({
     meta: [
       { title },
@@ -95,7 +69,6 @@ export const Route = createFileRoute("/careers")({
       { name: "twitter:image", content: ogImage() },
       { "script:ld+json": careersPageSchema },
       { "script:ld+json": organizationSchema },
-      { "script:ld+json": jobPostingSchema },
       { "script:ld+json": breadcrumbs },
     ],
     links: [{ rel: "canonical", href: canonical("/careers") }],

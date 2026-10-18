@@ -36,7 +36,7 @@ export default function Wordmark({ className = "h-9 w-9" }: { className?: string
   return (
     <img
       ref={ref}
-      src="/images/logo.webp"
+      src="/images/cctl-logo.webp"
       alt={company.name}
       onError={() => setOk(false)}
       className={`${className} shrink-0 object-contain`}

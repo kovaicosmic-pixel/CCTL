@@ -4,113 +4,37 @@
  * Flow:
  *   1. Admin submits email + password to `loginAdmin`
  *   2. Server verifies password, signs a JWT, sets it as an httpOnly cookie
- *   3. Every subsequent admin server function calls `requireAdminSession` to
- *      validate the cookie before doing anything
+ *   3. Every subsequent admin server function calls `requireAdminSession`
+ *      (careersSession.ts) to validate the cookie before doing anything
  *   4. `logoutAdmin` clears the cookie
  */
 
 import { createServerFn } from "@tanstack/react-start";
-import { SignJWT, jwtVerify } from "jose";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db, admins, verifyPassword, hashPassword, ensureDb } from "./db";
+import {
+  COOKIE_MAX_AGE,
+  COOKIE_NAME,
+  getAdminSessionFromCookie,
+  signToken,
+  toSession,
+} from "./careersSession";
+import {
+  LOCK_MINUTES,
+  MAX_ACCOUNT_FAILURES,
+  MAX_IP_FAILURES,
+  assertNotLocked,
+  clearFailures,
+  clientIp,
+  dummyPasswordHash,
+  lockedMessage,
+  recordFailure,
+} from "./loginThrottle";
 
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const COOKIE_NAME = "careers_admin_session";
-const COOKIE_MAX_AGE = 60 * 60 * 8; // 8 hours
-
-function getJwtSecret(): Uint8Array {
-  const secret = process.env["CAREERS_JWT_SECRET"];
-  if (!secret) {
-    throw new Error(
-      "CAREERS_JWT_SECRET is not set. Add it to your .env file.\n" +
-        "Generate one with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
-    );
-  }
-  return new TextEncoder().encode(secret);
-}
-
-// ─── JWT helpers ─────────────────────────────────────────────────────────────
-
-export interface AdminSession {
-  id: string;
-  name: string;
-  email: string;
-  role: "superadmin" | "admin";
-  /** Invited admins must replace their temporary password before anything else */
-  mustChangePassword: boolean;
-}
-
-async function signToken(session: AdminSession): Promise<string> {
-  return new SignJWT({ ...session })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("8h")
-    .sign(getJwtSecret());
-}
-
-async function verifyToken(token: string): Promise<AdminSession | null> {
-  try {
-    const { payload } = await jwtVerify(token, getJwtSecret());
-    return payload as unknown as AdminSession;
-  } catch {
-    return null;
-  }
-}
-
-// ─── Read session from current request cookie ────────────────────────────────
-
-function toSession(admin: typeof admins.$inferSelect): AdminSession {
-  return {
-    id: admin.id,
-    name: admin.name,
-    email: admin.email,
-    role: admin.role as "superadmin" | "admin",
-    mustChangePassword: admin.mustChangePassword,
-  };
-}
-
-// Internal helper — only called from within server function handlers.
-// The JWT only proves *who* is calling; role, name and the password-change flag
-// are re-read from the database so removals and role changes apply immediately.
-async function getAdminSessionFromCookie(): Promise<AdminSession | null> {
-  const { getCookie } = await import("@tanstack/react-start/server");
-  let tokenSession: AdminSession | null;
-  try {
-    const token = getCookie(COOKIE_NAME);
-    if (!token) return null;
-    tokenSession = await verifyToken(token);
-  } catch {
-    return null;
-  }
-  if (!tokenSession?.id) return null;
-
-  await ensureDb();
-  const [admin] = await db().select().from(admins).where(eq(admins.id, tokenSession.id)).limit(1);
-  return admin ? toSession(admin) : null;
-}
-
-/** Throws if no valid session. Use inside admin server functions. */
-export async function requireAdminSession(): Promise<AdminSession> {
-  const session = await getAdminSessionFromCookie();
-  if (!session) {
-    throw new Error("Unauthorized: no valid admin session");
-  }
-  if (session.mustChangePassword) {
-    throw new Error("Please set a new password before continuing.");
-  }
-  return session;
-}
-
-/** Throws if session exists but is not superadmin. */
-export async function requireSuperAdmin(): Promise<AdminSession> {
-  const session = await requireAdminSession();
-  if (session.role !== "superadmin") {
-    throw new Error("Forbidden: superadmin access required");
-  }
-  return session;
-}
+// Browser code imports the session *type* from here; the helpers themselves
+// live in careersSession.ts so they never end up in the client bundle.
+export type { AdminSession } from "./careersSession";
 
 // ─── Server functions ─────────────────────────────────────────────────────────
 
@@ -125,21 +49,38 @@ export const loginAdmin = createServerFn({ method: "POST" })
     // Ensure DB + superadmin are initialised on first login attempt
     await ensureDb();
 
-    const result = await db()
-      .select()
-      .from(admins)
-      .where(eq(admins.email, data.email.toLowerCase()))
-      .limit(1);
+    const email = data.email.toLowerCase();
+    const accountKey = `login:email:${email}`;
+    const ip = await clientIp();
+    const ipKey = ip ? `login:ip:${ip}` : null;
 
-    const admin = result[0];
-    if (!admin) {
+    // Locked accounts / networks don't even get a password check
+    await assertNotLocked(ipKey ? [accountKey, ipKey] : [accountKey]);
+
+    const [admin] = await db().select().from(admins).where(eq(admins.email, email)).limit(1);
+
+    // Unknown emails still pay for a full hash check, so response time doesn't
+    // reveal which addresses have accounts
+    const valid = admin
+      ? await verifyPassword(data.password, admin.passwordHash)
+      : (await verifyPassword(data.password, await dummyPasswordHash()), false);
+
+    if (!admin || !valid) {
+      const [accountFailures] = await Promise.all([
+        recordFailure(accountKey, MAX_ACCOUNT_FAILURES),
+        ipKey ? recordFailure(ipKey, MAX_IP_FAILURES) : Promise.resolve(0),
+      ]);
+      const left = MAX_ACCOUNT_FAILURES - accountFailures;
+      if (left <= 0) throw new Error(lockedMessage(LOCK_MINUTES));
+      if (left <= 2) {
+        throw new Error(
+          `Invalid email or password. ${left} attempt${left === 1 ? "" : "s"} left before sign-in is locked for ${LOCK_MINUTES} minutes.`,
+        );
+      }
       throw new Error("Invalid email or password");
     }
 
-    const valid = await verifyPassword(data.password, admin.passwordHash);
-    if (!valid) {
-      throw new Error("Invalid email or password");
-    }
+    await clearFailures(accountKey);
 
     const session = toSession(admin);
 
@@ -192,8 +133,16 @@ export const changePassword = createServerFn({ method: "POST" })
     const admin = result[0];
     if (!admin) throw new Error("Admin not found");
 
+    // Same brute-force protection for guessing the current password
+    const pwKey = `pwchange:admin:${session.id}`;
+    await assertNotLocked([pwKey]);
     const valid = await verifyPassword(data.currentPassword, admin.passwordHash);
-    if (!valid) throw new Error("Current password is incorrect");
+    if (!valid) {
+      const failures = await recordFailure(pwKey, MAX_ACCOUNT_FAILURES);
+      if (failures >= MAX_ACCOUNT_FAILURES) throw new Error(lockedMessage(LOCK_MINUTES));
+      throw new Error("Current password is incorrect");
+    }
+    await clearFailures(pwKey);
 
     if (data.newPassword === data.currentPassword) {
       throw new Error("Your new password must be different from the current one.");

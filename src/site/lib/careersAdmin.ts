@@ -10,21 +10,22 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { eq, desc, asc } from "drizzle-orm";
+import { and, eq, desc, asc } from "drizzle-orm";
 import {
   db,
   jobPostings,
   applications,
   admins,
   hashPassword,
-  initDb,
+  ensureDb,
   type JobPosting,
   type Application,
   type Admin,
 } from "./db";
-import { requireAdminSession, requireSuperAdmin } from "./careersAuth";
+import { requireAdminSession, requireSuperAdmin } from "./careersSession";
 import { Resend } from "resend";
-import { buildAdminInviteEmail } from "./careerEmails";
+import { buildAdminInviteEmail, senderWithName } from "./careerEmails";
+import { EMAIL_LOGO_ATTACHMENT } from "./emailLogo";
 
 // ─── Shared validators ────────────────────────────────────────────────────────
 
@@ -42,7 +43,7 @@ const jobSchema = z.object({
 // ─── Public — used by /careers page (no auth needed) ─────────────────────────
 
 export const listActiveJobs = createServerFn({ method: "GET" }).handler(async () => {
-  await initDb();
+  await ensureDb();
 
   const jobs = await db()
     .select()
@@ -59,6 +60,30 @@ export const listActiveJobs = createServerFn({ method: "GET" }).handler(async ()
     })),
   };
 });
+
+/** One live job for its public detail page — null if hidden, deleted or unknown. */
+export const getPublicJob = createServerFn({ method: "GET" })
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    await ensureDb();
+
+    const [j] = await db()
+      .select()
+      .from(jobPostings)
+      .where(and(eq(jobPostings.id, data.id), eq(jobPostings.active, true)))
+      .limit(1);
+
+    return {
+      job: j
+        ? {
+            ...j,
+            locations: JSON.parse(j.locations) as string[],
+            responsibilities: JSON.parse(j.responsibilities) as string[],
+            requirements: JSON.parse(j.requirements) as string[],
+          }
+        : null,
+    };
+  });
 
 // ─── Jobs — admin ─────────────────────────────────────────────────────────────
 
@@ -283,12 +308,13 @@ export const createAdminAccount = createServerFn({ method: "POST" })
         invitedBy: session.name,
       });
       const { error } = await new Resend(apiKey).emails.send({
-        from: fromAddress,
+        from: senderWithName(fromAddress),
         to: email,
         replyTo: session.email,
         subject: "You've been invited to the CCTL Careers admin panel",
         html: invite.html,
         text: invite.text,
+        attachments: [EMAIL_LOGO_ATTACHMENT],
       });
       if (error) console.error("createAdminAccount: invite email error", error);
       else inviteSent = true;

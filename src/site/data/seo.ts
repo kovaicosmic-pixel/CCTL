@@ -13,6 +13,21 @@
  */
 export const SITE_URL = "https://www.cosmictestlab.com";
 
+/**
+ * Self-describing pointer to the company, for use inside other schemas
+ * (author, publisher, provider, branchOf…). A bare { "@id" } only resolves on
+ * pages that also embed organizationSchema; Google reports it as an "Unnamed
+ * item" everywhere else. Carrying type, name, url and logo makes it valid on
+ * every page while still merging with the full Organization by @id.
+ */
+export const organizationRef = {
+  "@type": "Organization",
+  "@id": `${SITE_URL}/#organization`,
+  name: "Cosmic Compliance Test Lab",
+  url: SITE_URL,
+  logo: `${SITE_URL}/images/cctl-logo.png`,
+};
+
 export const canonical = (path: string) =>
   `${SITE_URL}${path === "/" ? "" : path}`;
 
@@ -55,7 +70,7 @@ export const organizationSchema = {
   name: "Cosmic Compliance Test Lab",
   alternateName: "CCTL",
   url: SITE_URL,
-  logo: `${SITE_URL}/images/logo.webp`,
+  logo: `${SITE_URL}/images/cctl-logo.png`,
   image: `${SITE_URL}/images/about_us.jpg`,
   email: "emc@cosmictestlab.com",
   telephone: "+91 94442 72009",
@@ -150,7 +165,7 @@ export function localBusinessSchema(loc: LabLocation) {
     email: loc.email,
     description: `EMI/EMC testing laboratory in ${locality}, ${region}. NABL accredited, ISO/IEC 17025 certified. Automotive, defence, aerospace, railway & telecom EMC compliance testing.`,
     priceRange: "$$",
-    branchOf: { "@id": `${SITE_URL}/#organization` },
+    branchOf: organizationRef,
     address: {
       "@type": "PostalAddress",
       streetAddress: loc.address,
@@ -222,7 +237,7 @@ export function professionalServiceSchema(svc: ServiceSchemaInput) {
     description: svc.description,
     url: canonical(svc.path),
     image: svc.image ? `${SITE_URL}${svc.image}` : undefined,
-    provider: { "@id": `${SITE_URL}/#organization` },
+    provider: organizationRef,
     areaServed: [
       { "@type": "City", name: "Coimbatore" },
       { "@type": "City", name: "Bangalore" },
@@ -254,8 +269,8 @@ export function articleSchema(post: BlogSchemaInput) {
     image: post.image ? `${SITE_URL}${post.image}` : ogImage(),
     datePublished: post.datePublished ?? "2025-01-15",
     dateModified: post.dateModified ?? post.datePublished ?? "2025-01-15",
-    author: { "@id": `${SITE_URL}/#organization` },
-    publisher: { "@id": `${SITE_URL}/#organization` },
+    author: organizationRef,
+    publisher: organizationRef,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": canonical(`/blog/${post.slug}`),
@@ -298,7 +313,7 @@ export const webSiteSchema = {
   name: "Cosmic Compliance Test Lab",
   alternateName: "CCTL",
   url: SITE_URL,
-  publisher: { "@id": `${SITE_URL}/#organization` },
+  publisher: organizationRef,
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -339,7 +354,7 @@ export function videoObjectSchema(video: VideoSchemaInput) {
     description: video.description,
     thumbnailUrl: video.thumbnailUrl,
     uploadDate: video.uploadDate,
-    publisher: { "@id": `${SITE_URL}/#organization` },
+    publisher: organizationRef,
     ...(video.embedUrl ? { embedUrl: video.embedUrl } : {}),
     ...(video.contentUrl ? { contentUrl: video.contentUrl } : {}),
     ...(video.duration ? { duration: video.duration } : {}),
@@ -479,7 +494,7 @@ export function personSchema(person: ExpertPerson) {
     "@type": "Person",
     name: person.name,
     jobTitle: person.jobTitle,
-    worksFor: { "@id": `${SITE_URL}/#organization` },
+    worksFor: organizationRef,
     ...(person.description ? { description: person.description } : {}),
     ...(person.sameAs && person.sameAs.length > 0 ? { sameAs: person.sameAs } : {}),
     ...(person.knowsAbout && person.knowsAbout.length > 0

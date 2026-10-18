@@ -97,10 +97,10 @@ export default function Navbar() {
           onClick={() => setOpen(false)}
         >
           <img
-            src="/images/logo.webp"
+            src="/images/cctl-logo.webp"
             alt="Cosmic Compliance Test Lab"
             className="nav-logo h-12 w-auto object-contain sm:h-14 lg:h-[3.6rem]"
-            width={88}
+            width={86}
             height={60}
             decoding="async"
           />

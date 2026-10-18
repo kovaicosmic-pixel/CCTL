@@ -6,12 +6,14 @@
  * came from the applicant is HTML-escaped before it is placed in markup.
  */
 import { SITE_URL } from "../data/seo";
+import { EMAIL_LOGO_CID } from "./emailLogo";
 
 const BRAND_BLUE = "#1a6cf5";
 const NAVY = "#0b1424";
 const FONT = "'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 const ADMIN_URL = `${SITE_URL}/careers/admin`;
-const LOGO_URL = `${SITE_URL}/images/logo-email.png`;
+// Inline attachment (see emailLogo.ts) — Outlook blocks remote images by default
+const LOGO_URL = `cid:${EMAIL_LOGO_CID}`;
 
 export interface ApplicationEmailData {
   fullName: string;
@@ -27,6 +29,17 @@ export interface ApplicationEmailData {
   preferredLocationLabel: string | null;
   isGeneral: boolean;
   appliedAt: Date;
+}
+
+/** Lab inboxes that should receive replies to emails sent to candidates. */
+export const LAB_REPLY_TO = ["emc@cosmictestlab.com", "kovaiemc@cosmictestlab.com"];
+
+/**
+ * "Cosmic Compliance Test Lab <noreply@…>" instead of a bare address, unless
+ * CONTACT_FROM_EMAIL already includes a display name.
+ */
+export function senderWithName(address: string) {
+  return address.includes("<") ? address : `Cosmic Compliance Test Lab <${address}>`;
 }
 
 function esc(s: string) {
@@ -83,7 +96,7 @@ Cosmic Compliance Test Lab &middot; Coimbatore &amp; Bangalore, India<br>
 function header(rightLabel: string) {
   return `<tr><td style="padding:20px 28px;border-bottom:1px solid #e2e8f0;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-<td valign="middle"><a href="${SITE_URL}"><img src="${LOGO_URL}" width="88" height="60" alt="Cosmic Compliance Test Lab" style="display:block;border:0;height:60px;width:88px;font-family:${FONT};font-size:14px;font-weight:bold;color:${NAVY};"></a></td>
+<td valign="middle"><a href="${SITE_URL}"><img src="${LOGO_URL}" width="110" height="77" alt="Cosmic Compliance Test Lab" style="display:block;border:0;height:77px;width:110px;font-family:${FONT};font-size:14px;font-weight:bold;color:${NAVY};"></a></td>
 <td valign="middle" align="right" style="font-family:${FONT};font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#64748b;">${esc(rightLabel)}</td>
 </tr></table>
 </td></tr>`;
@@ -101,14 +114,36 @@ function banner(eyebrow: string, title: string, sub: string, badge?: string) {
 </td></tr>`;
 }
 
-function button(href: string, label: string, primary = true) {
-  const bg = primary ? BRAND_BLUE : "#ffffff";
-  const fg = primary ? "#ffffff" : "#0f172a";
-  const border = primary ? BRAND_BLUE : "#cbd5e1";
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="display:inline-table;margin:0 8px 8px 0;"><tr>
-<td bgcolor="${bg}" style="background:${bg};border:1px solid ${border};border-radius:8px;">
-<a href="${href}" style="display:inline-block;padding:11px 20px;font-family:${FONT};font-size:14px;font-weight:600;color:${fg};text-decoration:none;">${esc(label)}</a>
-</td></tr></table>`;
+interface EmailButton {
+  href: string;
+  label: string;
+  primary?: boolean;
+}
+
+/**
+ * A row of buttons. Built as sibling table cells with the padding on the <td>
+ * and the colour on both <a> and an inner <span>: Outlook desktop ignores
+ * inline-table, drops padding on links and repaints link text in its own colour.
+ */
+function buttons(list: EmailButton[]) {
+  const cells = list
+    .map(({ href, label, primary = true }) => {
+      const bg = primary ? BRAND_BLUE : "#ffffff";
+      const fg = primary ? "#ffffff" : "#0f172a";
+      const border = primary ? BRAND_BLUE : "#cbd5e1";
+      return `<td align="center" valign="middle" bgcolor="${bg}" style="background:${bg};border:1px solid ${border};border-radius:8px;padding:12px 22px;mso-padding-alt:12px 22px;">
+<a href="${href}" target="_blank" style="font-family:${FONT};font-size:14px;line-height:18px;font-weight:600;color:${fg};text-decoration:none;display:inline-block;"><span style="color:${fg};text-decoration:none;">${esc(label)}</span></a>
+</td>`;
+    })
+    .join(`<td width="10" style="width:10px;font-size:0;line-height:0;">&nbsp;</td>`);
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>${cells}</tr></table>`;
+}
+
+/** Fixed-size coloured tile (badge / step number) — a table cell, since Outlook ignores sized divs. */
+function tile(content: string, size: number, bg: string, fg: string, fontSize: number, radius: string) {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+<td width="${size}" height="${size}" align="center" valign="middle" bgcolor="${bg}" style="width:${size}px;height:${size}px;background:${bg};border-radius:${radius};font-family:${FONT};font-size:${fontSize}px;line-height:${size}px;font-weight:800;color:${fg};mso-line-height-rule:exactly;">${content}</td>
+</tr></table>`;
 }
 
 function detailRows(rows: [string, string][]) {
@@ -176,13 +211,18 @@ ${cover}
 <tr><td style="padding:16px 28px 8px;">
 ${sectionTitle("Resume")}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f8fafc" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;"><tr>
-<td width="44" valign="middle" style="padding:12px 0 12px 14px;"><div style="width:32px;height:32px;line-height:32px;text-align:center;border-radius:8px;background:#fee2e2;color:#dc2626;font-family:${FONT};font-size:10px;font-weight:800;">${esc((d.resumeFilename.split(".").pop() ?? "FILE").toUpperCase().slice(0, 4))}</div></td>
+<td width="50" valign="middle" style="padding:12px 0 12px 14px;">${tile(esc((d.resumeFilename.split(".").pop() ?? "FILE").toUpperCase().slice(0, 4)), 36, "#fee2e2", "#dc2626", 10, "8px")}</td>
 <td valign="middle" style="padding:12px 14px;font-family:${FONT};"><div style="font-size:14px;font-weight:600;color:#0f172a;">${esc(d.resumeFilename)}</div><div style="font-size:12px;color:#64748b;margin-top:2px;">Attached to this email</div></td>
 </tr></table>
 </td></tr>
 <tr><td style="padding:20px 28px 28px;">
-${button(`mailto:${esc(d.email)}?subject=${encodeURIComponent(`Your application — ${role} | Cosmic Compliance Test Lab`)}`, `Reply to ${firstName}`)}
-${button(ADMIN_URL, "Open in admin panel", false)}
+${buttons([
+  {
+    href: `mailto:${esc(d.email)}?subject=${encodeURIComponent(`Your application — ${role} | Cosmic Compliance Test Lab`)}`,
+    label: `Reply to ${firstName}`,
+  },
+  { href: ADMIN_URL, label: "Open in admin panel", primary: false },
+])}
 </td></tr>
 <tr><td bgcolor="#f8fafc" style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 28px;font-family:${FONT};font-size:12px;line-height:18px;color:#64748b;">
 This application is saved in the careers portal. Sent to the Bangalore &amp; Coimbatore teams and all Super Admins.<br>
@@ -255,7 +295,7 @@ ${sectionTitle("What happens next")}
 ${steps
   .map(
     ([t, b], i) => `<tr>
-<td width="40" valign="top" style="padding:6px 0;"><div style="width:26px;height:26px;line-height:26px;text-align:center;border-radius:999px;background:#eff6ff;color:${BRAND_BLUE};font-family:${FONT};font-size:12px;font-weight:700;">${i + 1}</div></td>
+<td width="40" valign="top" style="padding:4px 0;">${tile(String(i + 1), 26, "#eff6ff", BRAND_BLUE, 12, "999px")}</td>
 <td valign="top" style="padding:6px 0;font-family:${FONT};font-size:14px;line-height:21px;color:#334155;"><strong style="color:#0f172a;">${t}</strong> &mdash; ${b}</td>
 </tr>`,
   )
@@ -263,8 +303,10 @@ ${steps
 </table>
 </td></tr>
 <tr><td style="padding:20px 28px 28px;">
-${button(`${SITE_URL}/careers`, "View open positions")}
-${button(SITE_URL, "Visit our website", false)}
+${buttons([
+  { href: `${SITE_URL}/careers`, label: "View open positions" },
+  { href: SITE_URL, label: "Visit our website", primary: false },
+])}
 </td></tr>
 <tr><td bgcolor="#f8fafc" style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:18px 28px;font-family:${FONT};font-size:13px;line-height:20px;color:#475569;">
 <strong style="color:#0f172a;">Best regards,</strong><br>
@@ -379,7 +421,7 @@ ${abilities
 </table>
 </td></tr>
 <tr><td style="padding:20px 28px 28px;">
-${button(ADMIN_URL, "Sign in to the admin panel")}
+${buttons([{ href: ADMIN_URL, label: "Sign in to the admin panel" }])}
 </td></tr>
 <tr><td bgcolor="#f8fafc" style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 28px;font-family:${FONT};font-size:12px;line-height:18px;color:#64748b;">
 Keep these details private. If you weren't expecting this invitation, you can ignore this email or let us know at

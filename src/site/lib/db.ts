@@ -18,6 +18,7 @@ import {
   boolean,
   timestamp,
   uuid,
+  integer,
 } from "drizzle-orm/pg-core";
 
 // ─── Schema ─────────────────────────────────────────────────────────────────
@@ -70,6 +71,17 @@ export const admins = pgTable("admins", {
   createdBy: uuid("created_by"), // nullable — null for the seeded superadmin
   /** true for invited admins until they replace their temporary password */
   mustChangePassword: boolean("must_change_password").notNull().default(false),
+});
+
+/**
+ * Failed sign-in counters for brute-force protection (see loginThrottle.ts).
+ * key is e.g. "login:email:x@y.com", "login:ip:1.2.3.4" or "pwchange:admin:<id>".
+ */
+export const loginAttempts = pgTable("login_attempts", {
+  key: text("key").primaryKey(),
+  failures: integer("failures").notNull().default(0),
+  windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
+  lockedUntil: timestamp("locked_until", { withTimezone: true }),
 });
 
 // ─── Type exports ────────────────────────────────────────────────────────────
@@ -160,6 +172,8 @@ export async function initDb(): Promise<void> {
   const client = postgres(process.env["DATABASE_URL"]!, {
     ssl: process.env["DATABASE_URL"]!.includes("supabase.co") ? "require" : false,
     max: 1,
+    // "already exists, skipping" notices from the IF NOT EXISTS statements are expected
+    onnotice: () => {},
   });
 
   try {
@@ -216,6 +230,15 @@ export async function initDb(): Promise<void> {
     `;
     await client`
       ALTER TABLE admins ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT FALSE
+    `;
+
+    await client`
+      CREATE TABLE IF NOT EXISTS login_attempts (
+        key           TEXT PRIMARY KEY,
+        failures      INTEGER NOT NULL DEFAULT 0,
+        window_start  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        locked_until  TIMESTAMPTZ
+      )
     `;
 
     // Seed superadmin if not already present

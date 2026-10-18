@@ -161,10 +161,10 @@ export default function CareersAdmin() {
             title="Go to website"
           >
             <img
-              src="/images/logo.webp"
+              src="/images/cctl-logo.webp"
               alt="Cosmic Compliance Test Lab"
               className="nav-logo h-8 w-auto object-contain"
-              width={88}
+              width={86}
               height={60}
               decoding="async"
             />

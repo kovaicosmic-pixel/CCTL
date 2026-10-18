@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   TrendingUp,
   Users,
-  X,
   type LucideIcon,
 } from "lucide-react";
 import SectionHeading from "@/site/components/SectionHeading";
@@ -32,7 +31,7 @@ interface Props {
   isLoading?: boolean;
 }
 
-const LOCATION_LABELS: Record<string, string> = {
+export const LOCATION_LABELS: Record<string, string> = {
   coimbatore: "Coimbatore",
   bangalore: "Bangalore",
 };
@@ -46,7 +45,7 @@ const DEPARTMENT_STYLES: { match: RegExp; icon: LucideIcon; tile: string }[] = [
 ];
 const FALLBACK_TILES = ["from-sky-500 to-blue-700", "from-violet-500 to-indigo-700", "from-cyan-500 to-blue-600"];
 
-function departmentStyle(department: string, idx: number) {
+export function departmentStyle(department: string, idx: number) {
   const hit = DEPARTMENT_STYLES.find((d) => d.match.test(department));
   return hit ?? { icon: Briefcase, tile: FALLBACK_TILES[idx % FALLBACK_TILES.length] };
 }
@@ -55,17 +54,11 @@ function postedDate(d: string | Date) {
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-const applyBtn =
+export const applyBtn =
   "inline-flex items-center justify-center gap-2 rounded-xl bg-[#0b3a82] px-5 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#1a6cf5] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1a6cf5]/30";
 
 export default function JobListings({ jobs, isLoading = false }: Props) {
-  const [detailJob, setDetailJob] = useState<ParsedJob | null>(null);
   const [applyJob, setApplyJob] = useState<ParsedJob | null>(null);
-
-  function startApply(job: ParsedJob) {
-    setDetailJob(null);
-    setApplyJob(job);
-  }
 
   return (
     <section id="open-positions" className="section-white relative scroll-mt-20 py-24 lg:py-28">
@@ -122,22 +115,12 @@ export default function JobListings({ jobs, isLoading = false }: Props) {
                 key={job.id}
                 job={job}
                 idx={idx}
-                onDetails={() => setDetailJob(job)}
-                onApply={() => startApply(job)}
+                onApply={() => setApplyJob(job)}
               />
             ))}
           </div>
         )}
       </div>
-
-      {detailJob && (
-        <JobDetailsDialog
-          job={detailJob}
-          idx={jobs.indexOf(detailJob)}
-          onClose={() => setDetailJob(null)}
-          onApply={() => startApply(detailJob)}
-        />
-      )}
 
       {applyJob && (
         <ApplyModal
@@ -156,7 +139,7 @@ export default function JobListings({ jobs, isLoading = false }: Props) {
 
 // ─── Card ────────────────────────────────────────────────────────────────────
 
-function JobMeta({ job }: { job: ParsedJob }) {
+export function JobMeta({ job }: { job: ParsedJob }) {
   const locs = job.locations.map((l) => LOCATION_LABELS[l] ?? l).join(" & ");
   const items: { icon: LucideIcon; text: string; label: string; tint: string }[] = [
     { icon: Briefcase, text: "Full-time", label: "Type", tint: "bg-blue-50 text-blue-600" },
@@ -196,12 +179,10 @@ function JobMeta({ job }: { job: ParsedJob }) {
 function JobCard({
   job,
   idx,
-  onDetails,
   onApply,
 }: {
   job: ParsedJob;
   idx: number;
-  onDetails: () => void;
   onApply: () => void;
 }) {
   const { icon: Icon, tile } = departmentStyle(job.department, idx);
@@ -226,13 +207,13 @@ function JobCard({
         </span>
         <div className="min-w-0">
           <h3 className="font-display text-lg font-bold leading-snug text-slate-900">
-            <button
-              type="button"
-              onClick={onDetails}
-              className="text-left transition-colors hover:text-[#1a6cf5] focus-visible:underline focus-visible:outline-none"
+            <Link
+              to="/careers/jobs/$jobId"
+              params={{ jobId: job.id }}
+              className="transition-colors hover:text-[#1a6cf5] focus-visible:underline focus-visible:outline-none"
             >
               {job.title}
-            </button>
+            </Link>
           </h3>
           <p className="mt-0.5 text-sm text-slate-500">{job.department}</p>
         </div>
@@ -270,13 +251,13 @@ function JobCard({
 
       {/* Actions — pinned to the bottom so buttons line up across cards */}
       <div className="mt-auto flex flex-col-reverse gap-3 pt-6 min-[420px]:flex-row">
-        <button
-          type="button"
-          onClick={onDetails}
-          className="whitespace-nowrap rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
+        <Link
+          to="/careers/jobs/$jobId"
+          params={{ jobId: job.id }}
+          className="whitespace-nowrap rounded-xl border border-slate-200 px-5 py-3 text-center text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
         >
           View details
-        </button>
+        </Link>
         <button type="button" onClick={onApply} className={`${applyBtn} flex-1 whitespace-nowrap`}>
           Apply Now
           <ArrowRight className="h-4 w-4" />
@@ -286,101 +267,9 @@ function JobCard({
   );
 }
 
-// ─── Details dialog ──────────────────────────────────────────────────────────
+// ─── Shared with the job detail page ───────────────────────────────────────
 
-function JobDetailsDialog({
-  job,
-  idx,
-  onClose,
-  onApply,
-}: {
-  job: ParsedJob;
-  idx: number;
-  onClose: () => void;
-  onApply: () => void;
-}) {
-  const [mounted, setMounted] = useState(false);
-  const { icon: Icon, tile } = departmentStyle(job.department, Math.max(idx, 0));
-
-  useEffect(() => {
-    setMounted(true);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [onClose]);
-
-  if (!mounted) return null;
-
-  return createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-900/60 backdrop-blur-sm sm:items-center sm:p-6"
-      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="job-details-title"
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl"
-      >
-        {/* Header */}
-        <div className="flex items-start gap-4 border-b border-slate-200 p-6 sm:p-8">
-          <span
-            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-md ${tile}`}
-          >
-            <Icon className="h-7 w-7" strokeWidth={1.75} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h2 id="job-details-title" className="font-display text-2xl font-bold text-slate-900">
-              {job.title}
-            </h2>
-            <p className="mt-0.5 text-sm text-slate-500">{job.department}</p>
-            <div className="mt-4">
-              <JobMeta job={job} />
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="grid flex-1 gap-8 overflow-y-auto p-6 sm:p-8 md:grid-cols-2">
-          <DetailList title="What you'll do" items={job.responsibilities} />
-          <DetailList title="What we're looking for" items={job.requirements} />
-        </div>
-
-        {/* Footer */}
-        <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <p className="flex items-center gap-2 text-sm text-slate-600">
-            <MapPin className="h-4 w-4 text-[#1a6cf5]" />
-            {job.locations.map((l) => LOCATION_LABELS[l] ?? l).join(" & ")}, India
-          </p>
-          <button type="button" onClick={onApply} className={`${applyBtn} flex-1 whitespace-nowrap`}>
-            Apply for this role
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>,
-    document.body,
-  );
-}
-
-function DetailList({ title, items }: { title: string; items: string[] }) {
+export function DetailList({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">{title}</h3>

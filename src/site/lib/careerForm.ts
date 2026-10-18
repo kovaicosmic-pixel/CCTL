@@ -15,8 +15,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Resend } from "resend";
 import { eq } from "drizzle-orm";
-import { db, applications, jobPostings, admins, initDb } from "./db";
-import { buildApplicantEmail, buildStaffEmail } from "./careerEmails";
+import { db, applications, jobPostings, admins, ensureDb } from "./db";
+import { LAB_REPLY_TO, buildApplicantEmail, buildStaffEmail, senderWithName } from "./careerEmails";
+import { EMAIL_LOGO_ATTACHMENT } from "./emailLogo";
 
 // ─── Validation schema ───────────────────────────────────────────────────────
 
@@ -54,7 +55,7 @@ export const submitApplication = createServerFn({ method: "POST" })
       return { ok: true as const };
     }
 
-    await initDb();
+    await ensureDb();
 
     // Verify the job exists and is active
     let positionTitle: string;
@@ -137,7 +138,7 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     // Send to all staff recipients with resume attachment
     const { error: staffError } = await resend.emails.send({
-      from: fromAddress,
+      from: senderWithName(fromAddress),
       to: allRecipients,
       replyTo: data.email,
       subject: `New Application — ${positionTitle} from ${data.fullName}`,
@@ -148,6 +149,7 @@ export const submitApplication = createServerFn({ method: "POST" })
           filename: data.resumeFilename,
           content: data.resumeData,
         },
+        EMAIL_LOGO_ATTACHMENT,
       ],
     });
 
@@ -158,11 +160,14 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     // Send confirmation auto-reply to applicant
     const { error: replyError } = await resend.emails.send({
-      from: fromAddress,
+      from: senderWithName(fromAddress),
       to: data.email,
+      // Replies from candidates reach both labs instead of a no-reply inbox
+      replyTo: LAB_REPLY_TO,
       subject: `We received your application — ${positionTitle} | Cosmic Compliance Test Lab`,
       html: applicantEmail.html,
       text: applicantEmail.text,
+      attachments: [EMAIL_LOGO_ATTACHMENT],
     });
 
     if (replyError) {

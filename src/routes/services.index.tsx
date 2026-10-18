@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import Services from "@/site/pages/Services";
 import { services, faqs } from "@/site/data/content";
 import {
+  organizationRef,
   SITE_URL,
   canonical,
   ogImage,
@@ -9,8 +10,7 @@ import {
   faqSchema,
 } from "@/site/data/seo";
 
-const title =
-  "EMI/EMC Testing Services in Coimbatore & Bangalore, India | CCTL";
+const title = "EMI/EMC Testing Services in Coimbatore & Bangalore, India | CCTL";
 const description =
   "Comprehensive EMI/EMC testing services for automotive, military/aerospace, railway, telecom & civilian equipment. NABL accredited labs in Coimbatore and Bangalore, India. MIL-STD-461, CISPR 25, EN 50121, IEC 61000 compliant testing.";
 
@@ -42,7 +42,7 @@ const serviceSchema = {
   "@type": "Service",
   "@id": `${SITE_URL}/services#service`,
   name: "EMI/EMC Compliance Testing",
-  provider: { "@id": `${SITE_URL}/#organization` },
+  provider: organizationRef,
   serviceType: "EMI/EMC Testing",
   description:
     "NABL accredited EMI/EMC testing services covering automotive, defence, aerospace, railway and telecom sectors at labs in Coimbatore and Bangalore, India.",

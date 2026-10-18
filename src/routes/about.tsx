@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import About from "@/site/pages/About";
 import {
+  organizationRef,
   SITE_URL,
   canonical,
   ogImage,
@@ -11,8 +12,7 @@ import {
   type FAQItem,
 } from "@/site/data/seo";
 
-const title =
-  "About CCTL | NABL Accredited EMI/EMC Testing Lab in Coimbatore & Bangalore, India";
+const title = "About CCTL | NABL Accredited EMI/EMC Testing Lab in Coimbatore & Bangalore, India";
 const description =
   "Cosmic Compliance Test Lab (CCTL) is India's leading NABL & ISO/IEC 17025 accredited EMI/EMC testing facility with labs in Coimbatore and Bangalore. 25+ expert engineers, 120+ projects, serving automotive, defence, aerospace, railway & telecom sectors.";
 
@@ -59,7 +59,7 @@ const aboutPageSchema = {
   name: "About Cosmic Compliance Test Lab",
   description,
   url: canonical("/about"),
-  mainEntity: { "@id": `${SITE_URL}/#organization` },
+  mainEntity: organizationRef,
   breadcrumb: { "@id": `${SITE_URL}/about#breadcrumb` },
 };
 

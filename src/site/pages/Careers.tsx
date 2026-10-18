@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getRouteApi } from "@tanstack/react-router";
 import { Mail, ArrowRight } from "lucide-react";
 import CareersHero from "@/site/components/careers/CareersHero";
 import WhyJoinUs from "@/site/components/careers/WhyJoinUs";
@@ -6,10 +7,15 @@ import JobListings from "@/site/components/careers/JobListings";
 import { GradientOrbs } from "@/site/components/bg";
 import { listActiveJobs } from "@/site/lib/careersAdmin";
 
+const route = getRouteApi("/careers");
+
 export default function Careers() {
+  // Jobs arrive server-rendered from the route loader; react-query keeps them fresh
+  const initial = route.useLoaderData();
   const { data, isLoading } = useQuery({
     queryKey: ["active-jobs"],
     queryFn: () => listActiveJobs(),
+    initialData: initial ?? undefined,
     staleTime: 60_000,
   });
 
