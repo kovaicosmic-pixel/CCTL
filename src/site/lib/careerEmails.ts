@@ -31,8 +31,6 @@ export interface ApplicationEmailData {
   appliedAt: Date;
 }
 
-/** Lab inboxes that should receive replies to emails sent to candidates. */
-export const LAB_REPLY_TO = ["emc@cosmictestlab.com", "kovaiemc@cosmictestlab.com"];
 
 /**
  * "Cosmic Compliance Test Lab <noreply@…>" instead of a bare address, unless
@@ -225,7 +223,7 @@ ${buttons([
 ])}
 </td></tr>
 <tr><td bgcolor="#f8fafc" style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 28px;font-family:${FONT};font-size:12px;line-height:18px;color:#64748b;">
-This application is saved in the careers portal. Sent to the Bangalore &amp; Coimbatore teams and all Super Admins.<br>
+This application is saved in the careers portal, where your whole team can review it. This email goes to HR only.<br>
 View and manage every application at <a href="${ADMIN_URL}" style="color:${BRAND_BLUE};">${ADMIN_URL.replace(/^https?:\/\//, "")}</a>
 </td></tr>`;
 

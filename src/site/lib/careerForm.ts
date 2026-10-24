@@ -4,19 +4,18 @@
  * On every submission:
  *   1. Validates all fields with Zod
  *   2. Saves the application to the `applications` table in Postgres
- *   3. Sends email (with resume attachment) to:
- *        - emc@cosmictestlab.com        (Bangalore branch)
- *        - kovaiemc@cosmictestlab.com   (Coimbatore branch)
- *        - anitha@cosmictest.com        (Super admin — always receives every application)
- *   4. Sends a confirmation auto-reply to the applicant
+ *   3. Emails HR only (CAREERS_HR_EMAIL, resume attached) — the rest of the
+ *      team reviews applications in the careers portal at /careers/admin
+ *   4. Sends a confirmation auto-reply to the applicant (replies go to HR)
  */
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Resend } from "resend";
 import { eq } from "drizzle-orm";
-import { db, applications, jobPostings, admins, ensureDb } from "./db";
-import { LAB_REPLY_TO, buildApplicantEmail, buildStaffEmail, senderWithName } from "./careerEmails";
+import { db, applications, jobPostings, ensureDb } from "./db";
+import { buildApplicantEmail, buildStaffEmail, senderWithName } from "./careerEmails";
+import { CAREERS_HR_EMAIL } from "../data/careers";
 import { EMAIL_LOGO_ATTACHMENT } from "./emailLogo";
 
 // ─── Validation schema ───────────────────────────────────────────────────────
@@ -107,15 +106,8 @@ export const submitApplication = createServerFn({ method: "POST" })
       return { ok: true as const };
     }
 
-    // Build recipient list: both branches + all superadmins
-    const superAdmins = await db()
-      .select({ email: admins.email })
-      .from(admins)
-      .where(eq(admins.role, "superadmin"));
-
-    const branchEmails = ["emc@cosmictestlab.com", "kovaiemc@cosmictestlab.com"];
-    const superAdminEmails = superAdmins.map((a) => a.email);
-    const allRecipients = [...new Set([...branchEmails, ...superAdminEmails])];
+    // Only HR is emailed; everyone else reviews applications in the careers portal
+    const allRecipients = [CAREERS_HR_EMAIL];
 
     const emailData = {
       fullName: data.fullName,
@@ -162,8 +154,8 @@ export const submitApplication = createServerFn({ method: "POST" })
     const { error: replyError } = await resend.emails.send({
       from: senderWithName(fromAddress),
       to: data.email,
-      // Replies from candidates reach both labs instead of a no-reply inbox
-      replyTo: LAB_REPLY_TO,
+      // Replies from candidates reach HR instead of a no-reply inbox
+      replyTo: CAREERS_HR_EMAIL,
       subject: `We received your application — ${positionTitle} | Cosmic Compliance Test Lab`,
       html: applicantEmail.html,
       text: applicantEmail.text,

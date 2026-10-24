@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Info, Mail } from "lucide-react";
 import { changePassword } from "@/site/lib/careersAuth";
+import { CAREERS_HR_EMAIL } from "@/site/data/careers";
 import type { AdminSession } from "@/site/lib/careersAuth";
 import { Alert, Avatar, Badge, Button, Card, Field, PageHeader, PasswordInput } from "./ui";
 
@@ -8,11 +9,7 @@ interface Props {
   session: AdminSession;
 }
 
-const NOTIFICATION_RECIPIENTS = [
-  { label: "Bangalore branch", value: "emc@cosmictestlab.com" },
-  { label: "Coimbatore branch", value: "kovaiemc@cosmictestlab.com" },
-  { label: "Super Admins", value: "All Super Admin accounts" },
-];
+const NOTIFICATION_RECIPIENTS = [{ label: "HR", value: CAREERS_HR_EMAIL }];
 
 /** One settings row: title + description on the left, content card on the right. */
 function SettingsSection({
@@ -146,7 +143,7 @@ export default function SettingsPanel({ session }: Props) {
         {isSuper && (
           <SettingsSection
             title="Notification emails"
-            description="Every new application is emailed to these recipients, with the resume attached."
+            description="Every new application is emailed here, with the resume attached. Everyone else reviews applications in this portal."
           >
             <ul className="divide-y divide-slate-100">
               {NOTIFICATION_RECIPIENTS.map((r) => (
@@ -164,12 +161,12 @@ export default function SettingsPanel({ session }: Props) {
             <p className="mt-4 flex gap-2 rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-600">
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
               <span>
-                Branch addresses are set in{" "}
+                Covers job applications and general CVs. Candidates' replies to their confirmation
+                email also go to HR. The address is set in{" "}
                 <code className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-700 ring-1 ring-slate-200">
-                  careerForm.ts
+                  src/site/data/careers.ts
                 </code>
-                . Super Admin recipients update automatically when you add or remove Super Admins
-                in the Team tab.
+                .
               </span>
             </p>
           </SettingsSection>
