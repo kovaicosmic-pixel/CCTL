@@ -80,7 +80,18 @@ export async function getAdminSessionFromCookie(): Promise<AdminSession | null> 
 
   await ensureDb();
   const [admin] = await db().select().from(admins).where(eq(admins.id, tokenSession.id)).limit(1);
-  return admin ? toSession(admin) : null;
+  if (!admin) return null;
+
+  // "Last active" for the Team tab — written at most every 2 minutes per admin,
+  // and not awaited, so it never slows the request down
+  if (!admin.lastActiveAt || Date.now() - admin.lastActiveAt.getTime() > 2 * 60_000) {
+    void db()
+      .update(admins)
+      .set({ lastActiveAt: new Date() })
+      .where(eq(admins.id, admin.id))
+      .catch((err) => console.error("careers: could not record admin activity", err));
+  }
+  return toSession(admin);
 }
 
 /** Throws if no valid session. Use inside admin server functions. */

@@ -11,7 +11,7 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db, admins, verifyPassword, hashPassword, ensureDb } from "./db";
 import {
   COOKIE_MAX_AGE,
@@ -81,6 +81,10 @@ export const loginAdmin = createServerFn({ method: "POST" })
     }
 
     await clearFailures(accountKey);
+    await db()
+      .update(admins)
+      .set({ lastLoginAt: new Date(), lastActiveAt: new Date(), loginCount: sql`${admins.loginCount} + 1` })
+      .where(eq(admins.id, admin.id));
 
     const session = toSession(admin);
 

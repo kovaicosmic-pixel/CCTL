@@ -128,8 +128,25 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     const resend = new Resend(apiKey);
 
-    // Send to all staff recipients with resume attachment
-    const { error: staffError } = await resend.emails.send({
+    // The application is already saved, so an email problem (Resend rejecting
+    // it, or the request itself crashing) must never turn into an error for
+    // the applicant — that would make them apply twice. Log it and carry on.
+    async function send(label: string, payload: Parameters<typeof resend.emails.send>[0]) {
+      try {
+        const { error } = await resend.emails.send(payload);
+        if (error) {
+          console.error(`submitApplication: ${label} email error`, error);
+          return false;
+        }
+        return true;
+      } catch (err) {
+        console.error(`submitApplication: ${label} email failed`, err);
+        return false;
+      }
+    }
+
+    // Notify HR, with the resume attached
+    const staffSent = await send("HR", {
       from: senderWithName(fromAddress),
       to: allRecipients,
       replyTo: data.email,
@@ -145,13 +162,8 @@ export const submitApplication = createServerFn({ method: "POST" })
       ],
     });
 
-    if (staffError) {
-      console.error("submitApplication: staff email error", staffError);
-      // Don't throw — application is already saved to DB
-    }
-
-    // Send confirmation auto-reply to applicant
-    const { error: replyError } = await resend.emails.send({
+    // Confirmation auto-reply to the applicant
+    const replySent = await send("applicant confirmation", {
       from: senderWithName(fromAddress),
       to: data.email,
       // Replies from candidates reach HR instead of a no-reply inbox
@@ -162,12 +174,9 @@ export const submitApplication = createServerFn({ method: "POST" })
       attachments: [EMAIL_LOGO_ATTACHMENT],
     });
 
-    if (replyError) {
-      console.error("submitApplication: applicant auto-reply error", replyError);
-    }
-
     console.log(
-      `submitApplication: saved + emailed for "${positionTitle}" — ${data.fullName} <${data.email}>`,
+      `submitApplication: saved "${positionTitle}" — ${data.fullName} <${data.email}> ` +
+        `(HR email ${staffSent ? "sent" : "FAILED"}, confirmation ${replySent ? "sent" : "FAILED"})`,
     );
 
     return { ok: true as const };

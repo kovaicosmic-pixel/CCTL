@@ -71,6 +71,10 @@ export const admins = pgTable("admins", {
   createdBy: uuid("created_by"), // nullable — null for the seeded superadmin
   /** true for invited admins until they replace their temporary password */
   mustChangePassword: boolean("must_change_password").notNull().default(false),
+  /** Activity — shown on the Team tab so super admins can see who uses the portal */
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  lastActiveAt: timestamp("last_active_at", { withTimezone: true }),
+  loginCount: integer("login_count").notNull().default(0),
 });
 
 /**
@@ -231,6 +235,9 @@ export async function initDb(): Promise<void> {
     await client`
       ALTER TABLE admins ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT FALSE
     `;
+    await client`ALTER TABLE admins ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ`;
+    await client`ALTER TABLE admins ADD COLUMN IF NOT EXISTS last_active_at TIMESTAMPTZ`;
+    await client`ALTER TABLE admins ADD COLUMN IF NOT EXISTS login_count INTEGER NOT NULL DEFAULT 0`;
 
     await client`
       CREATE TABLE IF NOT EXISTS login_attempts (

@@ -243,6 +243,10 @@ export const listAdmins = createServerFn({ method: "GET" }).handler(async () => 
       role: admins.role,
       createdAt: admins.createdAt,
       createdBy: admins.createdBy,
+      mustChangePassword: admins.mustChangePassword,
+      lastLoginAt: admins.lastLoginAt,
+      lastActiveAt: admins.lastActiveAt,
+      loginCount: admins.loginCount,
     })
     .from(admins)
     .orderBy(asc(admins.createdAt));

@@ -68,6 +68,7 @@ export default function TeamManager({ session }: Props) {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-team"],
     queryFn: () => listAdmins(),
+    refetchInterval: 60_000, // keeps "Online now" / "Last seen" current
   });
 
   const addMutation = useMutation({
@@ -293,6 +294,8 @@ export default function TeamManager({ session }: Props) {
         </Card>
       )}
 
+      {!isLoading && admins.length > 0 && <ActivitySummary admins={admins} />}
+
       <Card padded={false} className="overflow-hidden">
         {isLoading ? (
           <SkeletonRows rows={2} />
@@ -306,8 +309,9 @@ export default function TeamManager({ session }: Props) {
                 <tr>
                   <th className="px-5 py-3">Name</th>
                   <th className="px-5 py-3">Role</th>
-                  <th className="px-5 py-3">Added by</th>
-                  <th className="px-5 py-3">Date added</th>
+                  <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3">Last sign-in</th>
+                  <th className="px-5 py-3">Added</th>
                   <th className="px-5 py-3 text-right">
                     <span className="sr-only">Actions</span>
                   </th>
@@ -331,11 +335,24 @@ export default function TeamManager({ session }: Props) {
                     <td className="px-5 py-3.5">
                       <RoleBadge role={admin.role} />
                     </td>
-                    <td className="px-5 py-3.5 text-slate-600">
-                      {admin.createdBy ? (nameById.get(admin.createdBy) ?? "Removed admin") : "System"}
+                    <td className="px-5 py-3.5">
+                      <ActivityStatus admin={admin} />
                     </td>
                     <td className="whitespace-nowrap px-5 py-3.5 text-slate-600">
-                      {formatDate(admin.createdAt)}
+                      {admin.lastLoginAt ? (
+                        <>
+                          <p>{formatDateTime(admin.lastLoginAt)}</p>
+                          <p className="text-xs text-slate-400">
+                            {admin.loginCount} sign-in{admin.loginCount === 1 ? "" : "s"}
+                          </p>
+                        </>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-600">
+                      <p>{admin.createdBy ? (nameById.get(admin.createdBy) ?? "Removed admin") : "System"}</p>
+                      <p className="text-xs text-slate-400">{formatDate(admin.createdAt)}</p>
                     </td>
                     <td className="px-5 py-3.5 text-right">
                       {admin.id !== session.id && (
@@ -367,8 +384,9 @@ export default function TeamManager({ session }: Props) {
                       {admin.id === session.id && <Badge>You</Badge>}
                     </p>
                     <p className="truncate text-xs text-slate-500">{admin.email}</p>
-                    <div className="mt-1.5">
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2">
                       <RoleBadge role={admin.role} />
+                      <ActivityStatus admin={admin} />
                     </div>
                   </div>
                   {admin.id !== session.id && (
@@ -430,4 +448,89 @@ function generatePassword() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#$%";
   const bytes = crypto.getRandomValues(new Uint32Array(12));
   return Array.from(bytes, (b) => chars[b % chars.length]).join("");
+}
+
+// ─── Activity ────────────────────────────────────────────────────────────────
+
+interface ActivityInfo {
+  mustChangePassword: boolean;
+  lastLoginAt: Date | string | null;
+  lastActiveAt: Date | string | null;
+  loginCount: number;
+}
+
+const ONLINE_MS = 5 * 60_000;
+
+function activityOf(a: ActivityInfo) {
+  const last = a.lastActiveAt ? new Date(a.lastActiveAt) : null;
+  if (!last) {
+    return a.mustChangePassword
+      ? ({ key: "pending", label: "Invite pending", tone: "amber" } as const)
+      : ({ key: "none", label: "No activity yet", tone: "slate" } as const);
+  }
+  if (Date.now() - last.getTime() < ONLINE_MS) {
+    return { key: "online", label: "Online now", tone: "emerald" } as const;
+  }
+  if (last.toDateString() === new Date().toDateString()) {
+    return { key: "today", label: `Active today · ${timeAgo(last)}`, tone: "blue" } as const;
+  }
+  return { key: "seen", label: `Last seen ${timeAgo(last)}`, tone: "slate" } as const;
+}
+
+function ActivityStatus({ admin }: { admin: ActivityInfo }) {
+  const a = activityOf(admin);
+  return (
+    <Badge tone={a.tone} dot>
+      {a.label}
+    </Badge>
+  );
+}
+
+function ActivitySummary({ admins }: { admins: ActivityInfo[] }) {
+  const states = admins.map(activityOf);
+  const cards = [
+    { label: "Team members", value: admins.length, cls: "text-slate-900" },
+    {
+      label: "Active today",
+      value: states.filter((s) => s.key === "online" || s.key === "today").length,
+      cls: "text-emerald-600",
+    },
+    {
+      label: "Invites not yet accepted",
+      value: states.filter((s) => s.key === "pending").length,
+      cls: "text-amber-600",
+    },
+  ];
+  return (
+    <div className="grid gap-4 sm:grid-cols-3">
+      {cards.map((c) => (
+        <Card key={c.label}>
+          <p className="text-sm font-medium text-slate-500">{c.label}</p>
+          <p className={`font-display mt-1 text-3xl font-bold tabular-nums ${c.cls}`}>{c.value}</p>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function timeAgo(d: Date) {
+  const mins = Math.round((Date.now() - d.getTime()) / 60_000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours} hr${hours === 1 ? "" : "s"} ago`;
+  const days = Math.round(hours / 24);
+  if (days < 30) return `${days} day${days === 1 ? "" : "s"} ago`;
+  return `on ${formatDate(d)}`;
+}
+
+function formatDateTime(d: Date | string) {
+  return new Date(d).toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
