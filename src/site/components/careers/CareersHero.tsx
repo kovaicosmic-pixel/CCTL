@@ -8,10 +8,10 @@ export default function CareersHero() {
       <GradientOrbs variant="default" />
       <FloatingStandards count={8} opacity={0.3} />
 
-      {/* Ghost watermark */}
+      {/* Ghost watermark — hidden on phones where it clips awkwardly */}
       <span
         aria-hidden
-        className="pointer-events-none absolute right-[-4rem] top-1/2 -translate-y-1/2 select-none font-display text-[clamp(6rem,18vw,16rem)] font-black uppercase leading-none tracking-tighter text-white/[0.025]"
+        className="pointer-events-none absolute right-[-4rem] top-1/2 hidden -translate-y-1/2 select-none font-display text-[clamp(6rem,18vw,16rem)] font-black uppercase leading-none tracking-tighter text-white/[0.025] sm:block"
       >
         CAREERS
       </span>
@@ -74,7 +74,7 @@ export default function CareersHero() {
 
         {/* Stats strip */}
         <motion.div
-          className="mt-16 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur"
+          className="mt-12 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur sm:mt-16"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
@@ -86,12 +86,12 @@ export default function CareersHero() {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="flex flex-col items-center justify-center gap-1 bg-space-950/90 px-4 py-6 text-center"
+              className="flex flex-col items-center justify-center gap-1 bg-space-950/90 px-2 py-4 text-center sm:px-4 sm:py-6"
             >
-              <span className="font-display text-3xl font-black text-cyan-glow">
+              <span className="font-display text-2xl font-black text-cyan-glow sm:text-3xl">
                 {stat.value}
               </span>
-              <span className="text-xs font-medium uppercase tracking-widest text-slate-400">
+              <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400 sm:text-xs sm:tracking-widest">
                 {stat.label}
               </span>
             </div>

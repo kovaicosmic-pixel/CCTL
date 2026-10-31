@@ -80,7 +80,7 @@ export default function WhyJoinUs() {
               >
                 <b.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
               </div>
-              <h3 className="relative font-display text-lg font-bold text-slate-900">{b.title}</h3>
+              <h3 className="relative pr-12 font-display text-lg font-bold text-slate-900">{b.title}</h3>
               <p className="relative mt-2.5 text-sm leading-relaxed text-slate-600">{b.body}</p>
             </motion.div>
           ))}

@@ -107,7 +107,7 @@ const STATUS_BTN: Record<
 const PIPELINE = [
   { value: "new", label: "New" },
   { value: "shortlisted", label: "Shortlisted" },
-  { value: "interview_scheduled", label: "Interview Scheduled" },
+  { value: "interview_scheduled", label: "Interview" },
   { value: "selected", label: "Selected" },
 ] as const;
 
@@ -216,29 +216,29 @@ export default function ApplicationDetail({ applicationId, onClose }: Props) {
         )}
       </header>
 
-      {/* ── Body — two-column layout ── */}
+      {/* ── Body — stacks on mobile, 50/50 two-pane on desktop ── */}
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#1a6cf5]" />
         </div>
       ) : app ? (
-        <div className="flex flex-1 gap-0 overflow-hidden lg:gap-0">
+        <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
           {/* ── LEFT — candidate profile ── */}
-          <div className="flex w-full flex-col overflow-y-auto lg:w-[48%] xl:w-[50%]">
-            <div className="space-y-5 p-6">
+          <div className="flex w-full flex-col lg:w-[48%] lg:overflow-y-auto xl:w-[50%]">
+            <div className="space-y-5 p-4 sm:p-6">
               {/* Profile card */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-start gap-5">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <div className="flex items-start gap-4 sm:gap-5">
                   <Avatar name={app.fullName} size="lg" />
                   <div className="flex-1 min-w-0">
-                    <h1 className="font-display text-2xl font-bold text-slate-900">
+                    <h1 className="font-display text-xl font-bold text-slate-900 sm:text-2xl">
                       {app.fullName}
                     </h1>
                     <p className="mt-0.5 font-medium text-[#1a6cf5]">{app.jobTitle}</p>
                   </div>
                 </div>
 
-                <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-4">
+                <dl className="mt-6 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
                   <InfoItem icon={<Mail />} label="Email">
                     <a href={`mailto:${app.email}`} className="text-[#1a6cf5] hover:underline break-all">
                       {app.email}
@@ -314,16 +314,9 @@ export default function ApplicationDetail({ applicationId, onClose }: Props) {
           </div>
 
           {/* ── RIGHT — collaborative notes (gated to shortlisted+) ── */}
-          <div className="hidden flex-col border-l border-slate-200 bg-white lg:flex lg:w-[52%] xl:w-[50%]">
-            {POST_SHORTLIST.has(app.status) ? (
-              <NotesPanel applicationId={app.id} cachedSummary={app.aiSummary ?? null} />
-            ) : (
-              <NotesLocked status={app.status} />
-            )}
-          </div>
-
-          {/* Mobile notes — below profile */}
-          <div className="block lg:hidden w-full border-t border-slate-200 bg-white">
+          {/* Rendered ONCE — stacks under the profile on mobile, side pane on desktop.
+              min-h keeps the notes feed usable on phones; lg pins full height. */}
+          <div className="flex min-h-[70vh] w-full flex-col border-t border-slate-200 bg-white lg:min-h-0 lg:w-[52%] lg:border-l lg:border-t-0 xl:w-[50%]">
             {POST_SHORTLIST.has(app.status) ? (
               <NotesPanel applicationId={app.id} cachedSummary={app.aiSummary ?? null} />
             ) : (
@@ -491,7 +484,7 @@ function StatusPipeline({
                   )}
                 </span>
                 <span
-                  className={`whitespace-nowrap text-[11px] font-medium ${
+                  className={`max-w-[72px] text-center text-[10px] font-medium leading-tight sm:max-w-none sm:text-[11px] ${
                     isCurrent ? "text-[#1a6cf5]" : "text-slate-500"
                   }`}
                 >

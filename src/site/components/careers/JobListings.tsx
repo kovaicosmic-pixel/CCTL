@@ -68,8 +68,8 @@ export default function JobListings({ jobs, isLoading = false }: Props) {
   const [applyJob, setApplyJob] = useState<ParsedJob | null>(null);
 
   return (
-    <section id="open-positions" className="section-white relative scroll-mt-20 py-24 lg:py-28">
-      <div className="mx-auto max-w-6xl px-5 lg:px-8">
+    <section id="open-positions" className="section-white relative scroll-mt-20 overflow-x-hidden py-14 sm:py-20 lg:py-28">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-5 lg:px-8">
         <SectionHeading
           eyebrow="Open Positions"
           title="We're Hiring"
@@ -203,14 +203,14 @@ function JobCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ delay: (idx % 2) * 0.08, duration: 0.45 }}
-      className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_40px_-20px_rgba(15,23,42,0.25)] sm:p-7"
+      className="group flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_40px_-20px_rgba(15,23,42,0.25)] sm:p-7"
     >
       {/* Header */}
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3 sm:gap-4">
         <span
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-md ${tile}`}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-md sm:h-12 sm:w-12 ${tile}`}
         >
-          <Icon className="h-6 w-6" strokeWidth={1.75} />
+          <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.75} />
         </span>
         <div className="min-w-0">
           <h3 className="font-display text-lg font-bold leading-snug text-slate-900">
@@ -233,7 +233,7 @@ function JobCard({
 
       {/* Summary */}
       {summary && (
-        <p className="mt-5 line-clamp-3 text-sm leading-relaxed text-slate-600">{summary}</p>
+        <p className="mt-5 line-clamp-3 break-words text-sm leading-relaxed text-slate-600">{summary}</p>
       )}
 
       {/* Requirement chips */}

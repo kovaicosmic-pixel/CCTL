@@ -242,7 +242,7 @@ export default function ApplyModal({
         <div className="pointer-events-none absolute -top-32 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-cyan-glow/[0.12] blur-3xl" />
 
         {/* ── Header ─────────────────────────────────────────── */}
-        <header className="relative flex items-start justify-between gap-4 border-b border-white/[0.06] px-6 pb-5 pt-6 sm:px-8 sm:pt-7">
+        <header className="relative flex items-start justify-between gap-3 border-b border-white/[0.06] px-5 pb-4 pt-5 sm:gap-4 sm:px-8 sm:pb-5 sm:pt-7">
           <div className="min-w-0">
             <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-cyan-glow">
               {status === "success" ? "Application submitted" : "You're applying for"}
@@ -289,7 +289,7 @@ export default function ApplyModal({
               aria-hidden="true"
             />
 
-            <div className="flex-1 space-y-8 overflow-y-auto px-6 py-7 sm:px-8">
+            <div className="flex-1 space-y-6 overflow-y-auto px-5 py-6 sm:space-y-8 sm:px-8 sm:py-7">
               {/* ── Personal details ───────────────────────── */}
               <FormSection step="01" title="Personal details">
                 <Field label="Full name" required error={errors.fullName} htmlFor="apply-fullName">
@@ -417,7 +417,7 @@ export default function ApplyModal({
                       onDrop={onDrop}
                       onClick={() => fileInputRef.current?.click()}
                       data-invalid={!!errors.resume}
-                      className={`group flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-9 text-center transition-all ${
+                      className={`group flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-5 py-7 text-center transition-all sm:px-6 sm:py-9 ${
                         dragging
                           ? "scale-[1.01] border-cyan-glow bg-cyan-glow/[0.08]"
                           : errors.resume
@@ -513,7 +513,7 @@ export default function ApplyModal({
             </div>
 
             {/* ── Footer ───────────────────────────────────── */}
-            <footer className="flex flex-col-reverse items-stretch gap-3 border-t border-white/[0.06] bg-[#0a1220]/80 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-8">
+            <footer className="flex flex-col-reverse items-stretch gap-3 border-t border-white/[0.06] bg-[#0a1220]/80 px-5 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-8">
               <p className="flex items-center justify-center gap-1.5 text-xs text-ink-500 sm:justify-start">
                 <Lock className="h-3.5 w-3.5" />
                 Your details are shared only with our hiring team.

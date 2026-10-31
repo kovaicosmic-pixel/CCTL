@@ -39,6 +39,7 @@ import { Route as ServicesEmiTestingRouteImport } from './routes/services.emi-te
 import { Route as StandardsIndexRouteImport } from './routes/standards.index'
 import { Route as TelecomTelecomEmcTestingRouteImport } from './routes/telecom.telecom-emc-testing'
 import { Route as TelecomWirelessTestingRouteImport } from './routes/telecom.wireless-testing'
+import { Route as CareersJobsJobIdRouteImport } from './routes/careers_.jobs.$jobId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -199,6 +200,11 @@ const TelecomWirelessTestingRoute = TelecomWirelessTestingRouteImport.update({
   path: '/telecom/wireless-testing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CareersJobsJobIdRoute = CareersJobsJobIdRouteImport.update({
+  id: '/careers_/jobs/$jobId',
+  path: '/careers/jobs/$jobId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/standards/': typeof StandardsIndexRoute
+  '/careers/jobs/$jobId': typeof CareersJobsJobIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -263,6 +270,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/services': typeof ServicesIndexRoute
   '/standards': typeof StandardsIndexRoute
+  '/careers/jobs/$jobId': typeof CareersJobsJobIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -296,6 +304,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/standards/': typeof StandardsIndexRoute
+  '/careers_/jobs/$jobId': typeof CareersJobsJobIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -330,6 +339,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/services/'
     | '/standards/'
+    | '/careers/jobs/$jobId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/services'
     | '/standards'
+    | '/careers/jobs/$jobId'
   id:
     | '__root__'
     | '/'
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/services/'
     | '/standards/'
+    | '/careers_/jobs/$jobId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -427,6 +439,7 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
   StandardsIndexRoute: typeof StandardsIndexRoute
+  CareersJobsJobIdRoute: typeof CareersJobsJobIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -641,6 +654,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TelecomWirelessTestingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/careers_/jobs/$jobId': {
+      id: '/careers_/jobs/$jobId'
+      path: '/careers/jobs/$jobId'
+      fullPath: '/careers/jobs/$jobId'
+      preLoaderRoute: typeof CareersJobsJobIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -675,6 +695,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
   StandardsIndexRoute: StandardsIndexRoute,
+  CareersJobsJobIdRoute: CareersJobsJobIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

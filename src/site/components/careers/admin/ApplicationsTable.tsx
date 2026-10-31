@@ -342,23 +342,23 @@ function JobsOverview({
                 <button
                   key={group.key}
                   onClick={() => onOpenJob(group.key)}
-                  className={`group flex w-full items-center gap-4 rounded-2xl border bg-white p-5 text-left shadow-[0_1px_3px_rgba(15,23,42,0.05)] transition-all hover:border-[#1a6cf5]/40 hover:shadow-md ${
+                  className={`group flex w-full items-center gap-3 rounded-2xl border bg-white p-4 text-left shadow-[0_1px_3px_rgba(15,23,42,0.05)] transition-all hover:border-[#1a6cf5]/40 hover:shadow-md sm:gap-4 sm:p-5 ${
                     group.active ? "border-slate-200" : "border-slate-200 bg-slate-50/50"
                   }`}
                 >
                   {/* Role icon — same mapping as the public careers page */}
                   <span
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white ${tile} ${
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white sm:h-12 sm:w-12 ${tile} ${
                       group.active ? "" : "opacity-50 grayscale"
                     }`}
                   >
-                    <RoleIcon className="h-6 w-6" strokeWidth={1.75} />
+                    <RoleIcon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.75} />
                   </span>
 
                   {/* Title + counts */}
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="truncate font-display text-lg font-bold text-slate-900 group-hover:text-[#1a6cf5] transition-colors">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <h3 className="truncate font-display text-base font-bold text-slate-900 group-hover:text-[#1a6cf5] transition-colors sm:text-lg">
                         {group.title}
                       </h3>
                       {!group.active && (
@@ -490,11 +490,11 @@ function JobApplications({ group, onBack }: { group: JobGroup; onBack: () => voi
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Score remaining — job applications only */}
           {!group.isGeneral && <ScoreRemainingButton group={group} />}
           {/* Search */}
-          <div className="relative sm:w-56">
+          <div className="relative w-full sm:w-56">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
@@ -508,7 +508,7 @@ function JobApplications({ group, onBack }: { group: JobGroup; onBack: () => voi
       </div>
 
       {/* Status filter cards */}
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">
         <StatCard
           icon={Users}
           label="All"
@@ -699,7 +699,7 @@ function StatCard({
   return (
     <button
       onClick={onClick}
-      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border px-4 py-3 text-left transition-all duration-200 hover:shadow-sm ${
+      className={`group relative flex items-center gap-2.5 overflow-hidden rounded-xl border px-3 py-3 text-left transition-all duration-200 hover:shadow-sm sm:gap-3 sm:px-4 ${
         active ? `${cardCls} border-transparent shadow-sm` : "border-slate-200 bg-white hover:border-slate-300"
       }`}
     >
@@ -712,13 +712,13 @@ function StatCard({
       </span>
       <div className="min-w-0">
         <p
-          className={`font-display text-xl font-black tabular-nums leading-none ${
+          className={`font-display text-lg font-black tabular-nums leading-none sm:text-xl ${
             active ? "text-white" : "text-slate-900"
           }`}
         >
           {count}
         </p>
-        <p className={`mt-0.5 truncate text-xs font-medium ${active ? "text-white/80" : "text-slate-500"}`}>
+        <p className={`mt-0.5 truncate text-[11px] font-medium sm:text-xs ${active ? "text-white/80" : "text-slate-500"}`}>
           {label}
         </p>
       </div>

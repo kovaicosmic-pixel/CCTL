@@ -583,7 +583,12 @@ async function scoreApplicationById(applicationId: string): Promise<MatchOutcome
     if (!response.ok) {
       const body = await response.text();
       console.error("scoreApplicationById: Groq error", response.status, body);
-      return { ok: false, reason: "ai_error", message: "The AI service couldn't run the match right now. Please try again." };
+      // Temporarily surface the real reason so we can diagnose.
+      return {
+        ok: false,
+        reason: "ai_error",
+        message: `Groq error ${response.status}: ${body.slice(0, 300)}`,
+      };
     }
 
     const result = (await response.json()) as { choices?: { message?: { content?: string } }[] };
