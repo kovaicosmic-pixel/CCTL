@@ -122,11 +122,40 @@ function nextStep(status: string): { value: string; label: string } | null {
   return PIPELINE[idx + 1];
 }
 
+/**
+ * Forward-progress rank for each status. Higher = further along.
+ * Used to decide whether a status change is moving FORWARD (instant) or
+ * BACKWARD / reversing (needs confirmation). "rejected" and "old" are terminal
+ * outcomes — moving OUT of them back into the pipeline counts as a reverse.
+ */
+const STATUS_RANK: Record<string, number> = {
+  new: 0,
+  shortlisted: 1,
+  interview_scheduled: 2,
+  selected: 3,
+  rejected: 3, // terminal outcome, same tier as selected
+  old: 3, // terminal/archived
+};
+
+/** True when changing from `from` to `to` is a reverse / undo of a decision. */
+function isReverseChange(from: string, to: string): boolean {
+  const a = STATUS_RANK[from] ?? 0;
+  const b = STATUS_RANK[to] ?? 0;
+  // Moving to a lower rank = going backward.
+  if (b < a) return true;
+  // Leaving a terminal outcome (rejected/old/selected) for a different
+  // in-pipeline stage is also a reversal, even if the rank is equal/higher.
+  if ((from === "rejected" || from === "old" || from === "selected") && from !== to) return true;
+  return false;
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function ApplicationDetail({ applicationId, onClose }: Props) {
   const qc = useQueryClient();
   const [statusSaved, setStatusSaved] = useState(false);
+  // Pending reverse change awaiting confirmation: { to, label }
+  const [confirmReverse, setConfirmReverse] = useState<{ to: string; label: string } | null>(null);
 
   // Lock body scroll
   useEffect(() => {
@@ -290,7 +319,16 @@ export default function ApplicationDetail({ applicationId, onClose }: Props) {
               <StatusPipeline
                 status={app.status}
                 pending={statusMutation.isPending}
-                onChange={(s) => statusMutation.mutate(s)}
+                onChange={(s) => {
+                  // Forward moves apply instantly; reverses ask first.
+                  if (isReverseChange(app.status, s)) {
+                    const label =
+                      APPLICATION_STATUSES.find((o) => o.value === s)?.label ?? s;
+                    setConfirmReverse({ to: s, label });
+                  } else {
+                    statusMutation.mutate(s);
+                  }
+                }}
               />
 
               {/* Resume */}
@@ -362,6 +400,51 @@ export default function ApplicationDetail({ applicationId, onClose }: Props) {
           </div>
         </div>
       ) : null}
+
+      {/* Confirm dialog — only shown when reversing / undoing a status */}
+      {confirmReverse && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setConfirmReverse(null);
+          }}
+          role="alertdialog"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="flex gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                <AlertCircle className="h-5 w-5" />
+              </span>
+              <div>
+                <h4 className="text-base font-semibold text-slate-900">Move back to “{confirmReverse.label}”?</h4>
+                <p className="mt-1.5 text-sm text-slate-600">
+                  You're reversing this candidate's progress. Forward moves apply
+                  instantly, but going back asks first so decisions aren't undone by
+                  mistake.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmReverse(null)}
+                className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  statusMutation.mutate(confirmReverse.to);
+                  setConfirmReverse(null);
+                }}
+                className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600"
+              >
+                Yes, move back
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
