@@ -21,8 +21,6 @@ import ThemedSelect from "@/site/components/ThemedSelect";
 import { submitApplication } from "@/site/lib/careerForm";
 import { listActiveJobs } from "@/site/lib/careersAdmin";
 import {
-  ALLOWED_EXTENSIONS,
-  ALLOWED_TYPES,
   COVER_LETTER_MAX,
   EASE,
   EXPERIENCE_OPTIONS,
@@ -186,8 +184,8 @@ export default function GeneralApplicationForm() {
     if (!f) return;
     const ext = f.name.slice(f.name.lastIndexOf(".")).toLowerCase();
     let err: string | null = null;
-    if (!ALLOWED_TYPES.includes(f.type) && !ALLOWED_EXTENSIONS.includes(ext)) {
-      err = "Only PDF, DOC or DOCX files are accepted.";
+    if (ext !== ".pdf") {
+      err = "Only PDF files are accepted. Please upload your resume as a PDF.";
     } else if (f.size > MAX_FILE_SIZE) {
       err = `File is ${formatSize(f.size)} — the maximum is 5 MB.`;
     }
@@ -486,7 +484,7 @@ export default function GeneralApplicationForm() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.doc,.docx"
+            accept=".pdf,application/pdf"
             className="hidden"
             onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
           />
@@ -526,7 +524,7 @@ export default function GeneralApplicationForm() {
                   </>
                 )}
               </span>
-              <span className="text-xs text-slate-500">PDF, DOC or DOCX · up to 5 MB</span>
+              <span className="text-xs text-slate-500">PDF only · up to 5 MB</span>
             </button>
           ) : (
             <div className="flex items-center gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3.5">

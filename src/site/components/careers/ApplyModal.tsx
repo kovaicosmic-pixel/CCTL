@@ -35,13 +35,9 @@ type FieldErrors = Partial<Record<FieldName | "resume", string>>;
 export const EXPERIENCE_OPTIONS = ["<1 year", "1–3 years", "3–5 years", "5+ years"];
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 export const COVER_LETTER_MAX = 3000;
-export const ALLOWED_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
-// Some browsers (notably on Windows) report an empty MIME type for .doc/.docx
-export const ALLOWED_EXTENSIONS = [".pdf", ".doc", ".docx"];
+// PDF only — keeps resumes reliably previewable and parseable for AI matching.
+export const ALLOWED_TYPES = ["application/pdf"];
+export const ALLOWED_EXTENSIONS = [".pdf"];
 
 export const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -110,8 +106,9 @@ export default function ApplyModal({
 
   function validateFile(f: File): string | null {
     const ext = f.name.slice(f.name.lastIndexOf(".")).toLowerCase();
-    if (!ALLOWED_TYPES.includes(f.type) && !ALLOWED_EXTENSIONS.includes(ext)) {
-      return "Only PDF, DOC or DOCX files are accepted.";
+    // Require a .pdf extension (MIME can be empty/spoofed on some systems).
+    if (ext !== ".pdf") {
+      return "Only PDF files are accepted. Please upload your resume as a PDF.";
     }
     if (f.size > MAX_FILE_SIZE) return `File is ${formatSize(f.size)} — the maximum is 5 MB.`;
     return null;
@@ -405,7 +402,7 @@ export default function ApplyModal({
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,application/pdf"
                     className="hidden"
                     onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
                   />
@@ -444,7 +441,7 @@ export default function ApplyModal({
                           </>
                         )}
                       </span>
-                      <span className="text-xs text-ink-500">PDF, DOC or DOCX · up to 5 MB</span>
+                      <span className="text-xs text-ink-500">PDF only · up to 5 MB</span>
                     </button>
                   ) : (
                     <div className="flex items-center gap-4 rounded-2xl border border-emerald-400/25 bg-emerald-400/[0.05] px-4 py-3.5">

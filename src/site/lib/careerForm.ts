@@ -12,7 +12,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Resend } from "resend";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { db, applications, jobPostings, ensureDb } from "./db";
 import { buildApplicantEmail, buildStaffEmail, senderWithName } from "./careerEmails";
 import { CAREERS_HR_EMAIL } from "../data/careers";
@@ -38,7 +38,15 @@ const applySchema = z.object({
   yearsExperience: z.enum(["<1 year", "1–3 years", "3–5 years", "5+ years"]),
   currentLocation: z.string().trim().min(1).max(200),
   coverLetter: z.string().trim().max(3000).default(""),
-  resumeFilename: z.string().trim().min(1).max(255),
+  resumeFilename: z
+    .string()
+    .trim()
+    .min(1)
+    .max(255)
+    // PDF only — reject DOC/DOCX and anything else.
+    .refine((name) => name.toLowerCase().endsWith(".pdf"), {
+      message: "Resume must be a PDF file.",
+    }),
   resumeData: z.string().min(1), // base64 encoded file
   // Honeypot — real visitors never fill this hidden field
   websiteField: z.string().optional(),
@@ -79,6 +87,34 @@ export const submitApplication = createServerFn({ method: "POST" })
     const preferredLocationLabel = data.preferredLocation
       ? PREFERRED_LOCATION_LABELS[data.preferredLocation]
       : null;
+
+    // Block duplicate applications from the same email.
+    // - For a specific job: same email + same job = duplicate.
+    // - For a general CV: same email with any prior general application = duplicate.
+    const emailLower = data.email.trim().toLowerCase();
+    const duplicate = await db()
+      .select({ id: applications.id })
+      .from(applications)
+      .where(
+        data.jobId
+          ? and(
+              sql`lower(${applications.email}) = ${emailLower}`,
+              eq(applications.jobId, data.jobId),
+            )
+          : and(
+              sql`lower(${applications.email}) = ${emailLower}`,
+              isNull(applications.jobId),
+            ),
+      )
+      .limit(1);
+
+    if (duplicate.length > 0) {
+      throw new Error(
+        data.jobId
+          ? "You've already applied for this position with this email address."
+          : "You've already submitted a general application with this email address.",
+      );
+    }
 
     // Save application to DB first — data is never lost even if email fails
     await db().insert(applications).values({
