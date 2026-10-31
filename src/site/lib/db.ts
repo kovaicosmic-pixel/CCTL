@@ -58,6 +58,12 @@ export const applications = pgTable("applications", {
   /** "new" | "reviewed" | "shortlisted" | "rejected" */
   status: text("status").notNull().default("new"),
   appliedAt: timestamp("applied_at", { withTimezone: true }).notNull().defaultNow(),
+  /** Cached AI note summary (plain text) + when it was generated. */
+  aiSummary: text("ai_summary"),
+  aiSummaryAt: timestamp("ai_summary_at", { withTimezone: true }),
+  /** Cached AI resume↔job match result, stored as a JSON string. */
+  aiMatch: text("ai_match"),
+  aiMatchAt: timestamp("ai_match_at", { withTimezone: true }),
 });
 
 export const admins = pgTable("admins", {
@@ -88,6 +94,20 @@ export const loginAttempts = pgTable("login_attempts", {
   lockedUntil: timestamp("locked_until", { withTimezone: true }),
 });
 
+/**
+ * Append-only notes / comments on an application.
+ * Multiple admins can insert simultaneously — no row locking, no conflicts.
+ * Each note records who wrote it and when, so the activity log is self-evident.
+ */
+export const applicationNotes = pgTable("application_notes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  applicationId: uuid("application_id").notNull(),
+  adminId: uuid("admin_id").notNull(),
+  adminName: text("admin_name").notNull(),
+  note: text("note").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 // ─── Type exports ────────────────────────────────────────────────────────────
 
 export type JobPosting = typeof jobPostings.$inferSelect;
@@ -96,6 +116,8 @@ export type Application = typeof applications.$inferSelect;
 export type NewApplication = typeof applications.$inferInsert;
 export type Admin = typeof admins.$inferSelect;
 export type NewAdmin = typeof admins.$inferInsert;
+export type ApplicationNote = typeof applicationNotes.$inferSelect;
+export type NewApplicationNote = typeof applicationNotes.$inferInsert;
 
 // ─── Connection + Drizzle client (singleton) ─────────────────────────────────
 
@@ -114,7 +136,7 @@ function getDb() {
 
   const client = postgres(url, {
     max: 10,
-    ssl: url.includes("supabase.co") ? "require" : false,
+    ssl: url.includes("supabase.co") || url.includes("supabase.com") ? "require" : false,
     idle_timeout: 20,
     connect_timeout: 10,
   });
@@ -174,7 +196,11 @@ export async function verifyPassword(password: string, stored: string): Promise<
 
 export async function initDb(): Promise<void> {
   const client = postgres(process.env["DATABASE_URL"]!, {
-    ssl: process.env["DATABASE_URL"]!.includes("supabase.co") ? "require" : false,
+    ssl:
+      process.env["DATABASE_URL"]!.includes("supabase.co") ||
+      process.env["DATABASE_URL"]!.includes("supabase.com")
+        ? "require"
+        : false,
     max: 1,
     // "already exists, skipping" notices from the IF NOT EXISTS statements are expected
     onnotice: () => {},
@@ -220,6 +246,11 @@ export async function initDb(): Promise<void> {
     // Idempotent so it upgrades tables created before these columns existed.
     await client`ALTER TABLE applications ALTER COLUMN job_id DROP NOT NULL`;
     await client`ALTER TABLE applications ADD COLUMN IF NOT EXISTS preferred_location TEXT`;
+    // Cached AI results (note summary + resume match) so they persist across visits.
+    await client`ALTER TABLE applications ADD COLUMN IF NOT EXISTS ai_summary TEXT`;
+    await client`ALTER TABLE applications ADD COLUMN IF NOT EXISTS ai_summary_at TIMESTAMPTZ`;
+    await client`ALTER TABLE applications ADD COLUMN IF NOT EXISTS ai_match TEXT`;
+    await client`ALTER TABLE applications ADD COLUMN IF NOT EXISTS ai_match_at TIMESTAMPTZ`;
 
     await client`
       CREATE TABLE IF NOT EXISTS admins (
@@ -245,6 +276,18 @@ export async function initDb(): Promise<void> {
         failures      INTEGER NOT NULL DEFAULT 0,
         window_start  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         locked_until  TIMESTAMPTZ
+      )
+    `;
+
+    // Append-only notes on applications — collaborative, no locking.
+    await client`
+      CREATE TABLE IF NOT EXISTS application_notes (
+        id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        application_id  UUID NOT NULL,
+        admin_id        UUID NOT NULL,
+        admin_name      TEXT NOT NULL,
+        note            TEXT NOT NULL,
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
     `;
 

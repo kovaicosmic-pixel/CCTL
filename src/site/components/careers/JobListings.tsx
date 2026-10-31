@@ -47,7 +47,14 @@ const FALLBACK_TILES = ["from-sky-500 to-blue-700", "from-violet-500 to-indigo-7
 
 export function departmentStyle(department: string, idx: number) {
   const hit = DEPARTMENT_STYLES.find((d) => d.match.test(department));
-  return hit ?? { icon: Briefcase, tile: FALLBACK_TILES[idx % FALLBACK_TILES.length] };
+  if (hit) return hit;
+  // Deterministic fallback: derive the tile from the department name so the
+  // same role always gets the same colour everywhere (public cards + admin),
+  // regardless of its position in a list. Falls back to idx if no name.
+  const seed = department
+    ? Array.from(department).reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
+    : idx;
+  return { icon: Briefcase, tile: FALLBACK_TILES[seed % FALLBACK_TILES.length] };
 }
 
 function postedDate(d: string | Date) {

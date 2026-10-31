@@ -266,9 +266,11 @@ export function Badge({
 
 export const APPLICATION_STATUSES = [
   { value: "new", label: "New", tone: "blue" },
-  { value: "reviewed", label: "Reviewed", tone: "amber" },
-  { value: "shortlisted", label: "Shortlisted", tone: "emerald" },
+  { value: "shortlisted", label: "Shortlist", tone: "amber" },
+  { value: "interview_scheduled", label: "Called for Interview", tone: "violet" },
+  { value: "selected", label: "Selected", tone: "emerald" },
   { value: "rejected", label: "Rejected", tone: "red" },
+  { value: "old", label: "Archived", tone: "slate" },
 ] as const;
 
 export function StatusBadge({ status }: { status: string }) {

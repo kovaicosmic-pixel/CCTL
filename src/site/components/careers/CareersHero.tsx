@@ -69,12 +69,6 @@ export default function CareersHero() {
             >
               View Open Positions
             </a>
-            <a
-              href="/careers/apply"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-slate-200 transition-colors hover:border-cyan-glow/60 hover:text-ink-100"
-            >
-              Send Speculative CV
-            </a>
           </motion.div>
         </div>
 

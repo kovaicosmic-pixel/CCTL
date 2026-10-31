@@ -10,17 +10,19 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { and, eq, desc, asc } from "drizzle-orm";
+import { and, eq, desc, asc, isNull, isNotNull, sql } from "drizzle-orm";
 import {
   db,
   jobPostings,
   applications,
   admins,
+  applicationNotes,
   hashPassword,
   ensureDb,
   type JobPosting,
   type Application,
   type Admin,
+  type ApplicationNote,
 } from "./db";
 import { requireAdminSession, requireSuperAdmin } from "./careersSession";
 import { Resend } from "resend";
@@ -215,7 +217,14 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
-        status: z.enum(["new", "reviewed", "shortlisted", "rejected"]),
+        status: z.enum([
+          "new",
+          "shortlisted",
+          "interview_scheduled",
+          "selected",
+          "rejected",
+          "old",
+        ]),
       })
       .parse(data),
   )
@@ -229,6 +238,438 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
 
     return { ok: true as const };
   });
+
+// ─── Application notes (collaborative, append-only) ──────────────────────────
+
+export const listNotes = createServerFn({ method: "GET" })
+  .validator((data: unknown) => z.object({ applicationId: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    await requireAdminSession();
+
+    const notes = await db()
+      .select()
+      .from(applicationNotes)
+      .where(eq(applicationNotes.applicationId, data.applicationId))
+      .orderBy(asc(applicationNotes.createdAt));
+
+    return { notes };
+  });
+
+export const addNote = createServerFn({ method: "POST" })
+  .validator((data: unknown) =>
+    z
+      .object({
+        applicationId: z.string().uuid(),
+        note: z.string().trim().min(1).max(5000),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const session = await requireAdminSession();
+
+    await db().insert(applicationNotes).values({
+      applicationId: data.applicationId,
+      adminId: session.id,
+      adminName: session.name,
+      note: data.note,
+    });
+
+    return { ok: true as const };
+  });
+
+/**
+ * Delete a note. A note can be removed by its author, or by any super admin.
+ * A regular admin cannot delete someone else's note.
+ */
+export const deleteNote = createServerFn({ method: "POST" })
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    const session = await requireAdminSession();
+
+    const [note] = await db()
+      .select()
+      .from(applicationNotes)
+      .where(eq(applicationNotes.id, data.id))
+      .limit(1);
+
+    if (!note) {
+      // Already gone — treat as success so the UI just refreshes.
+      return { ok: true as const };
+    }
+
+    const isAuthor = note.adminId === session.id;
+    const isSuperAdmin = session.role === "superadmin";
+    if (!isAuthor && !isSuperAdmin) {
+      throw new Error("You can only delete your own notes.");
+    }
+
+    await db().delete(applicationNotes).where(eq(applicationNotes.id, data.id));
+
+    return { ok: true as const };
+  });
+
+/**
+ * Summarise all interview notes for an application using Groq (gpt-oss-120b).
+ *
+ * The model is not trained on our data — we send the notes with a clear
+ * instruction prompt and get a concise, neutral HR summary back. Returns a
+ * friendly message (not an error) when the key is missing or there are too
+ * few notes, so the UI can guide the recruiter instead of showing a crash.
+ */
+export const summariseNotes = createServerFn({ method: "POST" })
+  .validator((data: unknown) => z.object({ applicationId: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    await requireAdminSession();
+
+    const apiKey = process.env["GROQ_API_KEY"];
+    if (!apiKey) {
+      return {
+        ok: false as const,
+        reason: "not_configured" as const,
+        message: "AI summary isn't configured yet. Add GROQ_API_KEY to the server's .env file.",
+      };
+    }
+
+    const notes = await db()
+      .select()
+      .from(applicationNotes)
+      .where(eq(applicationNotes.applicationId, data.applicationId))
+      .orderBy(asc(applicationNotes.createdAt));
+
+    if (notes.length < 2) {
+      return {
+        ok: false as const,
+        reason: "too_few" as const,
+        message: "Add at least two notes before generating a summary.",
+      };
+    }
+
+    // Build the transcript of who said what.
+    const transcript = notes
+      .map((n, i) => `Note ${i + 1} — ${n.adminName}:\n${n.note}`)
+      .join("\n\n");
+
+    const systemPrompt = [
+      "You are an HR assistant for an EMC/EMI testing laboratory.",
+      "Several interviewers have left comments about ONE job candidate.",
+      "Write a concise, neutral summary for the hiring team.",
+      "",
+      "Return the summary in EXACTLY this format, using these three headings on their own lines (no markdown asterisks, no bullet symbols):",
+      "",
+      "Strengths",
+      "<one or two short sentences, or write 'None noted' if the interviewers raised none>",
+      "",
+      "Concerns",
+      "<one or two short sentences, or write 'None noted' if none>",
+      "",
+      "Recommendation",
+      "<the overall leaning in plain words — e.g. 'Lean hire', 'Mixed', 'Lean no-hire' — followed by one short sentence of reasoning. State explicitly if interviewers disagree.>",
+      "",
+      "Rules:",
+      "- Do NOT use markdown formatting (no **bold**, no # headings, no - bullets). Plain text only.",
+      "- Keep the whole summary under 120 words.",
+      "- Base everything strictly on the notes. Do not invent qualifications, experience, or opinions not present.",
+      "- If the notes contain only placeholder or test text with no real feedback, say so plainly under each heading instead of guessing.",
+      "- No greeting, no sign-off.",
+    ].join("\n");
+
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-oss-120b",
+          temperature: 0.3,
+          max_tokens: 400,
+          messages: [
+            { role: "system", content: systemPrompt },
+            {
+              role: "user",
+              content: `Here are the interview notes for the candidate:\n\n${transcript}`,
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        console.error("summariseNotes: Groq error", response.status, body);
+        return {
+          ok: false as const,
+          reason: "ai_error" as const,
+          message: "The AI service couldn't generate a summary right now. Please try again.",
+        };
+      }
+
+      const result = (await response.json()) as {
+        choices?: { message?: { content?: string } }[];
+      };
+      const summary = result.choices?.[0]?.message?.content?.trim();
+
+      if (!summary) {
+        return {
+          ok: false as const,
+          reason: "ai_error" as const,
+          message: "The AI returned an empty summary. Please try again.",
+        };
+      }
+
+      const generatedAt = new Date();
+      // Persist so it survives navigation / is shared across recruiters.
+      await db()
+        .update(applications)
+        .set({ aiSummary: summary, aiSummaryAt: generatedAt })
+        .where(eq(applications.id, data.applicationId));
+
+      return {
+        ok: true as const,
+        summary,
+        noteCount: notes.length,
+        generatedAt: generatedAt.toISOString(),
+      };
+    } catch (err) {
+      console.error("summariseNotes: request failed", err);
+      return {
+        ok: false as const,
+        reason: "ai_error" as const,
+        message: "Couldn't reach the AI service. Check the server's connection and try again.",
+      };
+    }
+  });
+
+// ─── Resume ↔ Job match (ATS-style) ──────────────────────────────────────────
+
+/** Pull plain text out of a base64 PDF or DOCX. Returns { text, error }. */
+async function extractResumeText(
+  base64: string,
+  filename: string,
+): Promise<{ text: string; error?: string }> {
+  const ext = filename.split(".").pop()?.toLowerCase();
+  // Strip any accidental data-URI prefix (e.g. "data:application/pdf;base64,")
+  const clean = base64.includes(",") ? base64.slice(base64.indexOf(",") + 1) : base64;
+  const buffer = Buffer.from(clean, "base64");
+
+  try {
+    if (ext === "pdf") {
+      const { extractText, getDocumentProxy } = await import("unpdf");
+      const pdf = await getDocumentProxy(new Uint8Array(buffer));
+      const { text } = await extractText(pdf, { mergePages: true });
+      return { text: (Array.isArray(text) ? text.join("\n") : text).trim() };
+    }
+    if (ext === "docx") {
+      const mammoth = await import("mammoth");
+      const { value } = await mammoth.extractRawText({ buffer });
+      return { text: value.trim() };
+    }
+    if (ext === "doc") {
+      return { text: "", error: "Old .doc files can't be read automatically — review manually." };
+    }
+    return { text: "", error: `Unsupported file type: .${ext}` };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("extractResumeText: failed", msg, err);
+    return { text: "", error: `Extraction failed: ${msg}` };
+  }
+}
+
+type MatchOutcome =
+  | { ok: true; jobTitle: string; score: number; verdict: string; matched: string[]; missing: string[]; summary: string; generatedAt: string }
+  | { ok: false; reason: "not_configured" | "no_job" | "unreadable" | "ai_error"; message: string };
+
+/**
+ * Core scorer — reusable by the single-run server fn and the bulk scorer.
+ * Loads the application + job, extracts resume text, calls Groq, saves the
+ * result to the DB, and returns the outcome. No auth check here — callers
+ * (server functions) handle auth.
+ */
+async function scoreApplicationById(applicationId: string): Promise<MatchOutcome> {
+  const apiKey = process.env["GROQ_API_KEY"];
+  if (!apiKey) {
+    return {
+      ok: false,
+      reason: "not_configured",
+      message: "AI match isn't configured yet. Add GROQ_API_KEY to the server's .env file.",
+    };
+  }
+
+  const [app] = await db()
+    .select()
+    .from(applications)
+    .where(eq(applications.id, applicationId))
+    .limit(1);
+  if (!app) throw new Error("Application not found");
+
+  if (!app.jobId) {
+    return {
+      ok: false,
+      reason: "no_job",
+      message:
+        "This is a general / speculative CV not tied to a specific job, so there's nothing to match against.",
+    };
+  }
+
+  const [job] = await db().select().from(jobPostings).where(eq(jobPostings.id, app.jobId)).limit(1);
+  if (!job) {
+    return { ok: false, reason: "no_job", message: "The job this candidate applied to no longer exists." };
+  }
+
+  const extracted = await extractResumeText(app.resumeData, app.resumeFilename);
+  const resumeText = extracted.text;
+  if (!resumeText || resumeText.length < 50) {
+    return {
+      ok: false,
+      reason: "unreadable",
+      message: extracted.error
+        ? `Couldn't read this resume. ${extracted.error}`
+        : "Couldn't read text from this resume — it may be a scanned image or an old .doc file. Open it to review manually.",
+    };
+  }
+
+  const requirements = (JSON.parse(job.requirements) as string[]).join("\n- ");
+  const responsibilities = (JSON.parse(job.responsibilities) as string[]).join("\n- ");
+
+  const systemPrompt = [
+    "You are an ATS (Applicant Tracking System) screening assistant for an EMC/EMI testing laboratory.",
+    "Compare ONE candidate's resume against ONE job posting and judge the fit.",
+    "",
+    "Return your answer as STRICT JSON with exactly these keys and nothing else:",
+    "{",
+    '  "score": <integer 0-100, overall match>,',
+    '  "verdict": "<one short phrase: Strong match | Good match | Partial match | Weak match>",',
+    '  "matched": [<skills/requirements from the job clearly evidenced in the resume, max 6 short strings>],',
+    '  "missing": [<important job requirements NOT found in the resume, max 6 short strings>],',
+    '  "summary": "<2-3 sentence plain-text assessment of the fit>"',
+    "}",
+    "",
+    "Rules:",
+    "- Judge ONLY on evidence in the resume text. Do not assume skills that aren't written.",
+    "- Be objective and unbiased. Do not inflate or deflate the score.",
+    "- Output valid JSON only. No markdown, no code fences, no extra text.",
+  ].join("\n");
+
+  const userPrompt = [
+    `JOB TITLE: ${job.title}`,
+    `EXPERIENCE REQUIRED: ${job.experienceBand}`,
+    "",
+    "RESPONSIBILITIES:",
+    `- ${responsibilities}`,
+    "",
+    "REQUIREMENTS:",
+    `- ${requirements}`,
+    "",
+    "CANDIDATE RESUME (extracted text):",
+    resumeText.slice(0, 12000),
+  ].join("\n");
+
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: "openai/gpt-oss-120b",
+        temperature: 0.2,
+        max_tokens: 700,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      console.error("scoreApplicationById: Groq error", response.status, body);
+      return { ok: false, reason: "ai_error", message: "The AI service couldn't run the match right now. Please try again." };
+    }
+
+    const result = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+    const raw = result.choices?.[0]?.message?.content?.trim();
+    if (!raw) {
+      return { ok: false, reason: "ai_error", message: "The AI returned an empty result. Please try again." };
+    }
+
+    let parsed: { score: number; verdict: string; matched: string[]; missing: string[]; summary: string };
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      console.error("scoreApplicationById: non-JSON response", raw);
+      return { ok: false, reason: "ai_error", message: "Couldn't parse the AI result. Please try again." };
+    }
+
+    const generatedAt = new Date();
+    const matchResult = {
+      jobTitle: job.title,
+      score: Math.max(0, Math.min(100, Math.round(parsed.score ?? 0))),
+      verdict: String(parsed.verdict ?? "").slice(0, 60),
+      matched: (parsed.matched ?? []).slice(0, 6).map((s) => String(s).slice(0, 80)),
+      missing: (parsed.missing ?? []).slice(0, 6).map((s) => String(s).slice(0, 80)),
+      summary: String(parsed.summary ?? "").slice(0, 600),
+      generatedAt: generatedAt.toISOString(),
+    };
+
+    await db()
+      .update(applications)
+      .set({ aiMatch: JSON.stringify(matchResult), aiMatchAt: generatedAt })
+      .where(eq(applications.id, applicationId));
+
+    return { ok: true, ...matchResult };
+  } catch (err) {
+    console.error("scoreApplicationById: request failed", err);
+    return { ok: false, reason: "ai_error", message: "Couldn't reach the AI service. Check the server's connection and try again." };
+  }
+}
+
+/** Single match run triggered from the candidate detail UI. */
+export const matchResumeToJob = createServerFn({ method: "POST" })
+  .validator((data: unknown) => z.object({ applicationId: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    await requireAdminSession();
+    return scoreApplicationById(data.applicationId);
+  });
+
+/**
+ * Bulk-score every job application that doesn't have a score yet.
+ * Processes in small sequential batches to stay within Groq rate limits.
+ * General (no-job) applications are skipped. Returns how many were scored.
+ */
+export const scoreUnscoredApplications = createServerFn({ method: "POST" }).handler(async () => {
+  await requireAdminSession();
+
+  if (!process.env["GROQ_API_KEY"]) {
+    return { ok: false as const, message: "Add GROQ_API_KEY to enable AI scoring.", scored: 0, failed: 0, remaining: 0 };
+  }
+
+  // Find job applications with a resume, a linked job, and no score yet.
+  const pending = await db()
+    .select({ id: applications.id })
+    .from(applications)
+    .where(and(isNull(applications.aiMatch), isNotNull(applications.jobId)))
+    .limit(25); // cap per click so a single request can't run away
+
+  let scored = 0;
+  let failed = 0;
+  for (const row of pending) {
+    try {
+      const res = await scoreApplicationById(row.id);
+      if (res.ok) scored++;
+      else failed++;
+    } catch {
+      failed++;
+    }
+  }
+
+  // How many still have no score after this batch.
+  const [{ count }] = await db()
+    .select({ count: sql<number>`count(*)` })
+    .from(applications)
+    .where(and(isNull(applications.aiMatch), isNotNull(applications.jobId)));
+
+  return { ok: true as const, scored, failed, remaining: Number(count) };
+});
 
 // ─── Admin accounts (superadmin only) ────────────────────────────────────────
 
