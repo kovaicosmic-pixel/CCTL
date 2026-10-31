@@ -26,6 +26,7 @@ import {
   XCircle,
   Lock,
   FileSignature,
+  Eye,
 } from "lucide-react";
 import {
   getApplication,
@@ -160,16 +161,18 @@ export default function ApplicationDetail({ applicationId, onClose }: Props) {
 
   const app = data?.application;
 
+  function resumeMime(filename: string): string {
+    const ext = filename.split(".").pop()?.toLowerCase() ?? "pdf";
+    return ext === "pdf"
+      ? "application/pdf"
+      : ext === "doc"
+        ? "application/msword"
+        : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  }
+
   function downloadResume() {
     if (!app) return;
-    const ext = app.resumeFilename.split(".").pop()?.toLowerCase() ?? "pdf";
-    const mimeType =
-      ext === "pdf"
-        ? "application/pdf"
-        : ext === "doc"
-          ? "application/msword"
-          : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    const blob = b64toBlob(app.resumeData, mimeType);
+    const blob = b64toBlob(app.resumeData, resumeMime(app.resumeFilename));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -177,6 +180,25 @@ export default function ApplicationDetail({ applicationId, onClose }: Props) {
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  /** Open the resume in a new tab for preview. PDFs render inline in the
+   *  browser; DOC/DOCX can't preview natively, so those fall back to download. */
+  function viewResume() {
+    if (!app) return;
+    const ext = app.resumeFilename.split(".").pop()?.toLowerCase() ?? "pdf";
+    if (ext !== "pdf") {
+      // Word docs don't preview in-browser — download instead.
+      downloadResume();
+      return;
+    }
+    const blob = b64toBlob(app.resumeData, "application/pdf");
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank", "noopener,noreferrer");
+    // Give the new tab time to load before revoking.
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  }
+
+  const isPdf = (app?.resumeFilename.split(".").pop()?.toLowerCase() ?? "") === "pdf";
 
   return (
     // Full-screen overlay
@@ -281,13 +303,28 @@ export default function ApplicationDetail({ applicationId, onClose }: Props) {
                   <p className="min-w-0 flex-1 truncate text-sm font-medium text-slate-900">
                     {app.resumeFilename}
                   </p>
-                  <button
-                    onClick={downloadResume}
-                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-[#1a6cf5] px-3.5 text-sm font-semibold text-white hover:bg-[#155ad0] transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download
-                  </button>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {isPdf && (
+                      <button
+                        onClick={viewResume}
+                        className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#1a6cf5] px-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#155ad0]"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View
+                      </button>
+                    )}
+                    <button
+                      onClick={downloadResume}
+                      className={`inline-flex h-9 items-center gap-2 rounded-lg px-3.5 text-sm font-semibold transition-colors ${
+                        isPdf
+                          ? "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                          : "bg-[#1a6cf5] text-white hover:bg-[#155ad0]"
+                      }`}
+                    >
+                      <Download className="h-4 w-4" />
+                      Download
+                    </button>
+                  </div>
                 </div>
 
                 {/* AI job-match check */}
